@@ -1,0 +1,155 @@
+{
+ "adilabad": [
+  "SIRPUR",
+  "ASIFABAD",
+  "KHANAPUR",
+  "ADILABAD",
+  "BOATH",
+  "NIRMAL",
+  "MUDHOLE"
+ ],
+ "peddapalli": [
+  "CHENNUR",
+  "BELLAMPALLI",
+  "MANCHERIAL",
+  "DHARMAPURI",
+  "RAMAGUNDAM",
+  "MANTHANI",
+  "PEDDAPALLE"
+ ],
+ "nizamabad": [
+  "ARMUR",
+  "BODHAN",
+  "NIZAMABAD (URBAN)",
+  "NIZAMABAD (RURAL)",
+  "BALKONDA",
+  "KORATLA",
+  "JAGTIAL"
+ ],
+ "zahirabad": [
+  "JUKKAL",
+  "BANSWADA",
+  "YELLAREDDY",
+  "KAMAREDDY",
+  "NARAYANKHED",
+  "ANDOLE",
+  "ZAHIRABAD"
+ ],
+ "karimnagar": [
+  "KARIMNAGAR",
+  "CHOPPADANDI",
+  "VEMULAWADA",
+  "SIRCILLA",
+  "MANAKONDUR",
+  "HUZURABAD",
+  "HUSNABAD"
+ ],
+ "medak": [
+  "SIDDIPET",
+  "MEDAK",
+  "NARSAPUR",
+  "SANGAREDDY",
+  "PATANCHERU",
+  "DUBBAK",
+  "GAJWEL"
+ ],
+ "malkajgiri": [
+  "MEDCHAL",
+  "MALKAJGIRI",
+  "QUTHBULLAPUR",
+  "KUKATPALLE",
+  "UPPAL",
+  "LAL BAHADUR NAGAR",
+  "SECUNDERABAD CANTT."
+ ],
+ "bhongir": [
+  "IBRAHIMPATNAM",
+  "MUNUGODE",
+  "BHONGIR",
+  "NAKREKAL",
+  "THUNGATHURTHI",
+  "ALAIR",
+  "JANGOAN"
+ ],
+ "chevella": [
+  "MAHESWARAM",
+  "RAJENDRANAGAR",
+  "SERILINGAMPALLY",
+  "CHEVELLA",
+  "PARGI",
+  "VICARABAD",
+  "TANDUR"
+ ],
+ "secunderabad": [
+  "MUSHEERABAD",
+  "AMBERPET",
+  "KHAIRATABAD",
+  "JUBILEE HILLS",
+  "SANATHNAGAR",
+  "NAMPALLY",
+  "SECUNDERABAD"
+ ],
+ "hyderabad": [
+  "MALAKPET",
+  "KARWAN",
+  "GOSHAMAHAL",
+  "CHARMINAR",
+  "CHANDRAYANGUTTA",
+  "YAKUTPURA",
+  "BAHADURPURA"
+ ],
+ "mahabubnagar": [
+  "KODANGAL",
+  "NARAYANPET",
+  "MAHBUBNAGAR",
+  "JADCHERLA",
+  "DEVARKADRA",
+  "MAKTHAL",
+  "SHADNAGAR"
+ ],
+ "nagarkurnool": [
+  "WANAPARTHY",
+  "GADWAL",
+  "ALAMPUR",
+  "NAGARKURNOOL",
+  "ACHAMPET",
+  "KALWAKURTHY",
+  "KOLLAPUR"
+ ],
+ "nalgonda": [
+  "DEVARAKONDA",
+  "NAGARJUNA SAGAR",
+  "MIRYALAGUDA",
+  "HUZURNAGAR",
+  "KODAD",
+  "SURYAPET",
+  "NALGONDA"
+ ],
+ "warangal": [
+  "GHANPUR (STATION)",
+  "PALAKURTHI",
+  "PARKAL",
+  "WARANGAL WEST",
+  "WARANGAL EAST",
+  "WARADHANAPET",
+  "BHUPALPALLE"
+ ],
+ "mahabubabad": [
+  "DORNAKAL",
+  "MAHABUBABAD",
+  "NARSAMPET",
+  "MULUG",
+  "PINAPAKA",
+  "YELLANDU",
+  "BHADRACHALAM"
+ ],
+ "khammam": [
+  "KHAMMAM",
+  "PALAIR",
+  "MADHIRA",
+  "WYRA",
+  "SATHUPALLE",
+  "KOTHAGUDEM",
+  "ASWARAOPETA"
+ ]
+}

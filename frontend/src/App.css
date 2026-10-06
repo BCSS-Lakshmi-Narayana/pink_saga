@@ -1,0 +1,103 @@
+.App-logo {
+    height: 40vmin;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+.App-header {
+    background-color: #0f0f10;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* News Ticker Marquee Animations */
+@keyframes marquee {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+@keyframes marquee-vertical {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+.animate-marquee {
+    animation: marquee 20s linear infinite;
+}
+
+.animate-marquee-vertical {
+    animation: marquee-vertical 30s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee-vertical:hover {
+    animation-play-state: paused;
+}
+
+/* ─── Button Highlight Animation ─── */
+@keyframes button-blink {
+    0%, 100% {
+        background-color: transparent;
+        transform: scale(1);
+        box-shadow: none;
+    }
+    50% {
+        background-color: rgba(99, 102, 241, 0.3); /* Indigo/Blue-ish */
+        transform: scale(1.15);
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.6);
+        border-radius: 9999px;
+    }
+}
+
+.animate-blink-3s {
+    animation: button-blink 1s ease-in-out 3; /* Blink 3 times (1s per cycle) */
+}
+
+/* ─── Card Action Highlight Animation ─── */
+@keyframes card-action-blink {
+    0%, 100% {
+        background-color: transparent;
+        box-shadow: none;
+        border-color: #e2e8f0;
+    }
+    50% {
+        background-color: rgba(34, 197, 94, 0.1); /* light green bg */
+        box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        border-color: rgba(34, 197, 94, 0.5);
+    }
+}
+
+.animate-card-action-blink {
+    animation: card-action-blink 0.75s ease-in-out 2;
+}

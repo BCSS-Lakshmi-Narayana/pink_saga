@@ -1,0 +1,21 @@
+[
+  {
+    "_id": "69b066bfbbe27def3306112b",
+    "id": "grievance_settings",
+    "__v": 0,
+    "ai_analysis_enabled": true,
+    "auto_fetch_enabled": true,
+    "default_priority": "medium",
+    "fetch_interval_minutes": 15,
+    "max_sources": 5,
+    "official_contacts": [],
+    "report_settings": {
+      "footer_text": "This is a system-generated report.",
+      "header_text": "OFFICIAL GRIEVANCE REPORT",
+      "include_engagement_stats": true,
+      "include_media": true
+    },
+    "sangrur_ac_rr_index": 1364,
+    "updated_at": "2026-03-10T18:45:18.626Z"
+  }
+]

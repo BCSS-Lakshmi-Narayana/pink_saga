@@ -1,0 +1,584 @@
+{
+    "category_mappings": [
+        {
+            "category_id": "Communal_Violence",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_196",
+                    "code": "196",
+                    "title": "Promoting enmity between groups"
+                },
+                {
+                    "id": "BNS_351",
+                    "code": "351",
+                    "title": "Criminal intimidation"
+                },
+                {
+                    "id": "BNS_353_2",
+                    "code": "353(2)",
+                    "title": "Statements conducing to public mischief"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "VIOLENT_GRAPHIC_CONTENT",
+                        "name": "Violent or Graphic Content"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Hate_Speech",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_196",
+                    "code": "196",
+                    "title": "Promoting enmity between groups"
+                },
+                {
+                    "id": "BNS_299",
+                    "code": "299",
+                    "title": "Religious insult"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "HATEFUL_CONDUCT",
+                        "name": "Hateful Conduct"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Hate_Speech_Threat",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_196",
+                    "code": "196",
+                    "title": "Promoting enmity between groups"
+                },
+                {
+                    "id": "BNS_351",
+                    "code": "351",
+                    "title": "Criminal intimidation"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    },
+                    {
+                        "id": "HARASSMENT_CYBERBULLYING",
+                        "name": "Harassment & Cyberbullying"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "HATEFUL_CONDUCT",
+                        "name": "Hateful Conduct"
+                    },
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    },
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "HATE_SPEECH",
+                        "name": "Hate Speech"
+                    },
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Hate_Speech_Threat_Extremist",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_152",
+                    "code": "152",
+                    "title": "Endangering sovereignty or integrity"
+                },
+                {
+                    "id": "BNS_196",
+                    "code": "196",
+                    "title": "Promoting enmity between groups"
+                },
+                {
+                    "id": "BNS_197",
+                    "code": "197",
+                    "title": "Prejudicial to national integration"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "VIOLENT_CRIMINAL_ORGS",
+                        "name": "Violent Criminal Organizations"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "DANGEROUS_ORGANIZATIONS",
+                        "name": "Dangerous Individuals and Organizations"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "DANGEROUS_ORGANIZATIONS",
+                        "name": "Dangerous Individuals and Organizations"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Harassment",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_352",
+                    "code": "352",
+                    "title": "Intentional insult provoking breach of peace"
+                },
+                {
+                    "id": "BNS_356",
+                    "code": "356",
+                    "title": "Defamation"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HARASSMENT_CYBERBULLYING",
+                        "name": "Harassment & Cyberbullying"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "ABUSE_HARASSMENT",
+                        "name": "Abuse and Harassment"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Abusive",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_352",
+                    "code": "352",
+                    "title": "Intentional insult provoking breach of peace"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HARASSMENT_CYBERBULLYING",
+                        "name": "Harassment & Cyberbullying"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "ABUSE_HARASSMENT",
+                        "name": "Abuse and Harassment"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Sexual_Harassment",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_72",
+                    "code": "72",
+                    "title": "Sexual harassment"
+                },
+                {
+                    "id": "BNS_74",
+                    "code": "74",
+                    "title": "Outraging modesty"
+                },
+                {
+                    "id": "BNS_79",
+                    "code": "79",
+                    "title": "Insulting modesty of a woman"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HARASSMENT_CYBERBULLYING",
+                        "name": "Harassment & Cyberbullying"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "ABUSE_HARASSMENT",
+                        "name": "Abuse and Harassment"
+                    },
+                    {
+                        "id": "SENSITIVE_MEDIA",
+                        "name": "Sensitive Media"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    },
+                    {
+                        "id": "SEXUAL_EXPLOITATION",
+                        "name": "Sexual Exploitation"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "BULLYING_HARASSMENT",
+                        "name": "Bullying and Harassment"
+                    },
+                    {
+                        "id": "SEXUAL_EXPLOITATION",
+                        "name": "Sexual Exploitation"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Sexual_Violence",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_74",
+                    "code": "74",
+                    "title": "Outraging modesty"
+                },
+                {
+                    "id": "BNS_351",
+                    "code": "351",
+                    "title": "Criminal intimidation"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "VIOLENT_GRAPHIC_CONTENT",
+                        "name": "Violent or Graphic Content"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    },
+                    {
+                        "id": "SENSITIVE_MEDIA",
+                        "name": "Sensitive Media"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    },
+                    {
+                        "id": "SEXUAL_EXPLOITATION",
+                        "name": "Sexual Exploitation"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    },
+                    {
+                        "id": "SEXUAL_EXPLOITATION",
+                        "name": "Sexual Exploitation"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Sexual",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_74",
+                    "code": "74",
+                    "title": "Outraging modesty"
+                },
+                {
+                    "id": "BNS_294",
+                    "code": "294",
+                    "title": "Obscene acts and songs"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "SEXUAL_CONTENT",
+                        "name": "Nudity and Sexual Content"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "SENSITIVE_MEDIA",
+                        "name": "Sensitive Media"
+                    },
+                    {
+                        "id": "ADULT_CONTENT",
+                        "name": "Adult Content"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "SEXUAL_ACTIVITY",
+                        "name": "Sexual Activity"
+                    },
+                    {
+                        "id": "NUDITY",
+                        "name": "Adult Nudity"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "NUDITY",
+                        "name": "Nudity and Sexual Activity"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "threat",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_351",
+                    "code": "351",
+                    "title": "Criminal intimidation"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "HARASSMENT_CYBERBULLYING",
+                        "name": "Harassment & Cyberbullying"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "threat_incitement",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_351",
+                    "code": "351",
+                    "title": "Criminal intimidation"
+                },
+                {
+                    "id": "BNS_353_2",
+                    "code": "353(2)",
+                    "title": "Statements conducing to public mischief"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "VIOLENT_GRAPHIC_CONTENT",
+                        "name": "Violent or Graphic Content"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "VIOLENT_SPEECH",
+                        "name": "Violent Speech"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "VIOLENCE_INCITEMENT",
+                        "name": "Violence and Incitement"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Misinformation",
+            "country": "IN",
+            "legal_sections": [
+                {
+                    "id": "BNS_197",
+                    "code": "197",
+                    "title": "Prejudicial to national integration"
+                },
+                {
+                    "id": "BNS_353_2",
+                    "code": "353(2)",
+                    "title": "Statements conducing to public mischief"
+                }
+            ],
+            "platform_policies": {
+                "youtube": [
+                    {
+                        "id": "MISINFORMATION",
+                        "name": "Misinformation"
+                    }
+                ],
+                "x": [
+                    {
+                        "id": "CIVIC_INTEGRITY",
+                        "name": "Civic Integrity"
+                    }
+                ],
+                "facebook": [
+                    {
+                        "id": "MISINFORMATION",
+                        "name": "Misinformation"
+                    }
+                ],
+                "instagram": [
+                    {
+                        "id": "MISINFORMATION",
+                        "name": "Misinformation"
+                    }
+                ]
+            }
+        },
+        {
+            "category_id": "Communal_Content",
+            "country": "IN",
+            "legal_sections": [],
+            "platform_policies": {
+                "youtube": [],
+                "x": [],
+                "facebook": [],
+                "instagram": []
+            }
+        },
+        {
+            "category_id": "Normal",
+            "country": "IN",
+            "legal_sections": [],
+            "platform_policies": {
+                "youtube": [],
+                "x": [],
+                "facebook": [],
+                "instagram": []
+            }
+        }
+    ],
+    "version": "1.0.0"
+}

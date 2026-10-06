@@ -1,0 +1,18 @@
+{
+ "_meta": {
+  "description": "Telangana statewide socioeconomic indicators and district-level Census 2011 indicators, for a political-monitoring dashboard. Statewide labour-force figures are from the NSO/MoSPI Periodic Labour Force Survey (PLFS) Annual Report 2023-24; statewide demographic figures and the Hyderabad district row are Census 2011. 32 of the 33 districts carry nulls for the Census 2011 rate fields because no Census 2011 figure exists for their present territory - see each district's census_2011_parent and null_reason. Nothing in this file is apportioned, interpolated or estimated.",
+  "vintage": "PLFS 2023-24 (labour); Census 2011 (literacy, urban share, sex ratio)",
+  "granularity": "statewide",
+  "source": "(1) LABOUR: NSO/MoSPI, Periodic Labour Force Survey Annual Report (July 2023 - June 2024), Appendix A detailed tables - Table (16) 'Labour Force Participation Rate (LFPR) ... for each State/UT', age group: 15 years and above, page A-62; Table (17) 'Worker Population Ratio (WPR) ... for each State/UT', age group: 15 years and above, page A-67; Table (18) 'Unemployment Rate (UR) ... for each State/UT', age group: 15-29 years, page A-70. All values are usual status (ps+ss), rural+urban, persons. https://www.mospi.gov.in/sites/default/files/publication_reports/AnnualReport_PLFS2023-24L2.pdf | (2) STATE DEMOGRAPHY (Census 2011): Government of Telangana official state portal, 'Telangana State Profile', Census 2011 block. https://www.telangana.gov.in/about/state-profile/ | (3) HYDERABAD DISTRICT (Census 2011): Census of India 2011, Andhra Pradesh, Series-29, Part XII-A, District Census Handbook, Hyderabad (DH_2011_2805_PART_A_DCHB_HYDERABAD.pdf), 'Important Statistics of the District' (printed p.11) and Analytical Note '2011 Census Findings' (printed pp.44-45), Table 13 / Table 17. https://censusindia.gov.in/nada/index.php/catalog/120/download/130/DH_2011_2805_PART_A_DCHB_HYDERABAD.pdf",
+  "as_of": "Labour figures: PLFS survey year July 2023 - June 2024. Demographic figures: Census of India 2011 (reference date 2011-03-01). District roster: 33 districts as of 2026-09-30. File compiled 2026-09-30.",
+  "caveat": "Labour rates are usual status (ps+ss), age 15+, rural+urban. Do not chart against a district Census work-participation rate: the definitions differ."
+ },
+ "statewide": {
+  "lfpr_15plus": 62.2,
+  "wpr_15plus": 59.2,
+  "unemployment_rate_15_29": 16.6,
+  "literacy_rate": 66.54,
+  "urban_pct": 38.88,
+  "sex_ratio": 988
+ }
+}

@@ -1,0 +1,328 @@
+{
+  "_meta": {
+    "purpose": "Accounts that post AGAINST the client (BRS). Separate from state_leader_handles.json, which records who an account IS. This file records which side an account argues for, so organised rival output is counted as rival output and not as organic public opinion.",
+    "why_this_file_exists": "cmDashboardController.classifyVoice falls through to 'organic' for any handle not in the registry. The registry holds one handle per party, so the Congress campaign apparatus — the Youth Congress account, the TPCC social-media chairman, the ministers' personal handles — was landing in the ORGANIC bucket. For an opposition client that is the worst possible misread: coordinated attack volume is scored as spontaneous public hostility, and the headline 'public sentiment' figure moves with the rival's posting schedule.",
+    "researched": "2026-09-30. Every handle below was fetched live from api.fxtwitter.com and its bio read before being recorded. Follower and tweet counts are from that fetch and will drift.",
+    "verification_limits": "A profile fetch proves IDENTITY, not BEHAVIOUR. Nothing here should be read as 'this account posted X against BRS on date Y' — it is not measured, and no field claims it. `hostility` records WHY the account is expected to be adversarial, with the evidence. Confirming actual posting behaviour needs either (a) the deployment's own pipeline once it has run for a fortnight, or (b) the companion Grok prompt in docs/ADVERSARY_HANDLES.md, which has live X access and can read timelines.",
+    "hostility_values": {
+      "structural": "The account's institutional purpose is to oppose us — a rival party organ, or the government BRS exists to attack. No reporting needed; the role is the evidence.",
+      "reported": "Named in published reporting as running or coordinating a campaign against BRS or its leaders.",
+      "defector": "Was ours, now argues against us — the most damaging kind, because the account carries insider credibility."
+    },
+    "deliberately_absent": [
+      "Anonymous and meme accounts. None could be verified from a profile alone, and a wrongly-listed anonymous handle is worse than an absent one: it silently attributes a stranger's posts to a coordinated campaign. Discovering these is exactly what the Grok prompt is for.",
+      "News outlets. @TV9Telugu, @V6News and the rest are adversarial to BRS on some stories and not others. They belong in the `news` voice bucket, which already exists, not here — filing a newsroom as an adversary would corrupt the share-of-voice split.",
+      "@ponnamprabhakar, @komatireddy, @seethakka, @DrSeethakka, @PongulettiSR, @JupallyKrishnaRao, @BommaMaheshKumarGoud, @DKArunaBJP, @RamchanderRaoBJP, @TPCCOfficial — probed 2026-09-30, each is either non-existent or a low-follower namesake with no matching bio. These ministers and office-bearers are real and almost certainly do have accounts; the handles simply could not be established. Ask Grok for them rather than guessing.",
+      "@NsuiTelangana — exists (518 followers) but has posted 3 times ever. Recorded here as a note, not as an adversary: a dormant account generates no volume and would only add noise."
+    ],
+    "keys": "handle = X screen name without '@'. camp = which rival bloc. tier = what kind of account. Counts are as-of the verified_on date."
+  },
+
+  "adversaries": [
+    {
+      "handle": "TelanganaCMO",
+      "platform": "x",
+      "name": "Telangana CMO",
+      "camp": "inc",
+      "tier": "government",
+      "hostility": "structural",
+      "followers": 1676474,
+      "tweets": 16118,
+      "bio": "Official account of CMO Telangana.",
+      "evidence": "api.fxtwitter.com/TelanganaCMO — the Chief Minister's office, i.e. the Congress administration. The single largest state political account found.",
+      "verified_on": "2026-09-30",
+      "note": "Already resolves to `opposition` via HANDLE_REGISTRY.government, and via STATE_MACHINERY_RX as a fallback. Listed for completeness so this file is a full picture of the adversary set."
+    },
+    {
+      "handle": "revanth_anumula",
+      "platform": "x",
+      "name": "Revanth Reddy",
+      "camp": "inc",
+      "tier": "government",
+      "hostility": "structural",
+      "followers": 630522,
+      "tweets": 10273,
+      "bio": "Chief Minister of Telangana",
+      "evidence": "api.fxtwitter.com/revanth_anumula — the head of the government BRS is in opposition to; the primary attack target and the primary attacker.",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "Bhatti_Mallu",
+      "platform": "x",
+      "name": "Bhatti Vikramarka Mallu",
+      "camp": "inc",
+      "tier": "government",
+      "hostility": "structural",
+      "followers": 54559,
+      "tweets": 5093,
+      "bio": "Deputy Chief Minister of Telangana || Minister for Finance, Planning & Energy ||Member of @incindia || MLA, Madhira",
+      "evidence": "api.fxtwitter.com/Bhatti_Mallu",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "UttamINC",
+      "platform": "x",
+      "name": "Uttam Kumar Reddy",
+      "camp": "inc",
+      "tier": "government",
+      "hostility": "structural",
+      "followers": 119216,
+      "tweets": 20022,
+      "bio": "Minister for Irrigation, Food & Civil Supplies, Govt of Telangana| MLA, Huzurnagar| Ex-MP| Fmr. TPCC President| Fmr. IAF Fighter Pilot",
+      "evidence": "api.fxtwitter.com/UttamINC",
+      "verified_on": "2026-09-30",
+      "note": "Irrigation is the portfolio that owns the Kaleshwaram attack line. Since Kaleshwaram is OURS (built_by brs), this handle is the single most likely origin of sustained, specific, technical attacks on the BRS record."
+    },
+    {
+      "handle": "Min_SridharBabu",
+      "platform": "x",
+      "name": "Minister Sridhar Babu",
+      "camp": "inc",
+      "tier": "government",
+      "hostility": "structural",
+      "followers": 5272,
+      "tweets": 112,
+      "bio": "Minister for ITE&C, Industries & Commerce and Legislative Affairs, Govt. of Telangana.",
+      "evidence": "api.fxtwitter.com/Min_SridharBabu",
+      "verified_on": "2026-09-30",
+      "note": "Low volume (112 posts). Holds the IT portfolio, which is KTR's legacy brief — so low volume here is worth watching for change rather than dismissing."
+    },
+    {
+      "handle": "INCTelangana",
+      "platform": "x",
+      "name": "Telangana Congress",
+      "camp": "inc",
+      "tier": "ruling_party",
+      "hostility": "structural",
+      "followers": 191725,
+      "tweets": 81388,
+      "bio": "Official Twitter handle of Telangana Pradesh Congress",
+      "evidence": "api.fxtwitter.com/INCTelangana — the ruling party's state organ. 81,388 posts.",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "IYCTelangana",
+      "platform": "x",
+      "name": "Telangana Youth Congress",
+      "camp": "inc",
+      "tier": "campaign_cell",
+      "hostility": "structural",
+      "followers": 54121,
+      "tweets": 175553,
+      "tweets_per_follower": 3.24,
+      "bio": "Official Handle of Telangana Pradesh Youth Congress Committee| #GintiKaro #BhartiBharosa #PehliNaukriPakki #KisaanMSPGuarantee State President: @JakkidiShivaIYC",
+      "evidence": "api.fxtwitter.com/IYCTelangana — joined Jan 2016; 175,553 posts against 54,121 followers.",
+      "verified_on": "2026-09-30",
+      "note": "HIGHEST-CADENCE ADVERSARY FOUND. 3.24 posts per follower is campaign-cell output, not an audience-driven account — for comparison @INCTelangana is 0.42 and even @TV9Telugu, a rolling news channel, is 0.56. This is the clearest quantitative signature of organised posting in the set, and it is the account most damaged by the old 'organic' misclassification: on volume alone it could singlehandedly move a public-sentiment reading."
+    },
+    {
+      "handle": "SatishManneINC",
+      "platform": "x",
+      "name": "Satish Manne",
+      "camp": "inc",
+      "tier": "campaign_cell",
+      "hostility": "reported",
+      "followers": 3365,
+      "tweets": 8267,
+      "bio": "",
+      "evidence": "api.fxtwitter.com/SatishManneINC. Reported as Chairman of the TPCC social media team — the coordinator of the apparatus BRS has publicly accused of running a smear campaign against KTR (Telangana Today, 9 Sep 2026).",
+      "verified_on": "2026-09-30",
+      "note": "Low reach (3,365 followers), high importance. Value here is as a HUB, not as a megaphone: what this account posts tends to become what the coordinator network posts. Treat a new line appearing here as an early-warning signal rather than as volume."
+    },
+    {
+      "handle": "JakkidiShivaIYC",
+      "platform": "x",
+      "name": "Shiva Charan Jakkidi",
+      "camp": "inc",
+      "tier": "campaign_cell",
+      "hostility": "structural",
+      "followers": 1040,
+      "tweets": 1547,
+      "bio": "State President- Telangana Youth Congress , AICC Member , Political Affairs Committee Member PCC.",
+      "evidence": "api.fxtwitter.com/JakkidiShivaIYC — named in @IYCTelangana's own bio as its state president.",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "INCIndia",
+      "platform": "x",
+      "name": "Congress",
+      "camp": "inc",
+      "tier": "national",
+      "hostility": "structural",
+      "followers": 11587742,
+      "tweets": 182358,
+      "bio": "India's Most Vibrant Political Movement - Indian National Congress",
+      "evidence": "api.fxtwitter.com/INCIndia",
+      "verified_on": "2026-09-30",
+      "note": "National, not Telangana-specific. Most of its output is irrelevant here and will be dropped by the state-signal gate; it matters only when Telangana is the subject."
+    },
+    {
+      "handle": "INCSandesh",
+      "platform": "x",
+      "name": "INC Sandesh",
+      "camp": "inc",
+      "tier": "national",
+      "hostility": "structural",
+      "followers": 265636,
+      "tweets": 7486,
+      "bio": "Official Account for the Announcements by Indian National Congress (@INCIndia)",
+      "evidence": "api.fxtwitter.com/INCSandesh",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "BJP4Telangana",
+      "platform": "x",
+      "name": "BJP Telangana",
+      "camp": "bjp",
+      "tier": "rival_party",
+      "hostility": "structural",
+      "followers": 309950,
+      "tweets": 54135,
+      "bio": "Official BJP Telangana Account",
+      "evidence": "api.fxtwitter.com/BJP4Telangana",
+      "verified_on": "2026-09-30",
+      "note": "A SECOND, INDEPENDENT ADVERSARY AXIS. BJP attacks BRS and Congress both, so its posts must not be folded into a single 'opposition' total — a BJP attack on the Congress government is not an attack on us, and counting it as one would make the rival bloc look more united than it is."
+    },
+    {
+      "handle": "bandisanjay_bjp",
+      "platform": "x",
+      "name": "Bandi Sanjay Kumar",
+      "camp": "bjp",
+      "tier": "rival_party",
+      "hostility": "structural",
+      "followers": 418310,
+      "tweets": 22197,
+      "bio": "Minister of State for Home Affairs, Govt. of India | Member of Parliament - Karimnagar",
+      "evidence": "api.fxtwitter.com/bandisanjay_bjp",
+      "verified_on": "2026-09-30",
+      "note": "⚠ The legacy `bsk_*` database prefix comes from an earlier deployment where Bandi Sanjay was THE CLIENT. Here he is a rival. The prefix must not be renamed, but nothing should infer alignment from it."
+    },
+    {
+      "handle": "kishanreddybjp",
+      "platform": "x",
+      "name": "G Kishan Reddy",
+      "camp": "bjp",
+      "tier": "rival_party",
+      "hostility": "structural",
+      "followers": 396483,
+      "tweets": 74824,
+      "bio": "Union Minister For Coal and Mines, Govt of India | MP - Secunderabad",
+      "evidence": "api.fxtwitter.com/kishanreddybjp",
+      "verified_on": "2026-09-30"
+    },
+    {
+      "handle": "Eatala_Rajender",
+      "platform": "x",
+      "name": "Eatala Rajender",
+      "camp": "bjp",
+      "tier": "rival_party",
+      "hostility": "defector",
+      "followers": 475622,
+      "tweets": 17161,
+      "bio": "Member of Parliament - Malkajgiri, Telangana | Chairperson - JCOP (18th LS)",
+      "evidence": "api.fxtwitter.com/Eatala_Rajender",
+      "verified_on": "2026-09-30",
+      "note": "Former BRS Finance and Health Minister, removed in 2021 and now BJP. Attacks from here carry insider detail about the BRS government's own record, which makes them harder to answer than a generic BJP line."
+    },
+    {
+      "handle": "TigerRajaSingh",
+      "platform": "x",
+      "name": "Raja Singh",
+      "camp": "independent",
+      "tier": "rival_party",
+      "hostility": "structural",
+      "followers": 660014,
+      "tweets": 8975,
+      "bio": "MLA - Goshamahal / Official Twitter Account | Follow Office Account @rajasinghoffice",
+      "evidence": "api.fxtwitter.com/TigerRajaSingh",
+      "verified_on": "2026-09-30",
+      "note": "Independent since resigning from the BJP in 2025 — do not file his posts under the BJP party total. High reach for a single MLA."
+    },
+    {
+      "handle": "RaoKavitha",
+      "platform": "x",
+      "name": "Kavitha Kalvakuntla",
+      "camp": "trs-k",
+      "tier": "former_insider",
+      "hostility": "defector",
+      "followers": 1307602,
+      "tweets": 12019,
+      "bio": "Founder & President, Telangana Rakshana Sena - TRS Party  Former Member of Parliament",
+      "evidence": "api.fxtwitter.com/RaoKavitha",
+      "verified_on": "2026-09-30",
+      "note": "THE MOST DANGEROUS ACCOUNT IN THIS FILE, and the easiest to misfile. KCR's daughter, suspended from BRS on 2 Sep 2025, founded her own party 25 Apr 2026. 1.3M followers — more than @BRSparty's 945K. Her bio says 'TRS Party', meaning Telangana RAKSHANA Sena, NOT the old Telangana Rashtra Samithi that BRS used to be called. Any alias rule that maps bare 'TRS' to BRS will file her attacks on the family as BRS's own voice."
+    },
+    {
+      "handle": "aimim_national",
+      "platform": "x",
+      "name": "AIMIM",
+      "camp": "aimim",
+      "tier": "situational",
+      "hostility": "structural",
+      "followers": 1049491,
+      "tweets": 28092,
+      "bio": "Official twitter account of All India Majlis-e-Ittehadul Muslimeen.",
+      "evidence": "api.fxtwitter.com/aimim_national",
+      "verified_on": "2026-09-30",
+      "note": "SITUATIONAL, not reliably hostile. AIMIM was a BRS ally through the BRS government and is not a consistent attacker. Listed so its volume is not read as organic, but its stance must be taken from the post, never assumed from the account."
+    },
+    {
+      "handle": "asadowaisi",
+      "platform": "x",
+      "name": "Asaduddin Owaisi",
+      "camp": "aimim",
+      "tier": "situational",
+      "hostility": "structural",
+      "followers": 3250831,
+      "tweets": 53867,
+      "bio": "President @aimim_national & Member of Parliament Lok Sabha (Hyderabad Constituency)",
+      "evidence": "api.fxtwitter.com/asadowaisi",
+      "verified_on": "2026-09-30",
+      "note": "Situational, as above. 3.25M followers — the largest single political account in the Telangana set."
+    },
+    {
+      "handle": "AkbarOwaisi_MIM",
+      "platform": "x",
+      "name": "Akbaruddin Owaisi",
+      "camp": "aimim",
+      "tier": "situational",
+      "hostility": "structural",
+      "followers": 125287,
+      "tweets": 14200,
+      "bio": "•MLA - Telangana •Floor Leader AIMIM Party •Chairman Salar-E-Millat Educational Trust",
+      "evidence": "api.fxtwitter.com/AkbarOwaisi_MIM",
+      "verified_on": "2026-09-30"
+    }
+  ],
+
+  "impersonation": [
+    {
+      "handle": "SandhyaRaoBRS",
+      "platform": "x",
+      "claimed_identity": "BRS 'international general secretary' Sandhya Rao",
+      "status": "DELETED",
+      "probe_result": "api.fxtwitter.com/SandhyaRaoBRS returned no account on 2026-09-30, consistent with reporting that it was deleted after being cited.",
+      "what_happened": "Chief Minister Revanth Reddy cited this handle in the Assembly to attack KCR over the Dalit 'purification' row. BRS holds no post called 'international general secretary' and has no leader of that name. BRS spokesperson Manne Krishank called it a fake account created by the Congress IT cell; BRS asked cybercrime police to establish its origin, operator and creation date, and filed a breach-of-privilege notice against the CM.",
+      "sources": [
+        "https://telanganatoday.com/revanth-reddy-relies-on-fake-brs-handle-to-target-kcr-on-dalit-row",
+        "https://telanganatoday.com/brs-seeks-probe-into-sandhya-rao-brs-social-media-account",
+        "https://www.siasat.com/congress-making-fake-posts-to-stir-up-dalit-purification-row-brs-3539518/"
+      ],
+      "verified_on": "2026-09-30",
+      "why_recorded": "⚠ THE TRAP THIS FILE EXISTS TO CATCH. The handle ends in 'BRS' and was used AGAINST BRS. Any rule that reads party alignment out of a handle string — and it is a tempting shortcut — would file this account's output as our own voice, which both inflates our apparent publishing volume and removes the attack from the adversary column. It is dead now; the pattern is not. Expect it again, and never infer alignment from a substring."
+    }
+  ],
+
+  "dormant": [
+    {
+      "handle": "NsuiTelangana",
+      "platform": "x",
+      "name": "Telangana NSUI",
+      "camp": "inc",
+      "followers": 518,
+      "tweets": 3,
+      "verified_on": "2026-09-30",
+      "note": "Congress student wing, real but effectively unused. Excluded from `adversaries` so it does not add an empty row to every report. Move it up if the count starts rising."
+    }
+  ]
+}

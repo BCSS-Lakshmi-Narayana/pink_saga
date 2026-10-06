@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#EC4899" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="SANKET" />
+    <meta name="application-name" content="SANKET" />
+    <meta name="description"
+        content="SANKET — Social Analytics, Network Knowledge &amp; Engagement Trends. Real-time social media intelligence: mentions, sentiment, alerts, grievances and people-of-interest across X, YouTube, Facebook, Instagram, Telegram and news media." />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="author" content="SANKET" />
+    <meta name="keywords"
+        content="SANKET, social analytics, network knowledge, engagement trends, social media monitoring, sentiment analysis, political intelligence" />
+    <meta name="robots" content="index,follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="SANKET" />
+    <meta property="og:title" content="SANKET — Social Analytics, Network Knowledge &amp; Engagement Trends" />
+    <meta property="og:description"
+        content="Real-time mentions, sentiment, alerts &amp; grievances across every major platform." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="%PUBLIC_URL%/party-logo.png" />
+    <meta property="og:locale" content="en_IN" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="SANKET" />
+    <meta name="twitter:description"
+        content="Social Analytics, Network Knowledge &amp; Engagement Trends — a real-time social media intelligence platform." />
+    <meta name="twitter:image" content="%PUBLIC_URL%/party-logo.png" />
+
+    <!-- Schema.org -->
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebApplication",
+            "name": "SANKET",
+            "alternateName": "Social Analytics, Network Knowledge & Engagement Trends",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "description": "Social media intelligence platform. Tracks mentions, sentiment and grievances in real time."
+        }
+    </script>
+
+    <link rel="icon" href="%PUBLIC_URL%/party-logo.png" />
+    <link rel="apple-touch-icon" href="%PUBLIC_URL%/party-logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <title>SANKET</title>
+
+    <style>
+        /* Pink splash while the bundle loads */
+        #initial-brand-splash {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 16px;
+            background: radial-gradient(circle at 30% 20%, #EC4899 0%, transparent 40%),
+                radial-gradient(circle at 70% 80%, #BE185D 0%, transparent 45%),
+                linear-gradient(135deg, #500724 0%, #9D174D 40%, #DB2777 75%, #EC4899 100%);
+            color: #fff;
+            font-family: 'Oswald', 'Inter', system-ui, sans-serif;
+            letter-spacing: 0.18em;
+            z-index: 99999;
+        }
+
+        #initial-brand-splash .ring {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 231, 179, 0.35);
+            border-top-color: #FFE7B3;
+            animation: brandSplashSpin 0.9s linear infinite;
+        }
+
+        /* A six-letter wordmark carries a much larger size than the sentence
+           it replaced. */
+        #initial-brand-splash h1 {
+            margin: 0;
+            font-weight: 800;
+            font-size: 34px;
+            letter-spacing: 0.26em;
+            text-transform: uppercase;
+        }
+
+        /* The expanded name is long, so it gets tighter tracking and a width
+           cap — at 0.3em it overflowed a phone viewport. */
+        #initial-brand-splash p {
+            margin: 0;
+            max-width: 320px;
+            padding: 0 16px;
+            font-size: 10px;
+            line-height: 1.7;
+            opacity: 0.8;
+            letter-spacing: 0.12em;
+            text-align: center;
+        }
+
+        @keyframes brandSplashSpin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+    <script>
+        // Only load visual edit scripts when inside an iframe
+        if (window.self !== window.top) {
+            // Load debug monitor script
+            var debugMonitorScript = document.createElement('script');
+            debugMonitorScript.src = 'https://assets.emergent.sh/scripts/debug-monitor.js';
+            document.head.appendChild(debugMonitorScript);
+
+            // Configure Tailwind
+            window.tailwind = window.tailwind || {};
+            tailwind.config = {
+                corePlugins: { preflight: false },
+            };
+
+            // Load Tailwind CDN
+            var tailwindScript = document.createElement('script');
+            tailwindScript.src = 'https://cdn.tailwindcss.com';
+            document.head.appendChild(tailwindScript);
+        }
+    </script>
+</head>
+
+<body>
+    <noscript>You need to enable JavaScript to run SANKET.</noscript>
+    <div id="initial-brand-splash">
+        <div class="ring"></div>
+        <h1>SANKET</h1>
+        <p>Social Analytics, Network Knowledge &amp; Engagement Trends</p>
+    </div>
+    <script>
+        // Remove splash once React mounts content into #root
+        (function () {
+            var maxWait = 12000;
+            var start = Date.now();
+            var iv = setInterval(function () {
+                var root = document.getElementById('root');
+                if ((root && root.children.length > 0) || Date.now() - start > maxWait) {
+                    var splash = document.getElementById('initial-brand-splash');
+                    if (splash) {
+                        splash.style.transition = 'opacity 0.45s ease';
+                        splash.style.opacity = '0';
+                        setTimeout(function () { splash && splash.remove(); }, 480);
+                    }
+                    clearInterval(iv);
+                }
+            }, 120);
+        })();
+    </script>
+    <div id="root"></div>
+    <!--
+      This HTML file is a template.
+      If you open it directly in the browser, you will see an empty page.
+
+      You can add webfonts, meta tags, or analytics to this file.
+      The build step will place the bundled scripts into the <body> tag.
+
+      To begin the development, run `npm start` or `yarn start`.
+      To create a production bundle, use `npm run build` or `yarn build`.
+    -->
+    <script>
+        !(function (t, e) {
+            var o, n, p, r;
+            e.__SV ||
+                ((window.posthog = e),
+                    (e._i = []),
+                    (e.init = function (i, s, a) {
+                        function g(t, e) {
+                            var o = e.split(".");
+                            2 == o.length && ((t = t[o[0]]), (e = o[1])),
+                                (t[e] = function () {
+                                    t.push(
+                                        [e].concat(
+                                            Array.prototype.slice.call(
+                                                arguments,
+                                                0,
+                                            ),
+                                        ),
+                                    );
+                                });
+                        }
+                        ((p = t.createElement("script")).type =
+                            "text/javascript"),
+                            (p.crossOrigin = "anonymous"),
+                            (p.async = !0),
+                            (p.src =
+                                s.api_host.replace(
+                                    ".i.posthog.com",
+                                    "-assets.i.posthog.com",
+                                ) + "/static/array.js"),
+                            (r =
+                                t.getElementsByTagName(
+                                    "script",
+                                )[0]).parentNode.insertBefore(p, r);
+                        var u = e;
+                        for (
+                            void 0 !== a ? (u = e[a] = []) : (a = "posthog"),
+                            u.people = u.people || [],
+                            u.toString = function (t) {
+                                var e = "posthog";
+                                return (
+                                    "posthog" !== a && (e += "." + a),
+                                    t || (e += " (stub)"),
+                                    e
+                                );
+                            },
+                            u.people.toString = function () {
+                                return u.toString(1) + ".people (stub)";
+                            },
+                            o =
+                            "init me ws ys ps bs capture je Di ks register register_once register_for_session unregister unregister_for_session Ps getFeatureFlag getFeatureFlagPayload isFeatureEnabled reloadFeatureFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException loadToolbar get_property getSessionProperty Es $s createPersonProfile Is opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing clear_opt_in_out_capturing Ss debug xs getPageViewId captureTraceFeedback captureTraceMetric".split(
+                                " ",
+                            ),
+                            n = 0;
+                            n < o.length;
+                            n++
+                        )
+                            g(u, o[n]);
+                        e._i.push([i, s, a]);
+                    }),
+                    (e.__SV = 1));
+        })(document, window.posthog || []);
+        posthog.init("phc_yJW1VjHGGwmCbbrtczfqqNxgBDbhlhOWcdzcIJEOTFE", {
+            api_host: "https://us.i.posthog.com",
+            person_profiles: "identified_only",
+            session_recording: {
+                record_console_log: false
+            }
+        });
+    </script>
+</body>
+
+</html>

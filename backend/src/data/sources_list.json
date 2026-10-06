@@ -1,0 +1,206 @@
+[
+ {
+  "platform": "x",
+  "identifier": "@TV9Telugu",
+  "display_name": "TV9 Telugu",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@V6News",
+  "display_name": "V6 News",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@SakshiNews",
+  "display_name": "Sakshi",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@TelanganaToday",
+  "display_name": "Telangana Today",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@DeccanChronicle",
+  "display_name": "Deccan Chronicle",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@TheSiasatDaily",
+  "display_name": "The Siasat Daily",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@ABNAndhraJyothy",
+  "display_name": "ABN Andhra Jyothy",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@the_hindu",
+  "display_name": "The Hindu",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@timesofindia",
+  "display_name": "The Times of India",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@ndtv",
+  "display_name": "NDTV",
+  "category": "news"
+ },
+ {
+  "platform": "x",
+  "identifier": "@BRSparty",
+  "display_name": "BRS Party",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@KTRBRS",
+  "display_name": "K. T. Rama Rao",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@BRSHarish",
+  "display_name": "T. Harish Rao",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@KCRBRSPresident",
+  "display_name": "K. Chandrashekar Rao",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@RaoKavitha",
+  "display_name": "K. Kavitha (Telangana Rakshana Sena)",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@revanth_anumula",
+  "display_name": "A. Revanth Reddy",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@TelanganaCMO",
+  "display_name": "Telangana CMO",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@INCTelangana",
+  "display_name": "Telangana Congress",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@Bhatti_Mallu",
+  "display_name": "Mallu Bhatti Vikramarka",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@BJP4Telangana",
+  "display_name": "BJP Telangana",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@kishanreddybjp",
+  "display_name": "G. Kishan Reddy",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@bandisanjay_bjp",
+  "display_name": "Bandi Sanjay Kumar",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@Eatala_Rajender",
+  "display_name": "Eatala Rajender",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@Tigerrajasingh",
+  "display_name": "T. Raja Singh (Independent)",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@asadowaisi",
+  "display_name": "Asaduddin Owaisi",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@aimim_national",
+  "display_name": "AIMIM",
+  "category": "political"
+ },
+ {
+  "platform": "x",
+  "identifier": "@AkbarOwaisi_MIM",
+  "display_name": "Akbaruddin Owaisi",
+  "category": "political"
+ },
+ {
+  "platform": "facebook",
+  "identifier": "BRSParty",
+  "display_name": "BRS Party",
+  "category": "political"
+ },
+ {
+  "platform": "facebook",
+  "identifier": "TrsHarish",
+  "display_name": "T. Harish Rao",
+  "category": "political"
+ },
+ {
+  "platform": "facebook",
+  "identifier": "KavithaKalvakuntla",
+  "display_name": "K. Kavitha",
+  "category": "political"
+ },
+ {
+  "platform": "facebook",
+  "identifier": "TelanganaCMO",
+  "display_name": "Telangana CMO",
+  "category": "political"
+ },
+ {
+  "platform": "facebook",
+  "identifier": "BJP4Telangana",
+  "display_name": "BJP Telangana",
+  "category": "political"
+ },
+ {
+  "platform": "instagram",
+  "identifier": "brsparty",
+  "display_name": "BRS Party",
+  "category": "political"
+ },
+ {
+  "platform": "instagram",
+  "identifier": "bjp4telangana",
+  "display_name": "BJP Telangana",
+  "category": "political"
+ }
+]

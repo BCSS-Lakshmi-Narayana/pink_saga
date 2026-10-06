@@ -1,0 +1,572 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Oswald:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Body Styles */
+body {
+    margin: 0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Prevent horizontal overflow on mobile */
+    overflow-x: hidden;
+}
+
+code {
+    font-family: 'JetBrains Mono', source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+/* ========================
+   CSS Custom Properties
+   ======================== */
+@layer base {
+    :root {
+        /* GOV Theme - Light Mode (Professional Slate/Navy) */
+        --background: 210 20% 98%;
+        --foreground: 217 71% 15%;
+        --card: 0 0% 100%;
+        --card-foreground: 217 71% 15%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 217 71% 15%;
+        
+        /* Navy Blue Primary */
+        --primary: 217 71% 25%;
+        --primary-foreground: 0 0% 100%;
+        
+        /* Gold Accent */
+        --secondary: 43 96% 50%;
+        --secondary-foreground: 217 71% 15%;
+        
+        --muted: 210 20% 94%;
+        --muted-foreground: 217 30% 40%;
+        --accent: 43 96% 50%;
+        --accent-foreground: 217 71% 15%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 217 30% 85%;
+        --input: 217 30% 85%;
+        --ring: 217 71% 25%;
+        --radius: 0.5rem;
+        
+        /* Custom GOV colors */
+        --police-navy: 217 71% 25%;
+        --police-navy-dark: 217 71% 20%;
+        --police-gold: 43 96% 50%;
+        --police-badge: 43 74% 49%;
+        --police-silver: 210 11% 71%;
+        
+        /* Safe area for notched devices */
+        --safe-area-inset-top: env(safe-area-inset-top);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom);
+        --safe-area-inset-left: env(safe-area-inset-left);
+        --safe-area-inset-right: env(safe-area-inset-right);
+    }
+
+    .dark {
+        /* GOV Theme - Dark Mode (Navy Blue & Gold) */
+        --background: 217 71% 12%;
+        --foreground: 210 40% 98%;
+        --card: 217 71% 15%;
+        --card-foreground: 210 40% 98%;
+        --popover: 217 71% 15%;
+        --popover-foreground: 210 40% 98%;
+        
+        /* Navy Blue Primary */
+        --primary: 217 71% 25%;
+        --primary-foreground: 0 0% 100%;
+        
+        /* Gold Accent */
+        --secondary: 43 96% 50%;
+        --secondary-foreground: 217 71% 12%;
+        
+        --muted: 217 71% 20%;
+        --muted-foreground: 210 20% 70%;
+        --accent: 43 96% 50%;
+        --accent-foreground: 217 71% 12%;
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 0 0% 100%;
+        --border: 217 71% 25%;
+        --input: 217 71% 20%;
+        --ring: 43 96% 50%;
+        
+        /* Custom GOV colors */
+        --police-navy: 217 71% 25%;
+        --police-navy-dark: 217 71% 20%;
+        --police-gold: 43 96% 50%;
+        --police-badge: 43 74% 49%;
+        --police-silver: 210 11% 71%;
+    }
+}
+
+/* ========================
+   Base Element Styles
+   ======================== */
+@layer base {
+    * {
+        border-color: hsl(var(--border));
+    }
+    
+    body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+    }
+
+    /* Focus visible styles for accessibility - GOV-style */
+    *:focus-visible {
+        outline: 2px solid hsl(var(--ring));
+        outline-offset: 2px;
+        border-radius: calc(var(--radius) - 2px);
+    }
+    
+    /* Better touch targets on mobile */
+    button, 
+    [role="button"], 
+    a {
+        touch-action: manipulation;
+    }
+    
+    /* Smooth scrolling */
+    html {
+        scroll-behavior: smooth;
+    }
+    
+    /* Better text rendering */
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        text-wrap: balance;
+    }
+    
+    p {
+        text-wrap: pretty;
+    }
+}
+
+/* ========================
+   Component Utilities
+   ======================== */
+@layer components {
+    /* GOV-style cards with professional borders */
+    .gov-card {
+        @apply bg-card border border-border rounded-lg shadow-sm;
+        @apply hover:shadow-md transition-shadow duration-200;
+    }
+    
+    /* Professional header styling */
+    .gov-header {
+        @apply border-b-2 border-secondary pb-4 mb-6;
+    }
+    
+    /* GOV badge/chip styling */
+    .gov-badge {
+        @apply inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold;
+        @apply border transition-colors duration-150;
+    }
+    
+    .gov-badge-high {
+        @apply bg-red-50 text-red-700 border-red-200;
+        @apply dark:bg-red-950 dark:text-red-400 dark:border-red-800;
+    }
+    
+    .gov-badge-medium {
+        @apply bg-amber-50 text-amber-700 border-amber-200;
+        @apply dark:bg-amber-950 dark:text-amber-400 dark:border-amber-800;
+    }
+    
+    .gov-badge-low {
+        @apply bg-emerald-50 text-emerald-700 border-emerald-200;
+        @apply dark:bg-emerald-950 dark:text-emerald-400 dark:border-emerald-800;
+    }
+    
+    /* Mobile-first container */
+    .mobile-container {
+        @apply px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto;
+    }
+    
+    /* Touch-friendly button base */
+    .touch-target {
+        @apply min-h-[44px] min-w-[44px];
+    }
+    
+    /* Responsive grid that stacks on mobile */
+    .responsive-grid {
+        @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
+    }
+    
+    /* Mobile-first stat cards */
+    .stat-card-grid {
+        @apply grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4;
+    }
+}
+
+/* ========================
+   Utility Classes
+   ======================== */
+@layer utilities {
+    /* Hide scrollbar but keep functionality */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+    
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+    
+    /* Safe area padding for notched devices */
+    .safe-area-inset-top {
+        padding-top: var(--safe-area-inset-top);
+    }
+    
+    .safe-area-inset-bottom {
+        padding-bottom: var(--safe-area-inset-bottom);
+    }
+    
+    /* Prevent text selection on interactive elements */
+    .no-select {
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    /* Hardware accelerated animations */
+    .gpu-accelerated {
+        transform: translateZ(0);
+        will-change: transform;
+    }
+    
+    /* Mobile-friendly text truncation */
+    .truncate-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .truncate-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    /* Custom Scrollbar for Sidebar/Dark Areas */
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 6px;
+        height: 8px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+        background: rgba(0, 0, 0, 0.03);
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 0, 0, 0.3);
+    }
+
+    /* Dark variant for navy/dark backgrounds */
+    .custom-scrollbar-dark::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .custom-scrollbar-dark::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .custom-scrollbar-dark::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: 10px;
+    }
+
+    .custom-scrollbar-dark::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.4);
+    }
+}
+
+/* ========================
+   Debug Wrapper (Existing)
+   ======================== */
+@layer base {
+    [data-debug-wrapper="true"] {
+        display: contents !important;
+    }
+
+    [data-debug-wrapper="true"]>* {
+        margin-left: inherit;
+        margin-right: inherit;
+        margin-top: inherit;
+        margin-bottom: inherit;
+        padding-left: inherit;
+        padding-right: inherit;
+        padding-top: inherit;
+        padding-bottom: inherit;
+        column-gap: inherit;
+        row-gap: inherit;
+        gap: inherit;
+        border-left-width: inherit;
+        border-right-width: inherit;
+        border-top-width: inherit;
+        border-bottom-width: inherit;
+        border-left-style: inherit;
+        border-right-style: inherit;
+        border-top-style: inherit;
+        border-bottom-style: inherit;
+        border-left-color: inherit;
+        border-right-color: inherit;
+        border-top-color: inherit;
+        border-bottom-color: inherit;
+    }
+}
+
+/* ========================
+   Animation Utilities
+   ======================== */
+@layer utilities {
+    /* Subtle fade-in animation */
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Slide-in from left (for sidebar) */
+    .animate-slide-in-left {
+        animation: slideInLeft 0.3s ease-out forwards;
+    }
+
+    @keyframes slideInLeft {
+        from {
+            transform: translateX(-100%);
+        }
+        to {
+            transform: translateX(0);
+        }
+    }
+
+    /* Pulse for status indicators */
+    .animate-pulse-slow {
+        animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    .animate-progress-indeterminate {
+        animation: progress-indeterminate 1.5s infinite linear;
+        transform-origin: 0% 50%;
+    }
+
+    @keyframes progress-indeterminate {
+        0% {
+            transform: translateX(0) scaleX(0);
+        }
+
+        40% {
+            transform: translateX(0) scaleX(0.4);
+        }
+
+        100% {
+            transform: translateX(100%) scaleX(0.5);
+        }
+    }
+}
+
+/* ========================
+   Brand Animations
+   (used by Login page and hero sections)
+   ======================== */
+@layer utilities {
+
+    /* Party accent flag wave */
+    .brand-flag-wave {
+        animation: brandFlagWave 5s ease-in-out infinite;
+        transform-origin: left center;
+    }
+
+    @keyframes brandFlagWave {
+        0%, 100% { transform: skewY(0deg) translateY(0px); }
+        25%      { transform: skewY(-2deg) translateY(-3px); }
+        50%      { transform: skewY(0deg) translateY(0px); }
+        75%      { transform: skewY(2deg) translateY(3px); }
+    }
+
+    /* Glow ring around the leader photo */
+    .brand-glow {
+        animation: brandGlow 3.4s ease-in-out infinite;
+    }
+
+    @keyframes brandGlow {
+        0%, 100% {
+            box-shadow:
+                0 0 0 4px rgba(236,72,153,0.35),
+                0 0 36px 6px rgba(236,72,153,0.55),
+                0 0 80px 12px rgba(219,39,119,0.35);
+        }
+        50% {
+            box-shadow:
+                0 0 0 6px rgba(236,72,153,0.6),
+                0 0 60px 10px rgba(236,72,153,0.85),
+                0 0 120px 18px rgba(219,39,119,0.55);
+        }
+    }
+
+    /* Slow shimmering gradient sweep for headlines/buttons */
+    .brand-gradient-shimmer {
+        background-size: 200% 100%;
+        animation: brandGradientShimmer 4s linear infinite;
+    }
+
+    @keyframes brandGradientShimmer {
+        0%   { background-position:   0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+
+    /* Rising particles (small dots, used behind login card) */
+    .brand-particle {
+        animation: brandParticleRise var(--particle-duration, 9s) linear infinite;
+        animation-delay: var(--particle-delay, 0s);
+    }
+
+    @keyframes brandParticleRise {
+        0%   { transform: translateY(20vh) translateX(0); opacity: 0; }
+        10%  { opacity: 0.85; }
+        90%  { opacity: 0.85; }
+        100% { transform: translateY(-110vh) translateX(var(--particle-drift, 40px)); opacity: 0; }
+    }
+
+    /* Pulse the saffron accent line under brand titles */
+    .brand-underline-pulse {
+        animation: brandUnderlinePulse 2.4s ease-in-out infinite;
+    }
+
+    @keyframes brandUnderlinePulse {
+        0%, 100% { opacity: 0.7; transform: scaleX(0.85); }
+        50%      { opacity: 1;   transform: scaleX(1.05); }
+    }
+}
+
+/* ========================
+   Responsive Typography
+   ======================== */
+@layer base {
+    /* Mobile-first heading sizes */
+    .heading-responsive {
+        @apply text-xl sm:text-2xl lg:text-3xl font-bold tracking-tight;
+    }
+    
+    .subheading-responsive {
+        @apply text-base sm:text-lg lg:text-xl font-semibold;
+    }
+    
+    .body-responsive {
+        @apply text-sm sm:text-base;
+    }
+}
+
+/* ========================
+   Print Styles (for reports)
+   ======================== */
+@media print {
+
+    /* Aggressively hide all non-report elements */
+    .no-print,
+    nav,
+    aside,
+    header,
+    footer,
+    .sidebar,
+    .main-header,
+    .control-buttons,
+    button:not(.print-only),
+    [data-radix-portal],
+    .fixed.inset-0,
+    .shadow-2xl,
+    .shadow-xl,
+    .bg-black\/50,
+    .bg-black\/20 {
+        display: none !important;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        pointer-events: none !important;
+    }
+
+    html,
+    body {
+        height: auto !important;
+        overflow: visible !important;
+        background: white !important;
+        color: black !important;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .report-document {
+        display: block !important;
+        visibility: visible !important;
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 10mm 0 !important;
+        /* Add vertical safety padding */
+        min-height: 297mm;
+        box-shadow: none !important;
+        border: none !important;
+        position: relative !important;
+        z-index: 9999 !important;
+        background: white !important;
+    }
+
+    /* Secret technique for repeating margins on EVERY page */
+    .report-page-header-spacer {
+        height: 1.5cm;
+    }
+
+    .report-page-footer-spacer {
+        height: 1cm;
+    }
+
+    table.report-print-container {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    thead.report-header-spacer {
+        display: table-header-group;
+    }
+
+    tfoot.report-footer-spacer {
+        display: table-footer-group;
+    }
+
+    /* Professional report layout - setting margin to 0 hides browser headers/footers */
+    @page {
+        margin: 0;
+        size: A4 portrait;
+    }
+
+    /* Force background colors for specific blocks */
+    .bg-slate-50,
+    .bg-white,
+    .bg-blue-600,
+    .bg-\[\#071633\] {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}

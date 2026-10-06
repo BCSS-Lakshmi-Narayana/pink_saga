@@ -1,0 +1,691 @@
+[
+  {
+    "_id": "69ad0a69bf8fb2605ed87ab8",
+    "category_id": "Communal_Violence",
+    "definition": "Promotes or supports physical violence, riots or destruction between religious or communal groups.",
+    "legal_sections": [
+      {
+        "id": "BNS_196",
+        "code": "196",
+        "title": "Promoting enmity between groups",
+        "_id": "69ad0a69bf8fb2605ed87ab9"
+      },
+      {
+        "id": "BNS_351",
+        "code": "351",
+        "title": "Criminal intimidation",
+        "_id": "69ad0a69bf8fb2605ed87aba"
+      },
+      {
+        "id": "BNS_353_2",
+        "code": "353(2)",
+        "title": "Statements conducing to public mischief",
+        "_id": "69ad0a69bf8fb2605ed87abb"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "VIOLENT_GRAPHIC_CONTENT",
+          "name": "Violent or Graphic Content",
+          "_id": "69ad0a69bf8fb2605ed87abc"
+        }
+      ],
+      "x": [
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a69bf8fb2605ed87abd"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87abe"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87abf"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.445Z",
+    "updated_at": "2026-03-08T05:34:33.447Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87ac2",
+    "category_id": "Hate_Speech",
+    "definition": "Insults, dehumanises or promotes hatred against a protected group (religion, caste, community, ethnicity, nationality, etc.) without a physical threat.",
+    "legal_sections": [
+      {
+        "id": "BNS_196",
+        "code": "196",
+        "title": "Promoting enmity between groups",
+        "_id": "69ad0a69bf8fb2605ed87ac3"
+      },
+      {
+        "id": "BNS_299",
+        "code": "299",
+        "title": "Religious insult",
+        "_id": "69ad0a69bf8fb2605ed87ac4"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ac5"
+        }
+      ],
+      "x": [
+        {
+          "id": "HATEFUL_CONDUCT",
+          "name": "Hateful Conduct",
+          "_id": "69ad0a69bf8fb2605ed87ac6"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ac7"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ac8"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.505Z",
+    "updated_at": "2026-03-08T05:34:33.505Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87acb",
+    "category_id": "Hate_Speech_Threat",
+    "definition": "Hate speech with a direct or implied physical threat against a protected group.",
+    "legal_sections": [
+      {
+        "id": "BNS_196",
+        "code": "196",
+        "title": "Promoting enmity between groups",
+        "_id": "69ad0a69bf8fb2605ed87acc"
+      },
+      {
+        "id": "BNS_351",
+        "code": "351",
+        "title": "Criminal intimidation",
+        "_id": "69ad0a69bf8fb2605ed87acd"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ace"
+        },
+        {
+          "id": "HARASSMENT_CYBERBULLYING",
+          "name": "Harassment & Cyberbullying",
+          "_id": "69ad0a69bf8fb2605ed87acf"
+        }
+      ],
+      "x": [
+        {
+          "id": "HATEFUL_CONDUCT",
+          "name": "Hateful Conduct",
+          "_id": "69ad0a69bf8fb2605ed87ad0"
+        },
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a69bf8fb2605ed87ad1"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ad2"
+        },
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87ad3"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "HATE_SPEECH",
+          "name": "Hate Speech",
+          "_id": "69ad0a69bf8fb2605ed87ad4"
+        },
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87ad5"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.560Z",
+    "updated_at": "2026-03-08T05:34:33.561Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87ad8",
+    "category_id": "Hate_Speech_Threat_Extremist",
+    "definition": "Hate or violent content supporting extremist, terrorist or organised violent ideology.",
+    "legal_sections": [
+      {
+        "id": "BNS_152",
+        "code": "152",
+        "title": "Endangering sovereignty or integrity",
+        "_id": "69ad0a69bf8fb2605ed87ad9"
+      },
+      {
+        "id": "BNS_196",
+        "code": "196",
+        "title": "Promoting enmity between groups",
+        "_id": "69ad0a69bf8fb2605ed87ada"
+      },
+      {
+        "id": "BNS_197",
+        "code": "197",
+        "title": "Prejudicial to national integration",
+        "_id": "69ad0a69bf8fb2605ed87adb"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "VIOLENT_CRIMINAL_ORGS",
+          "name": "Violent Criminal Organizations",
+          "_id": "69ad0a69bf8fb2605ed87adc"
+        }
+      ],
+      "x": [
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a69bf8fb2605ed87add"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "DANGEROUS_ORGANIZATIONS",
+          "name": "Dangerous Individuals and Organizations",
+          "_id": "69ad0a69bf8fb2605ed87ade"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "DANGEROUS_ORGANIZATIONS",
+          "name": "Dangerous Individuals and Organizations",
+          "_id": "69ad0a69bf8fb2605ed87adf"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.617Z",
+    "updated_at": "2026-03-08T05:34:33.618Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87ae2",
+    "category_id": "Harassment",
+    "definition": "Targeted hostile or intimidating behaviour against a specific person.",
+    "legal_sections": [
+      {
+        "id": "BNS_352",
+        "code": "352",
+        "title": "Intentional insult provoking breach of peace",
+        "_id": "69ad0a69bf8fb2605ed87ae3"
+      },
+      {
+        "id": "BNS_356",
+        "code": "356",
+        "title": "Defamation",
+        "_id": "69ad0a69bf8fb2605ed87ae4"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HARASSMENT_CYBERBULLYING",
+          "name": "Harassment & Cyberbullying",
+          "_id": "69ad0a69bf8fb2605ed87ae5"
+        }
+      ],
+      "x": [
+        {
+          "id": "ABUSE_HARASSMENT",
+          "name": "Abuse and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87ae6"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87ae7"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87ae8"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "Medium",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.675Z",
+    "updated_at": "2026-03-08T05:34:33.675Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87aeb",
+    "category_id": "Abusive",
+    "definition": "Personal insults, profanity or degrading remarks about a person or people (including vulgar family or sexualised slurs in any language), without threats and without protected-group targeting.",
+    "legal_sections": [
+      {
+        "id": "BNS_352",
+        "code": "352",
+        "title": "Intentional insult provoking breach of peace",
+        "_id": "69ad0a69bf8fb2605ed87aec"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HARASSMENT_CYBERBULLYING",
+          "name": "Harassment & Cyberbullying",
+          "_id": "69ad0a69bf8fb2605ed87aed"
+        }
+      ],
+      "x": [
+        {
+          "id": "ABUSE_HARASSMENT",
+          "name": "Abuse and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87aee"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87aef"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87af0"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.730Z",
+    "updated_at": "2026-03-08T05:34:33.730Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87af3",
+    "category_id": "Sexual_Harassment",
+    "definition": "Unwelcome sexual remarks or sexualised targeting.",
+    "legal_sections": [
+      {
+        "id": "BNS_72",
+        "code": "72",
+        "title": "Sexual harassment",
+        "_id": "69ad0a69bf8fb2605ed87af4"
+      },
+      {
+        "id": "BNS_74",
+        "code": "74",
+        "title": "Outraging modesty",
+        "_id": "69ad0a69bf8fb2605ed87af5"
+      },
+      {
+        "id": "BNS_79",
+        "code": "79",
+        "title": "Insulting modesty of a woman",
+        "_id": "69ad0a69bf8fb2605ed87af6"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HARASSMENT_CYBERBULLYING",
+          "name": "Harassment & Cyberbullying",
+          "_id": "69ad0a69bf8fb2605ed87af7"
+        }
+      ],
+      "x": [
+        {
+          "id": "ABUSE_HARASSMENT",
+          "name": "Abuse and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87af8"
+        },
+        {
+          "id": "SENSITIVE_MEDIA",
+          "name": "Sensitive Media",
+          "_id": "69ad0a69bf8fb2605ed87af9"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87afa"
+        },
+        {
+          "id": "SEXUAL_EXPLOITATION",
+          "name": "Sexual Exploitation",
+          "_id": "69ad0a69bf8fb2605ed87afb"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "BULLYING_HARASSMENT",
+          "name": "Bullying and Harassment",
+          "_id": "69ad0a69bf8fb2605ed87afc"
+        },
+        {
+          "id": "SEXUAL_EXPLOITATION",
+          "name": "Sexual Exploitation",
+          "_id": "69ad0a69bf8fb2605ed87afd"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.785Z",
+    "updated_at": "2026-03-08T05:34:33.786Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87b00",
+    "category_id": "Sexual_Violence",
+    "definition": "Threats or support of rape or sexual assault.",
+    "legal_sections": [
+      {
+        "id": "BNS_74",
+        "code": "74",
+        "title": "Outraging modesty",
+        "_id": "69ad0a69bf8fb2605ed87b01"
+      },
+      {
+        "id": "BNS_351",
+        "code": "351",
+        "title": "Criminal intimidation",
+        "_id": "69ad0a69bf8fb2605ed87b02"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "VIOLENT_GRAPHIC_CONTENT",
+          "name": "Violent or Graphic Content",
+          "_id": "69ad0a69bf8fb2605ed87b03"
+        }
+      ],
+      "x": [
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a69bf8fb2605ed87b04"
+        },
+        {
+          "id": "SENSITIVE_MEDIA",
+          "name": "Sensitive Media",
+          "_id": "69ad0a69bf8fb2605ed87b05"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87b06"
+        },
+        {
+          "id": "SEXUAL_EXPLOITATION",
+          "name": "Sexual Exploitation",
+          "_id": "69ad0a69bf8fb2605ed87b07"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87b08"
+        },
+        {
+          "id": "SEXUAL_EXPLOITATION",
+          "name": "Sexual Exploitation",
+          "_id": "69ad0a69bf8fb2605ed87b09"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.841Z",
+    "updated_at": "2026-03-08T05:34:33.841Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87b0c",
+    "category_id": "Sexual",
+    "definition": "Sexual references without targeting or coercion.",
+    "legal_sections": [
+      {
+        "id": "BNS_74",
+        "code": "74",
+        "title": "Outraging modesty",
+        "_id": "69ad0a69bf8fb2605ed87b0d"
+      },
+      {
+        "id": "BNS_294",
+        "code": "294",
+        "title": "Obscene acts and songs",
+        "_id": "69ad0a69bf8fb2605ed87b0e"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "SEXUAL_CONTENT",
+          "name": "Nudity and Sexual Content",
+          "_id": "69ad0a69bf8fb2605ed87b0f"
+        }
+      ],
+      "x": [
+        {
+          "id": "SENSITIVE_MEDIA",
+          "name": "Sensitive Media",
+          "_id": "69ad0a69bf8fb2605ed87b10"
+        },
+        {
+          "id": "ADULT_CONTENT",
+          "name": "Adult Content",
+          "_id": "69ad0a69bf8fb2605ed87b11"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "SEXUAL_ACTIVITY",
+          "name": "Sexual Activity",
+          "_id": "69ad0a69bf8fb2605ed87b12"
+        },
+        {
+          "id": "NUDITY",
+          "name": "Adult Nudity",
+          "_id": "69ad0a69bf8fb2605ed87b13"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "NUDITY",
+          "name": "Nudity and Sexual Activity",
+          "_id": "69ad0a69bf8fb2605ed87b14"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "Medium",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.898Z",
+    "updated_at": "2026-03-08T05:34:33.898Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a69bf8fb2605ed87b17",
+    "category_id": "threat",
+    "definition": "Direct threat of physical harm against a person or group (not identity-based).",
+    "legal_sections": [
+      {
+        "id": "BNS_351",
+        "code": "351",
+        "title": "Criminal intimidation",
+        "_id": "69ad0a69bf8fb2605ed87b18"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "HARASSMENT_CYBERBULLYING",
+          "name": "Harassment & Cyberbullying",
+          "_id": "69ad0a69bf8fb2605ed87b19"
+        }
+      ],
+      "x": [
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a69bf8fb2605ed87b1a"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87b1b"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a69bf8fb2605ed87b1c"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:33.953Z",
+    "updated_at": "2026-03-08T05:34:33.953Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a6abf8fb2605ed87b1f",
+    "category_id": "threat_incitement",
+    "definition": "Urging or mobilising others to commit violence.",
+    "legal_sections": [
+      {
+        "id": "BNS_351",
+        "code": "351",
+        "title": "Criminal intimidation",
+        "_id": "69ad0a6abf8fb2605ed87b20"
+      },
+      {
+        "id": "BNS_353_2",
+        "code": "353(2)",
+        "title": "Statements conducing to public mischief",
+        "_id": "69ad0a6abf8fb2605ed87b21"
+      }
+    ],
+    "platform_policies": {
+      "youtube": [
+        {
+          "id": "VIOLENT_GRAPHIC_CONTENT",
+          "name": "Violent or Graphic Content",
+          "_id": "69ad0a6abf8fb2605ed87b22"
+        }
+      ],
+      "x": [
+        {
+          "id": "VIOLENT_SPEECH",
+          "name": "Violent Speech",
+          "_id": "69ad0a6abf8fb2605ed87b23"
+        }
+      ],
+      "facebook": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a6abf8fb2605ed87b24"
+        }
+      ],
+      "instagram": [
+        {
+          "id": "VIOLENCE_INCITEMENT",
+          "name": "Violence and Incitement",
+          "_id": "69ad0a6abf8fb2605ed87b25"
+        }
+      ]
+    },
+    "keywords": [],
+    "severity_level": "High",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:34.006Z",
+    "updated_at": "2026-03-08T05:34:34.007Z",
+    "__v": 0
+  },
+  {
+    "_id": "69ad0a6abf8fb2605ed87b28",
+    "category_id": "Normal",
+    "definition": "News, complaints, political messaging, slogans, lyrics, praise, opinions or neutral discussion without abuse, threats, hate, sexual targeting or misinformation.",
+    "legal_sections": [],
+    "platform_policies": {
+      "youtube": [],
+      "x": [],
+      "facebook": [],
+      "instagram": []
+    },
+    "keywords": [],
+    "severity_level": "Low",
+    "is_active": true,
+    "created_at": "2026-03-08T05:34:34.061Z",
+    "updated_at": "2026-03-08T05:34:34.061Z",
+    "__v": 0
+  }
+]

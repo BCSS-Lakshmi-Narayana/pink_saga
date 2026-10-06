@@ -1,0 +1,144 @@
+/* ═══════════════════════════════════════════════════════════
+   Deepfake Analysis — SANKET Forensic Scanner
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Entrance ──────────────────────────────────────────────── */
+@keyframes dfkIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.dfk-in {
+  animation: dfkIn .3s ease both;
+  animation-delay: var(--d, 0s);
+}
+
+/* ── Spinner ───────────────────────────────────────────────── */
+@keyframes dfkSpin { to { transform: rotate(360deg); } }
+.dfk-spin { animation: dfkSpin 1s linear infinite; }
+
+/* ── Scan line ─────────────────────────────────────────────── */
+@keyframes scanLine {
+  0%   { top: -1px; opacity: 0; }
+  5%   { opacity: .7; }
+  95%  { opacity: .7; }
+  100% { top: 100%; opacity: 0; }
+}
+.dfk-scanline {
+  position: absolute; left: 0; right: 0; height: 2px; z-index: 30;
+  background: linear-gradient(90deg, transparent, hsl(var(--primary)) 30%, hsl(var(--primary)) 50%, hsl(var(--primary)) 70%, transparent);
+  box-shadow: 0 0 10px 2px hsla(var(--primary), .3);
+  animation: scanLine 3s ease-in-out infinite;
+}
+
+/* ── Scan grid overlay ─────────────────────────────────────── */
+.dfk-scan-grid {
+  position: absolute; inset: 0; z-index: 25; pointer-events: none;
+  background-image:
+    linear-gradient(hsla(var(--primary), .05) 1px, transparent 1px),
+    linear-gradient(90deg, hsla(var(--primary), .05) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* ── Corner brackets ───────────────────────────────────────── */
+@keyframes bPulse { 0%,100%{opacity:.3} 50%{opacity:.7} }
+.dfk-bracket {
+  position: absolute; width: 18px; height: 18px; z-index: 30;
+  border-color: hsl(var(--primary));
+  animation: bPulse 2.5s ease-in-out infinite;
+}
+.dfk-bracket.tl { top:10px; left:10px; border-top:2px solid; border-left:2px solid; }
+.dfk-bracket.tr { top:10px; right:10px; border-top:2px solid; border-right:2px solid; }
+.dfk-bracket.bl { bottom:10px; left:10px; border-bottom:2px solid; border-left:2px solid; }
+.dfk-bracket.br { bottom:10px; right:10px; border-bottom:2px solid; border-right:2px solid; }
+
+/* ── Overlay ───────────────────────────────────────────────── */
+.dfk-overlay {
+  background: hsla(var(--background), .88);
+  backdrop-filter: blur(3px);
+}
+
+/* ── Status pulse ──────────────────────────────────────────── */
+@keyframes dfkPulse {
+  0%,100% { opacity: 1; }
+  50%     { opacity: .4; }
+}
+.dfk-pulse { animation: dfkPulse 2s ease-in-out infinite; }
+
+/* ── Progress bar ──────────────────────────────────────────── */
+.dfk-bar { transition: width .4s ease; }
+
+/* ── Ring gauge ────────────────────────────────────────────── */
+.dfk-ring-track { fill: none; stroke: hsl(var(--muted)); }
+.dfk-ring-fill  { fill: none; stroke-linecap: round; }
+
+/* ── Score bar ─────────────────────────────────────────────── */
+.dfk-sbar-bg { height: 4px; background: hsl(var(--muted)); border-radius: 999px; overflow: hidden; }
+.dfk-sbar    { height: 100%; border-radius: 999px; transition: width .5s ease; }
+
+/* ── Scan step row ─────────────────────────────────────────── */
+.dfk-step {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 8px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+  transition: border-color .2s, background .2s, box-shadow .2s;
+  cursor: default;
+}
+.dfk-step:hover { box-shadow: 0 1px 4px hsla(var(--foreground), .05); }
+.dfk-step.active {
+  border-color: hsl(var(--primary));
+  background: hsla(var(--primary), .04);
+}
+.dfk-step.done {
+  border-color: hsl(142 71% 35%);
+  background: hsla(142, 71%, 35%, .04);
+}
+
+/* ── Scrollbar ─────────────────────────────────────────────── */
+.dfk-scroll::-webkit-scrollbar { width: 4px; }
+.dfk-scroll::-webkit-scrollbar-track { background: transparent; }
+.dfk-scroll::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 10px; }
+
+/* ── Upload drop zone ──────────────────────────────────────── */
+.dfk-dropzone {
+  border: 2px dashed hsl(var(--border));
+  border-radius: 12px;
+  transition: border-color .2s, background .2s;
+}
+.dfk-dropzone:hover,
+.dfk-dropzone.active {
+  border-color: hsl(var(--primary));
+  background: hsla(var(--primary), .03);
+}
+
+/* ── Metric row ────────────────────────────────────────────── */
+.dfk-metric-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.dfk-metric-row:last-child { border-bottom: none; }
+
+/* ── Section header ────────────────────────────────────────── */
+.dfk-section-header {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: hsl(var(--foreground));
+}
+
+/* ── Card header bar ───────────────────────────────────────── */
+.dfk-card-hdr {
+  padding: 12px 16px;
+  border-bottom: 1px solid hsl(var(--border));
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .dfk-fgrid { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 1024px) {
+  .dfk-main-grid { grid-template-columns: 1fr !important; }
+}

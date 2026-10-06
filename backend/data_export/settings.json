@@ -1,0 +1,18 @@
+[
+  {
+    "_id": "69acfff6b621271bffc4116e",
+    "id": "global_settings",
+    "risk_threshold_high": 70,
+    "risk_threshold_medium": 40,
+    "monitoring_interval_minutes": 5,
+    "high_risk_threshold": 70,
+    "medium_risk_threshold": 40,
+    "enable_email_alerts": true,
+    "velocity_alerts_enabled": true,
+    "alert_for_every_post": false,
+    "alert_emails": [],
+    "threat_keywords": [],
+    "updated_at": "2026-03-08T04:49:58.826Z",
+    "__v": 0
+  }
+]

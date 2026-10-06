@@ -1,0 +1,3040 @@
+{
+ "state": "Telangana",
+ "_meta": {
+  "as_of": "2026-09-30",
+  "district_count": 33,
+  "districts_note": "33 districts, unchanged since Mulugu and Narayanpet were created on 17 Feb 2019. Hanumakonda (formerly Warangal Urban) and Warangal (formerly Warangal Rural) were renamed AND had a boundary change on 12 Aug 2021, so third-party area and population figures for those two are commonly stale; the figures here are the post-2021 official ones.",
+  "telugu_note": "Every district carries its Telugu spelling. Stage 2 reads raw post text, so a district without a Telugu name is invisible in Telugu-language posts.",
+  "subdivisions_note": "Telangana has 76 revenue divisions and 621 mandals (Revenue Minister, Assembly, 17 Dec 2024) — NOT the 74/594 that older sources still repeat. Per-district mandal counts here are LOW CONFIDENCE: they sum to less than the official total and official pages contradict each other. Do not use them for arithmetic.",
+  "talukas_note": "Deliberately EMPTY. No authoritative machine-readable list of the 621 mandals was obtained, and inventing names would turn every one into a false geo-match.",
+  "sources": [
+   "https://www.telangana.gov.in/about/districts/ — official state portal list of the 33 district name strings (authority for English spelling)",
+   "https://en.wikipedia.org/wiki/List_of_districts_of_Telangana — primary source for the area_km2 and population_2011 columns (internally consistent; validated, see _meta.validation)",
+   "https://en.wikipedia.org/wiki/List_of_revenue_divisions_in_Telangana — revenue division names (stale total of 74; see _meta.warnings)",
+   "Official district portals *.telangana.gov.in (about-district / demography / revenue-division / te pages) — Telugu name strings, revenue division names, HQ confirmation, and the post-2021 Hanumakonda/Warangal figures",
+   "https://te.wikipedia.org/wiki/తెలంగాణ_జిల్లాలు — Telugu district and HQ name strings",
+   "OpenStreetMap / Nominatim place nodes + Wikidata P625 + en.wikipedia infoboxes — HQ town coordinates (cross-checked across all three)",
+   "https://telanganatoday.com/govt-to-reconsider-creation-of-new-revenue-divisions-mandals-ponguleti — Revenue Minister Ponguleti Srinivas Reddy, Telangana Assembly, 17 Dec 2024: '33 districts, 76 revenue divisions and 621 mandals'",
+   "https://en.wikipedia.org/wiki/Warangal_district — GO.Ms.No., Revenue (DA) Dept, 12 Aug 2021: the Warangal Urban/Rural reorganisation",
+   "https://www.thehansindia.com/posts/index/latest-news/2019-02-17/telangana-two-new-districts-mulugu-narayanpet-comes-into-existence/496507 — Mulugu and Narayanpet final notification, 17 Feb 2019"
+  ]
+ },
+ "centroid": {
+  "lat": 17.801203,
+  "lng": 79.008393,
+  "source": "True area-weighted polygon centroid computed from the OpenStreetMap administrative boundary relation for Telangana (OSM relation 3250963, 8058 boundary vertices, fetched via Nominatim details with polygon_geojson=1). Alternatives: bounding-box midpoint 17.876860/79.279605; en.wikipedia Geography of Telangana representative point 17.9/79.3; Nominatim label point 17.8495919/79.1151663."
+ },
+ "bbox": {
+  "min_lat": 15.836425,
+  "max_lat": 19.917296,
+  "min_lng": 77.236585,
+  "max_lng": 81.322625,
+  "source": "Computed from the OpenStreetMap administrative boundary relation for Telangana (OSM relation 3250963); identical to 7 dp with Nominatim's own reported bbox for the same relation. NOT the textbook '15°46'-19°47'N / 77°16'-81°43'E' extent, whose eastern limit of 81.717 reflects the pre-2014 boundary before the Bhadrachalam-division mandals east of the Godavari were transferred to Andhra Pradesh."
+ },
+ "districts": [
+  {
+   "name": "Adilabad",
+   "key": "adilabad",
+   "telugu": "ఆదిలాబాద్",
+   "hq": "Adilabad",
+   "division": "Adilabad",
+   "revenue_divisions": [
+    "Adilabad",
+    "Utnoor"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 19.6759,
+    "lng": 78.534
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 19.67/78.53 and Wikidata 19.669/78.5355 agree)",
+   "aliases": [],
+   "area_km2": 4153,
+   "population_2011": 708972,
+   "census_2011_parent": "Adilabad",
+   "created": "2014-06-02",
+   "mandals": 18,
+   "flags": [
+    "official site contradicts itself on mandal count: about-district says 18, homepage counter says 21"
+   ]
+  },
+  {
+   "name": "Bhadradri Kothagudem",
+   "key": "bhadradrikothagudem",
+   "telugu": "భద్రాద్రి కొత్తగూడెం",
+   "hq": "Kothagudem",
+   "division": "Kothagudem",
+   "revenue_divisions": [
+    "Kothagudem",
+    "Bhadrachalam"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.5477,
+    "lng": 80.6137
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia/Wikidata 17.55/80.63 agree at lower precision)",
+   "aliases": [
+    "Bhadradri",
+    "Kothagudem",
+    "Bhadrachalam district"
+   ],
+   "area_km2": 7483,
+   "population_2011": 1069261,
+   "census_2011_parent": "Khammam",
+   "created": "2016-10-11",
+   "mandals": 23,
+   "flags": [
+    "CLEANEST RECORD IN THIS FILE - kothagudem.telangana.gov.in is fully self-consistent and independently confirms every value here: area 7,483 sq km, population 1,069,261 ('Provisional population figures of 2011 Census'), 23 mandals, 2 divisions (Kothagudem, Bhadrachalam), HQ 'located at Kothagudem town'.",
+    "official web subdomain is kothagudem.telangana.gov.in (bhadradrikothagudem.telangana.gov.in does not resolve)"
+   ]
+  },
+  {
+   "name": "Hanumakonda",
+   "key": "hanumakonda",
+   "telugu": "హనుమకొండ",
+   "hq": "Hanumakonda",
+   "division": "Hanumakonda",
+   "revenue_divisions": [
+    "Hanumakonda",
+    "Parkal"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.0069,
+    "lng": 79.5579
+   },
+   "centroid_note": "HQ town coordinate from the OSM place node. FLAGGED: the en.wikipedia Hanamkonda infobox gives 18.0167/79.6333, which places it EAST of Warangal city and is geographically wrong (Hanumakonda lies NW of Warangal). OSM value used.",
+   "aliases": [
+    "Warangal Urban",
+    "Hanamkonda",
+    "Hanumkonda"
+   ],
+   "area_km2": 1679.03,
+   "population_2011": 908744,
+   "census_2011_parent": "Warangal",
+   "created": "2016-10-11",
+   "mandals": 14,
+   "flags": [
+    "RENAME + BOUNDARY CHANGE: created 2016-10-11 as 'Warangal Urban'; renamed Hanumakonda AND reorganised on 2021-08-12 (GO.Ms.No., Revenue (DA) Dept). Warangal and Khila Warangal mandals were transferred OUT to the new Warangal district.",
+    "area_km2 and population_2011 here are the OFFICIAL post-2021 figures from hanumakonda.telangana.gov.in. The Wikipedia district-list values (1,309 km2 / 1,080,858) are PRE-2021 and stale. Cross-check: official Hanumakonda 908,744 + official Warangal 890,651 = 1,799,395, exactly equal to the Wikipedia pair total, so only the split changed.",
+    "Telugu spelling varies: official site uses హనుమకొండ; te.wikipedia uses హన్మకొండ. Index both.",
+    "English spelling varies: official portal uses 'Hanumakonda'; en.wikipedia uses 'Hanamkonda'."
+   ]
+  },
+  {
+   "name": "Hyderabad",
+   "key": "hyderabad",
+   "telugu": "హైదరాబాద్",
+   "hq": "Hyderabad",
+   "division": "Hyderabad",
+   "revenue_divisions": [
+    "Hyderabad",
+    "Secunderabad"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.3617,
+    "lng": 78.4747
+   },
+   "centroid_note": "HQ city coordinate (en.wikipedia infobox 17°21'42\"N 78°28'29\"E = Wikidata Q1361; OSM 17.3606/78.4741 agrees)",
+   "aliases": [
+    "Hyderabad district",
+    "GHMC",
+    "Greater Hyderabad"
+   ],
+   "area_km2": 217,
+   "population_2011": 3943323,
+   "census_2011_parent": "Hyderabad",
+   "created": "2014-06-02",
+   "mandals": 16,
+   "flags": [
+    "The ONLY district whose population_2011 is a true, unmodified 2011 census district count — Hyderabad district was left untouched by both the 2016 and 2019 reorganisations.",
+    "Official /te/ page also carries the Urdu form حیدرآباد ضلع."
+   ]
+  },
+  {
+   "name": "Jagtial",
+   "key": "jagtial",
+   "telugu": "జగిత్యాల",
+   "hq": "Jagtial",
+   "division": "Jagtial",
+   "revenue_divisions": [
+    "Jagtial",
+    "Korutla",
+    "Metpalli"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.7957,
+    "lng": 78.9162
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18.7895/78.9120 agrees)",
+   "aliases": [],
+   "area_km2": 2419,
+   "population_2011": 985417,
+   "census_2011_parent": "Karimnagar",
+   "created": "2016-10-11",
+   "mandals": 18,
+   "flags": [
+    "official site spells the third division both 'Metpalli' and 'Metpally', and its own about-district text names only two of the three divisions"
+   ]
+  },
+  {
+   "name": "Jangaon",
+   "key": "jangaon",
+   "telugu": "జనగామ",
+   "hq": "Jangaon",
+   "division": "Jangaon",
+   "revenue_divisions": [
+    "Jangaon",
+    "Ghanpur Station"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.7244,
+    "lng": 79.1571
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 17.7227/79.1518 agrees)",
+   "aliases": [],
+   "area_km2": 2188,
+   "population_2011": 566376,
+   "census_2011_parent": "Warangal",
+   "created": "2016-10-11",
+   "mandals": 12,
+   "flags": [
+    "secondary parent: Gundala mandal came from Nalgonda district",
+    "TELUGU SPELLING AMBIGUOUS ON THE OFFICIAL SITE ITSELF: the bilingual header on every page reads జనగామ, but the /te/ homepage title tag reads జనగాం. te.wikipedia also uses జనగామ, so that is recorded as primary and జనగాం is aliased. Index both.",
+    "MANDAL COUNT CHANGED to 12: the official /tehsil/ page ENUMERATES exactly 12 mandals by name (Jangaon, Lingala Ghanpur, Bachannapet, Devaruppula, Narmetta, Tharigoppula, Ragunathpally, Ghanpur (Stn), Chilpur, Zaffergadh, Palakurthy, Kodakandla). The Wikipedia district list says 13.",
+    "HQ NOT STATED on the official site - no page declares a headquarters. Nearest official datum is the address 'Integrated Collectorate Complex, Jangaon - 506167'. 'Jangaon' here rests on the state portal and te.wikipedia, not on a district-site declaration.",
+    "official division name is written 'Ghanpur Station' on the district site and 'Station Ghanpur' in the Wikipedia divisions list"
+   ]
+  },
+  {
+   "name": "Jayashankar Bhupalpally",
+   "key": "jayashankarbhupalpally",
+   "telugu": "జయశంకర్ భూపాలపల్లి",
+   "hq": "Bhupalpally",
+   "division": "Bhupalpally",
+   "revenue_divisions": [
+    "Bhupalpally",
+    "Kataram"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.4381,
+    "lng": 79.8685
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18.4293/79.8635 agrees)",
+   "aliases": [],
+   "area_km2": 2293,
+   "population_2011": 416763,
+   "census_2011_parent": "Warangal",
+   "created": "2016-10-11",
+   "mandals": 12,
+   "flags": [
+    "official site contradicts itself on mandal count: homepage counter says 12, administrative-setup page says 11",
+    "secondary parent: some mandals came from Karimnagar district",
+    "lost territory on 2019-02-17 when Mulugu district was carved out of it",
+    "official web subdomain is bhoopalapally.telangana.gov.in (note the 'oo')"
+   ]
+  },
+  {
+   "name": "Jogulamba Gadwal",
+   "key": "jogulambagadwal",
+   "telugu": "జోగులంబా గద్వాల్",
+   "hq": "Gadwal",
+   "division": "Gadwal",
+   "revenue_divisions": [
+    "Gadwal"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 16.2347,
+    "lng": 77.7946
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikidata Q1525224 16.23/77.8 agrees)",
+   "aliases": [
+    "Jogulamba",
+    "Gadwal"
+   ],
+   "area_km2": 2928,
+   "population_2011": 609990,
+   "census_2011_parent": "Mahbubnagar",
+   "created": "2016-10-11",
+   "mandals": 12,
+   "flags": [
+    "AREA CONFLICT: the value here (2,928) is the Wikipedia district-list figure; the official gadwal.telangana.gov.in site states 2,575.5 sq km. Unresolved — a human should pick.",
+    "the official /te/ page uniquely puts జిల్లా BEFORE the name; the district name carries the long ā (జోగులంబా) while the Jogulamba temple is spelled జోగులంబ"
+   ]
+  },
+  {
+   "name": "Kamareddy",
+   "key": "kamareddy",
+   "telugu": "కామారెడ్డి",
+   "hq": "Kamareddy",
+   "division": "Kamareddy",
+   "revenue_divisions": [
+    "Kamareddy",
+    "Banswada",
+    "Yellareddy"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.3222,
+    "lng": 78.3387
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18.3205/78.3370 agrees)",
+   "aliases": [],
+   "area_km2": 3652,
+   "population_2011": 972625,
+   "census_2011_parent": "Nizamabad",
+   "created": "2016-10-11",
+   "mandals": 22,
+   "flags": [
+    "official site contradicts itself: area 3,652 (about-district) vs 3,667 (demography); mandals 22 (about-district) vs 25 (homepage)",
+    "secondary parent: some mandals came from Medak district"
+   ]
+  },
+  {
+   "name": "Karimnagar",
+   "key": "karimnagar",
+   "telugu": "కరీంనగర్",
+   "hq": "Karimnagar",
+   "division": "Karimnagar",
+   "revenue_divisions": [
+    "Karimnagar",
+    "Huzurabad"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.4348,
+    "lng": 79.1328
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 18°26'19\"N 79°07'44\"E agrees)",
+   "aliases": [],
+   "area_km2": 2128,
+   "population_2011": 1005711,
+   "census_2011_parent": "Karimnagar",
+   "created": "2014-06-02",
+   "mandals": 16,
+   "flags": [
+    "official site gives two different 2011 totals, both labelled Census 2011: 1,005,711 (history page) and 1,179,303 (homepage counter, = urban 494,913 + rural 684,390). The 1,005,711 figure is used here because it is the one that makes the 33-district column sum to the state total.",
+    "mandal count 16 is officially ENUMERATED by name on karimnagar.telangana.gov.in/mandals/ — one of the more trustworthy mandal values in this file"
+   ]
+  },
+  {
+   "name": "Khammam",
+   "key": "khammam",
+   "telugu": "ఖమ్మం",
+   "hq": "Khammam",
+   "division": "Khammam",
+   "revenue_divisions": [
+    "Khammam",
+    "Kalluru"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.2465,
+    "lng": 80.15
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 17.2473/80.1514 agrees)",
+   "aliases": [],
+   "area_km2": 4361,
+   "population_2011": 1401639,
+   "census_2011_parent": "Khammam",
+   "created": "2014-06-02",
+   "mandals": 21,
+   "flags": [
+    "division spelling varies across feeds: Kalluru / Kallur",
+    "official site independently confirms area 4,361 sq km, population 1,401,639 ('Total Population (2011 Census)'), 21 mandals and 2 divisions (Khammam, Kalluru)",
+    "HQ NOT STATED on the official site; nearest official datum is the collectorate address 'integrated district office complex, V.V. Palem, Khammam, Pin 507318'. The district's /about-district/ page contains only the etymology of the name and no statistics at all."
+   ]
+  },
+  {
+   "name": "Kumuram Bheem Asifabad",
+   "key": "kumurambheemasifabad",
+   "telugu": "కుమురం భీమ్ ఆసిఫాబాద్",
+   "hq": "Asifabad",
+   "division": "Asifabad",
+   "revenue_divisions": [
+    "Asifabad",
+    "Kagaznagar"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 19.3593,
+    "lng": 79.296
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikidata Q589709 19.3585/79.2842 agrees)",
+   "aliases": [
+    "Komaram Bheem Asifabad"
+   ],
+   "area_km2": 4878,
+   "population_2011": 515812,
+   "census_2011_parent": "Adilabad",
+   "created": "2016-10-11",
+   "mandals": 15,
+   "flags": [
+    "NAME VARIANT: the official state portal and the district's own site use 'Kumuram Bheem' / 'కుమురం భీమ్ ఆసిఫాబాద్'. en.wikipedia and te.wikipedia use 'Komaram Bheem' / 'కొమరంభీం'. Both forms are in wide news use — index both.",
+    "official site contradicts itself on population: homepage counter 592,831 vs demography page 515,812. 515,812 is used here because it makes the column sum to the state total.",
+    "mandal count 15 is officially ENUMERATED by name"
+   ]
+  },
+  {
+   "name": "Mahabubabad",
+   "key": "mahabubabad",
+   "telugu": "మహబూబాబాద్",
+   "hq": "Mahabubabad",
+   "division": "Mahabubabad",
+   "revenue_divisions": [
+    "Mahabubabad",
+    "Thorrur"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.5957,
+    "lng": 79.9999
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikidata Q6732721 17.5973/80.0021 agrees; Wikipedia 17.6167/80.0167 is coarser)",
+   "aliases": [
+    "Mahbubabad",
+    "Manukota"
+   ],
+   "area_km2": 2877,
+   "population_2011": 774549,
+   "census_2011_parent": "Warangal",
+   "created": "2016-10-11",
+   "mandals": 18,
+   "flags": [
+    "secondary parent: some mandals came from Khammam district",
+    "MANDAL COUNT CHANGED to 18 per the official site, which adds 'out of which 2 Mandals from Khammam District'. The Wikipedia district list says 16.",
+    "AREA INDEPENDENTLY CORROBORATED: the official site gives area only in hectares ('287674 Hects.'), which converts to 2,876.74 sq km and matches the 2,877 figure used here almost exactly.",
+    "population 774,549 confirmed officially '(as per 2011 census)'; HQ confirmed 'located at Mahabubabad Town'"
+   ]
+  },
+  {
+   "name": "Mahabubnagar",
+   "key": "mahabubnagar",
+   "telugu": "మహబూబ్ నగర్",
+   "hq": "Mahabubnagar",
+   "division": "Mahabubnagar",
+   "revenue_divisions": [
+    "Mahabubnagar"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 16.7435,
+    "lng": 77.9923
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 16.7488/78.0035 is ~1.3 km away)",
+   "aliases": [
+    "Mahbubnagar",
+    "Palamuru",
+    "Mahaboobnagar"
+   ],
+   "area_km2": 2738,
+   "population_2011": 919903,
+   "census_2011_parent": "Mahbubnagar",
+   "created": "2014-06-02",
+   "mandals": null,
+   "flags": [
+    "MANDAL COUNT NULLED — irreconcilable conflict: Wikipedia district list says 26; the official /ataglance/ page says 15 and ENUMERATES exactly 15 by name; the official homepage says 17. Not a rounding difference. A human must resolve.",
+    "official site also contradicts itself on area: 2,737.96 (about-district and ataglance) vs 5,285.1 (homepage — almost certainly a pre-bifurcation leftover, since that page still lists Narayanpet as one of its municipalities)",
+    "the district is very widely called పాలమూరు / Palamuru in Telugu news — the official Telugu pages use that alias throughout. Essential for matching.",
+    "lost territory on 2019-02-17 when Narayanpet district was carved out of it"
+   ]
+  },
+  {
+   "name": "Mancherial",
+   "key": "mancherial",
+   "telugu": "మంచిర్యాల",
+   "hq": "Mancherial",
+   "division": "Mancherial",
+   "revenue_divisions": [
+    "Mancherial",
+    "Bellampalli"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.8762,
+    "lng": 79.445
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18°52'17\"N 79°26'40\"E agrees)",
+   "aliases": [],
+   "area_km2": 4016,
+   "population_2011": 807037,
+   "census_2011_parent": "Adilabad",
+   "created": "2016-10-11",
+   "mandals": 18,
+   "flags": [
+    "division spelling varies: Bellampalli / Bellampally",
+    "a Chennur revenue division was reported created by GO in Oct 2023, but the official district site still shows only 2 divisions — treated as an unfinalised preliminary notification and EXCLUDED here"
+   ]
+  },
+  {
+   "name": "Medak",
+   "key": "medak",
+   "telugu": "మెదక్",
+   "hq": "Medak",
+   "division": "Medak",
+   "revenue_divisions": [
+    "Medak",
+    "Narsapur",
+    "Toopran"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.0459,
+    "lng": 78.2652
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia/Wikidata 18.046/78.263 agree)",
+   "aliases": [],
+   "area_km2": 2786,
+   "population_2011": 767428,
+   "census_2011_parent": "Medak",
+   "created": "2014-06-02",
+   "mandals": 20,
+   "flags": [
+    "division spelling varies: Toopran / Tupran",
+    "AREA CONFLICT: value here (2,786) is the Wikipedia district-list figure; medak.telangana.gov.in states 2,765 (about-district) and 2,757.37 (at-a-glance).",
+    "mandals 20 and divisions 3 (Medak, Narsapur, Toopran) are both confirmed on the official site with named RDOs; population 767,428 confirmed 'as per 2011 Census'"
+   ]
+  },
+  {
+   "name": "Medchal–Malkajgiri",
+   "key": "medchalmalkajgiri",
+   "telugu": "మేడ్చల్-మల్కాజ్గిరి",
+   "hq": "Shamirpet",
+   "division": "Keesara",
+   "revenue_divisions": [
+    "Keesara",
+    "Malkajgiri"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.5917,
+    "lng": 78.5822
+   },
+   "centroid_note": "HQ town coordinate for Shamirpet (en.wikipedia infobox 17°35'30\"N 78°34'56\"E = Wikidata Q16339099; the OSM Shamirpet mandal boundary centroid 17.5943/78.5744 agrees)",
+   "aliases": [
+    "Medchal",
+    "Malkajgiri",
+    "Medchal Malkajgiri",
+    "Medchal-Malkajgiri"
+   ],
+   "area_km2": 1084,
+   "population_2011": 2440073,
+   "census_2011_parent": "Rangareddy",
+   "created": "2016-10-11",
+   "mandals": null,
+   "flags": [
+    "MANDAL COUNT NULLED — the official site's own English at-a-glance says 15 while its Telugu at-a-glance says 14; Wikipedia gives both 14 (list) and 15 (district page). Unresolved.",
+    "HQ DISPUTED: resolved to Shamirpet from the official collectorate address — 'Integrated District Office Complexes, Anthaipally Village, Shameerpet Mandal' (medchal-malkajgiri.telangana.gov.in/contact-us/, corroborated by dge.gov.in). te.wikipedia and some official prose say Medchal town instead. Both Medchal and Shamirpet should be treated as HQ tokens. Either way the HQ revenue division is Keesara.",
+    "Telugu spelling varies: official title tag మేడ్చల్-మల్కాజ్గిరి (no space); official body text మేడ్చల్-మల్కాజ్ గిరి (with space); te.wikipedia మేడ్చెల్ మల్కాజ్‌గిరి (note మేడ్చెల్ vs మేడ్చల్, plus a ZWNJ). Index all.",
+    "official web subdomain requires the hyphen: medchal-malkajgiri.telangana.gov.in"
+   ]
+  },
+  {
+   "name": "Mulugu",
+   "key": "mulugu",
+   "telugu": "ములుగు",
+   "hq": "Mulugu",
+   "division": "Mulugu",
+   "revenue_divisions": [
+    "Mulugu"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.1932,
+    "lng": 79.9414
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18°11'28\"N 79°56'35\"E and Wikidata Q6935204 18.191/79.943 agree)",
+   "aliases": [],
+   "area_km2": 3881,
+   "population_2011": 257744,
+   "census_2011_parent": "Warangal",
+   "created": "2019-02-17",
+   "mandals": 10,
+   "flags": [
+    "least populous district in Telangana",
+    "carved directly out of Jayashankar Bhupalpally district, which had itself been carved out of old Warangal in 2016 — so the pre-2014 census parent is Warangal",
+    "an Eturunagaram revenue division was reported created by GO in Oct 2023, but the official district site still states only one division — treated as an unfinalised preliminary notification and EXCLUDED here",
+    "MANDAL COUNT CHANGED to 10 per mulugu.telangana.gov.in; the Wikipedia district list says 9.",
+    "POPULATION CONFLICT: official about-district says 'As per 2011 census, the population of Mulugu district is 2,57,744' (dated), while the at-a-glance tile says 2,94,671 (undated). The dated figure is used, and it is also the one that makes the 33-district column sum to the state total.",
+    "HQ NOT STATED on the official site; nearest official datum is 'O/o Mulugu Collectorate Mulugu-506343'."
+   ]
+  },
+  {
+   "name": "Nagarkurnool",
+   "key": "nagarkurnool",
+   "telugu": "నాగర్ కర్నూల్",
+   "hq": "Nagarkurnool",
+   "division": "Nagarkurnool",
+   "revenue_divisions": [
+    "Nagarkurnool",
+    "Achampet",
+    "Kalwakurthy",
+    "Kollapur"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 16.487,
+    "lng": 78.3169
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia/Wikidata 16.4939/78.3102 agree)",
+   "aliases": [
+    "Nagar Kurnool"
+   ],
+   "area_km2": 6545,
+   "population_2011": 893308,
+   "census_2011_parent": "Mahbubnagar",
+   "created": "2016-10-11",
+   "mandals": 20,
+   "flags": [
+    "mandals 20 is the official prose figure ('four revenue divisions ... with (20) twenty mandals'); the Wikipedia district list says 22. Official preferred.",
+    "area 6,545 is confirmed by BOTH the official site and the Wikipedia list; the Wikipedia infobox's 6,924 km2 disagrees and was rejected.",
+    "population: the official site states NO population figure at all. 893,308 is the Wikipedia district-list value, preferred over the Wikipedia district-page value of 861,766 because only 893,308 makes the 33-district column sum to the state total.",
+    "the official site never asserts the HQ in the present tense; Nagarkurnool is the seat per Wikipedia and the district's formation notification",
+    "Telugu spelling varies: te.wikipedia article title నాగర్‌కర్నూల్ contains a ZWNJ (U+200C) and no space; the te.wikipedia district table uses నాగర్ కర్నూల్ with a plain space"
+   ]
+  },
+  {
+   "name": "Nalgonda",
+   "key": "nalgonda",
+   "telugu": "నల్గొండ",
+   "hq": "Nalgonda",
+   "division": "Nalgonda",
+   "revenue_divisions": [
+    "Nalgonda",
+    "Miryalaguda",
+    "Devarakonda",
+    "Chandur"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.0504,
+    "lng": 79.2669
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 17.0575/79.2684 agrees)",
+   "aliases": [],
+   "area_km2": 7122,
+   "population_2011": 1618416,
+   "census_2011_parent": "Nalgonda",
+   "created": "2014-06-02",
+   "mandals": 31,
+   "flags": [
+    "official site independently confirms area 7,122 sq km, population 1,618,416 ('As per 2011 Census'), 31 mandals and 4 divisions",
+    "DATA-QUALITY WARNINGS on the official pages: /demography/ mislabels the 7,122 area as 'Sq.Meters'; its population table is row-misaligned (1,618,416 appears in the 'Males' row), so the sex split there must NOT be ingested; and the at-a-glance tile says 'Block: 33' against 31 mandals elsewhere.",
+    "DIVISION COUNT: /tehsil/ prose says 3 but its own officer table names 4 (Nalgonda, Miryalaguda, Devarakonda, Chandur). 4 is used.",
+    "HQ NOT STATED on the official site; nearest official datum is 'Collectorate, Miryalaguda Road, Nalgonda, Pin 508001'."
+   ]
+  },
+  {
+   "name": "Narayanpet",
+   "key": "narayanpet",
+   "telugu": "నారాయణపేట",
+   "hq": "Narayanpet",
+   "division": "Narayanpet",
+   "revenue_divisions": [
+    "Narayanpet"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 16.7478,
+    "lng": 77.495
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 16.7445/77.4960 agrees)",
+   "aliases": [],
+   "area_km2": 2336,
+   "population_2011": 566874,
+   "census_2011_parent": "Mahbubnagar",
+   "created": "2019-02-17",
+   "mandals": 13,
+   "flags": [
+    "mandals 13 is officially ENUMERATED by name on the district site; the Wikipedia district list says 11. Official preferred.",
+    "the official site never states a revenue-division COUNT; it only says in prose that 'Narayanapet is a town, mandal & revenue division', so the value 1 here rests on that prose plus the Wikipedia infobox",
+    "the official site's own English prose alternates between 'Narayanpet' and 'Narayanapet'"
+   ]
+  },
+  {
+   "name": "Nirmal",
+   "key": "nirmal",
+   "telugu": "నిర్మల్",
+   "hq": "Nirmal",
+   "division": "Nirmal",
+   "revenue_divisions": [
+    "Nirmal",
+    "Bhainsa"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 19.0925,
+    "lng": 78.3486
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia/Wikidata 19.1/78.35 agree at low precision)",
+   "aliases": [],
+   "area_km2": 3845,
+   "population_2011": 709418,
+   "census_2011_parent": "Adilabad",
+   "created": "2016-10-11",
+   "mandals": 19,
+   "flags": [
+    "a Boath revenue division has been floated in proposals but is not official — EXCLUDED here"
+   ]
+  },
+  {
+   "name": "Nizamabad",
+   "key": "nizamabad",
+   "telugu": "నిజామాబాద్",
+   "hq": "Nizamabad",
+   "division": "Nizamabad",
+   "revenue_divisions": [
+    "Nizamabad",
+    "Bodhan",
+    "Armoor"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.6732,
+    "lng": 78.0978
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 18.672/78.094 agrees)",
+   "aliases": [],
+   "area_km2": 4288,
+   "population_2011": 1571022,
+   "census_2011_parent": "Nizamabad",
+   "created": "2014-06-02",
+   "mandals": null,
+   "flags": [
+    "MANDAL COUNT NULLED — four different figures in circulation: Wikipedia district list 34; official about-district 29 ('formed with 29 mandals ... recently 10 new Mandal are formed'); official homepage 33; official district-at-glance 27 plus 8 later formed. Unresolved.",
+    "official site contradicts itself on population: about-district says 1,577,108 explicitly 'In 2011'; homepage and /te/ say 1,571,022. 1,571,022 is used here because it makes the column sum to the state total.",
+    "the official site states a division COUNT of 3 but never NAMES them; the names here (Nizamabad, Bodhan, Armoor) come from Wikipedia",
+    "the official site never states the headquarters in words",
+    "Telugu spelling varies: te.wikipedia article title is నిజామాబాదు; the official site and te.wikipedia district table use నిజామాబాద్"
+   ]
+  },
+  {
+   "name": "Peddapalli",
+   "key": "peddapalli",
+   "telugu": "పెద్దపల్లి",
+   "hq": "Peddapalli",
+   "division": "Peddapalli",
+   "revenue_divisions": [
+    "Peddapalli",
+    "Manthani"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.6177,
+    "lng": 79.3868
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 18.6162/79.3832 agrees)",
+   "aliases": [],
+   "area_km2": 2236,
+   "population_2011": 795332,
+   "census_2011_parent": "Karimnagar",
+   "created": "2016-10-11",
+   "mandals": 14,
+   "flags": [
+    "official site gives THREE different areas: 4,614.74 (about-district — almost certainly a stale pre-bifurcation figure), 2,236 (demography and Telugu homepage), 2,168 (English homepage). 2,236 is used here, matching the Wikipedia list.",
+    "official Telugu homepage shows population 759,332, a digit transposition of the 795,332 given on the English demography page (which explicitly cites 'Provisional population figures of 2011 Census')",
+    "the official Telugu homepage mislabels the mandal count 14 as 'Revenue Divisions: 14' — ignore",
+    "the official site never states the headquarters; note Ramagundam, not Peddapalli, is the district's largest city",
+    "mandal count 14 is officially ENUMERATED by name"
+   ]
+  },
+  {
+   "name": "Rajanna Sircilla",
+   "key": "rajannasircilla",
+   "telugu": "రాజన్న సిరిసిల్ల",
+   "hq": "Sircilla",
+   "division": "Sircilla",
+   "revenue_divisions": [
+    "Sircilla",
+    "Vemulawada"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.3898,
+    "lng": 78.8086
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikidata Q2563435 18.3884/78.8140 agrees; Wikipedia 18.38/78.83 is coarser)",
+   "aliases": [
+    "Rajanna Sircilla",
+    "Sircilla",
+    "Rajanna"
+   ],
+   "area_km2": 2019,
+   "population_2011": 552037,
+   "census_2011_parent": "Karimnagar",
+   "created": "2016-10-11",
+   "mandals": 13,
+   "flags": [
+    "official site's homepage counter says 1 revenue division, contradicting its own /revenue-division/ page which names two (Sircilla, Vemulawada). The counter is wrong; 2 is used.",
+    "mandals: the official counter says 13 but the site enumerates only ~12 by name",
+    "official web subdomain is rajannasircilla.telangana.gov.in (sircilla.telangana.gov.in does not resolve)"
+   ]
+  },
+  {
+   "name": "Rangareddy",
+   "key": "rangareddy",
+   "telugu": "రంగారెడ్డి",
+   "hq": "Kongara Kalan",
+   "division": "Ibrahimpatnam",
+   "revenue_divisions": [
+    "Chevella",
+    "Ibrahimpatnam",
+    "Kandukur",
+    "Rajendranagar",
+    "Shadnagar"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.2611,
+    "lng": 78.3932
+   },
+   "centroid_note": "CAUTION — this is the coordinate of SHAMSHABAD (OSM place node; en.wikipedia 'Shamshabad, Hyderabad' 17.2603/78.3969 agrees), which the state portal lists as the HQ. The actual collectorate is at Kongara Kalan, Ibrahimpatnam mandal, whose coordinate was NOT separately sourced. Treat this point as indicative only.",
+   "aliases": [
+    "Ranga Reddy",
+    "R R District",
+    "RR District"
+   ],
+   "area_km2": 5031,
+   "population_2011": 2446265,
+   "census_2011_parent": "Rangareddy",
+   "created": "2014-06-02",
+   "mandals": 27,
+   "flags": [
+    "HQ DISPUTED — three candidates. The official district portal gives only one address: 'Integrated District Office Complexes, Kongara Kalan Village, Ibrahimpatnam Mandal' (rangareddy.telangana.gov.in/collectorate/ and /contact-us/), and never mentions Shamshabad. The state portal's district list and 2016 press reports say Shamshabad. en.wikipedia's infobox says Kongara Kalan. Kothur appears in no source. 'Kongara Kalan' is recorded here on the strength of the official collectorate address; the centroid however is Shamshabad's — see centroid_note.",
+    "the official site states no population figure with a census year attached",
+    "the official /administrative-setup/ page says '8 Divisions', which is a page error (8 = the collectorate's A-H sections); the /divisions/ page correctly lists 5",
+    "official division listing lives at /divisions/, not /revenue-divisions/ (which 404s)",
+    "most revenue divisions of any Telangana district (5)"
+   ]
+  },
+  {
+   "name": "Sangareddy",
+   "key": "sangareddy",
+   "telugu": "సంగారెడ్డి",
+   "hq": "Sangareddy",
+   "division": "Sangareddy",
+   "revenue_divisions": [
+    "Sangareddy",
+    "Narayankhed",
+    "Zaheerabad",
+    "Andole-Jogipet"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.6119,
+    "lng": 78.0819
+   },
+   "centroid_note": "HQ town coordinate (en.wikipedia infobox 17°36'43\"N 78°04'55\"E; the OSM Sangareddy mandal boundary centroid 17.6155/78.0817 agrees; Wikidata Q59061593 17.6294/78.0917 differs by ~2 km)",
+   "aliases": [],
+   "area_km2": 4403,
+   "population_2011": 1527628,
+   "census_2011_parent": "Medak",
+   "created": "2016-10-11",
+   "mandals": 26,
+   "flags": [
+    "division spelling varies: Andole-Jogipet / Andole / Jogipet",
+    "AREA CONFLICT: value here (4,403) is the Wikipedia district-list figure; sangareddy.telangana.gov.in states 4,464.87 (about-district) and 4,464 (at-a-glance/demography).",
+    "MANDAL CONFLICT: 26 (Wikipedia list AND official about-district) vs 28 (official at-a-glance, and the official /tehsil/ page enumerates exactly 28 mandal rows) vs 29 (official demography). 26 retained on a two-source basis, but the 28 enumeration is arguably stronger evidence.",
+    "DIVISION COUNT CONFLICT on the official site: about-district names 3 (Narayankhed, Sangareddy, Zaheerabad); /revenue-divisions/ says 4 and its RDO officer table names 4 (adding Andole-Jogipet); the Telugu at-a-glance says 5. 4 is used here because the RDO table names actual serving officers.",
+    "population 1,527,628 is independently confirmed on the official site with an explicit 'As of 2011 Census of India'"
+   ]
+  },
+  {
+   "name": "Siddipet",
+   "key": "siddipet",
+   "telugu": "సిద్దిపేట",
+   "hq": "Siddipet",
+   "division": "Siddipet",
+   "revenue_divisions": [
+    "Siddipet",
+    "Gajwel",
+    "Husnabad"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 18.1018,
+    "lng": 78.852
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 18°06'07\"N 78°51'07\"E agrees to 4 dp)",
+   "aliases": [],
+   "area_km2": 3632,
+   "population_2011": 1012065,
+   "census_2011_parent": "Medak",
+   "created": "2016-10-11",
+   "mandals": 26,
+   "flags": [
+    "mandal count conflict: Wikipedia district list says 22, the Siddipet district judiciary site says 26. 22 retained but low confidence.",
+    "secondary parents: annexed mandals from both Karimnagar and Warangal districts",
+    "MANDAL COUNT CHANGED to the official figure: three official pages agree on 26 (about-district, at-a-glance, and /tehsil/ 'Siddipet District Consists of (26) Mandals'). The Wikipedia district list says 22, and the official demography page says 22 in a table while its own lead sentence says 23. 26 preferred, medium confidence only.",
+    "AREA: the official site gives no clean sq-km figure - at-a-glance states '364694 Hectares' (= 3,646.94 sq km) while demography says 3,632 sq km. The 3,632 value used here matches both demography and the Wikipedia list.",
+    "population 1,012,065 confirmed officially as 'Provisional population figures of 2011 Census'"
+   ]
+  },
+  {
+   "name": "Suryapet",
+   "key": "suryapet",
+   "telugu": "సూర్యాపేట",
+   "hq": "Suryapet",
+   "division": "Suryapet",
+   "revenue_divisions": [
+    "Suryapet",
+    "Kodad",
+    "Huzurnagar"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.1405,
+    "lng": 79.6225
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 17.1415/79.6236 agrees)",
+   "aliases": [],
+   "area_km2": 3607,
+   "population_2011": 1099560,
+   "census_2011_parent": "Nalgonda",
+   "created": "2016-10-11",
+   "mandals": 23,
+   "flags": [
+    "Huzurnagar is one of the two revenue divisions absent from the stale Wikipedia '74 divisions' table; confirmed on suryapet.telangana.gov.in/administrative-setup/",
+    "TELUGU SPELLING VARIES: te.wikipedia uses సూర్యాపేట (recorded here); the official district site header uses సూర్యపేట (without the long aa). Index both. Note the district's /te/ homepage is BROKEN - it serves an unrelated staff-nurse merit list and contains no Telugu rendering of the district name.",
+    "AREA CONFLICT: value here (3,607) is the Wikipedia district-list figure; suryapet.telangana.gov.in states 3,583.5837 sq km as 'Total Geographical Area'.",
+    "DIVISION COUNT: the official about-district page says '2 revenue divisions - Suryapet and Kodad', but /demography/ and /tehsil/ both say 3 and the /tehsil/ RDO table names three (Suryapet, Kodada, Huzurnagar). The about-district '2' is stale; 3 is used.",
+    "the official site states no census year for the population figure"
+   ]
+  },
+  {
+   "name": "Vikarabad",
+   "key": "vikarabad",
+   "telugu": "వికారాబాద్",
+   "hq": "Vikarabad",
+   "division": "Vikarabad",
+   "revenue_divisions": [
+    "Vikarabad",
+    "Tandur"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.3379,
+    "lng": 77.904
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia/Wikidata 17.33/77.9 agree at low precision)",
+   "aliases": [],
+   "area_km2": 3386,
+   "population_2011": 927140,
+   "census_2011_parent": "Rangareddy",
+   "created": "2016-10-11",
+   "mandals": 18,
+   "flags": [
+    "secondary parent: the official site says the district was formed 'from erstwhile Rangareddy and Mahaboobnagar districts'",
+    "official site contradicts itself on population: about-district says 927,140 'As of 2011 Census of India'; the homepage counter says 941,383 with no year. The dated figure is used.",
+    "mandal count 18 is officially ENUMERATED by name across both divisions (11 + 7)",
+    "Telugu spelling varies: te.wikipedia uses వికారాబాదు for the district and వికారాబాద్ for the town; the official site uses వికారాబాద్"
+   ]
+  },
+  {
+   "name": "Wanaparthy",
+   "key": "wanaparthy",
+   "telugu": "వనపర్తి",
+   "hq": "Wanaparthy",
+   "division": "Wanaparthy",
+   "revenue_divisions": [
+    "Wanaparthy"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 16.3618,
+    "lng": 78.0611
+   },
+   "centroid_note": "HQ town coordinate (OSM place node; Wikipedia 16.3623/78.0622 agrees)",
+   "aliases": [],
+   "area_km2": 2152,
+   "population_2011": 577758,
+   "census_2011_parent": "Mahbubnagar",
+   "created": "2016-10-11",
+   "mandals": 15,
+   "flags": [
+    "mandals 15 is the official figure; the Wikipedia district list says 14. Official preferred.",
+    "official site contradicts itself on area (2,164.59 on about-district vs 2,152 on the at-a-glance tiles) and on population (577,758 'as per Census 2011' vs 587,041 undated). The dated figures are used."
+   ]
+  },
+  {
+   "name": "Warangal",
+   "key": "warangal",
+   "telugu": "వరంగల్",
+   "hq": "Warangal",
+   "division": "Warangal",
+   "revenue_divisions": [
+    "Warangal",
+    "Narsampet"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.9821,
+    "lng": 79.5971
+   },
+   "centroid_note": "HQ city coordinate (OSM place node; Wikipedia 17.9689/79.5941 is ~1.5 km SW, at the fort area)",
+   "aliases": [
+    "Warangal Rural"
+   ],
+   "area_km2": 1766,
+   "population_2011": 890651,
+   "census_2011_parent": "Warangal",
+   "created": "2016-10-11",
+   "mandals": 13,
+   "flags": [
+    "RENAME + BOUNDARY CHANGE: this district was created 2016-10-11 as 'Warangal Rural' and renamed 'Warangal' on 2021-08-12 (GO.Ms.No., Revenue (DA) Dept), at the same time GAINING the Warangal and Khila Warangal mandals from the district now called Hanumakonda. It is NOT the same territory as the pre-2014 Warangal district, which covered all of today's Hanumakonda, Warangal, Jangaon, Mahabubabad, Jayashankar Bhupalpally and Mulugu.",
+    "area_km2 and population_2011 here are the OFFICIAL post-2021 figures from warangal.telangana.gov.in. The Wikipedia district-list values (2,175 km2 / 718,537) are PRE-2021 and stale; the Wikipedia district page gives a third area, 2,095 km2.",
+    "HQ ADMINISTRATIVELY UNSETTLED: Wikipedia records that Hanumakonda tentatively serves as the headquarters of BOTH Hanumakonda and Warangal districts, with Warangal city proposed to take over. 'Warangal' is recorded here per the official portal.",
+    "division spelling varies: Narsampet / Narasampet"
+   ]
+  },
+  {
+   "name": "Yadadri Bhuvanagiri",
+   "key": "yadadribhuvanagiri",
+   "telugu": "యాదాద్రి భువనగిరి",
+   "hq": "Bhongir",
+   "division": "Bhongir",
+   "revenue_divisions": [
+    "Bhongir",
+    "Choutuppal"
+   ],
+   "talukas": [],
+   "centroid": {
+    "lat": 17.5173,
+    "lng": 78.8863
+   },
+   "centroid_note": "HQ town coordinate (OSM place node 'Bhongir, Bhongiri mandal'; en.wikipedia Bhongir 17.51/78.89 agrees)",
+   "aliases": [
+    "Yadadri",
+    "Bhuvanagiri",
+    "Bhongir",
+    "Yadadri Bhongir"
+   ],
+   "area_km2": 3092,
+   "population_2011": 739448,
+   "census_2011_parent": "Nalgonda",
+   "created": "2016-10-11",
+   "mandals": 17,
+   "flags": [
+    "the HQ town is called Bhuvanagiri, Bhongir and Bhongiri interchangeably, including in official material; all three resolve to the same Telugu form భువనగిరి",
+    "secondary parent: some mandals came from Rangareddy district",
+    "MANDAL COUNT CHANGED to 17 per yadadri.telangana.gov.in; the Wikipedia district list says 16.",
+    "POPULATION CONFLICT - UNRESOLVED, HUMAN DECISION NEEDED: the official site states 770,833 with an explicit 'As per 2011 Census' (males 390,492 + females 380,341, which sums correctly). The Wikipedia district list says 739,448. 739,448 is retained ONLY because it is the value that makes the 33-district column sum to the state total; the official figure has better provenance in isolation.",
+    "AREA CONFLICT: value here (3,092) is the Wikipedia district-list figure; the official site states 3,253 sq km.",
+    "HQ recorded as 'Bhongir' because the official site says 'The district headquarters is located at Bhongir town'. The same place is called Bhuvanagiri and Bhongiri elsewhere, including in official material.",
+    "official web subdomain is yadadri.telangana.gov.in"
+   ]
+  }
+ ],
+ "talukas": [],
+ "towns": [
+  {
+   "name": "Adilabad",
+   "telugu": "ఆదిలాబాద్",
+   "aliases": [
+    "Adilabad town"
+   ],
+   "district": "Adilabad",
+   "type": "Municipality",
+   "lat": 19.6759,
+   "lng": 78.534,
+   "population_2011": 117167,
+   "is_district_hq": true
+  },
+  {
+   "name": "Utnoor",
+   "telugu": "ఉట్నూరు",
+   "aliases": [
+    "Utnoor town"
+   ],
+   "district": "Adilabad",
+   "type": null,
+   "lat": 19.3667,
+   "lng": 78.7667,
+   "population_2011": 16005,
+   "is_district_hq": false
+  },
+  {
+   "name": "Aswaraopeta",
+   "telugu": "అశ్వారావుపేట",
+   "aliases": [
+    "Aswaraopeta town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.2067,
+   "lng": 80.8375,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bhadrachalam",
+   "telugu": "భద్రాచలం",
+   "aliases": [
+    "Bhadrachalam town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.6669,
+   "lng": 80.8826,
+   "population_2011": 50087,
+   "is_district_hq": false
+  },
+  {
+   "name": "Burgampadu",
+   "telugu": "బూర్గంపాడు",
+   "aliases": [
+    "Burgampadu town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.65,
+   "lng": 80.8667,
+   "population_2011": 10235,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kothagudem",
+   "telugu": "కొత్తగూడెం",
+   "aliases": [
+    "Kottagudem",
+    "Bhadradri Kothagudem",
+    "కొత్తగూడెం (భద్రాద్రి జిల్లా)"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": "Municipality",
+   "lat": 17.5477,
+   "lng": 80.6137,
+   "population_2011": 79819,
+   "is_district_hq": true
+  },
+  {
+   "name": "Manuguru",
+   "telugu": "మణుగూరు",
+   "aliases": [
+    "Manuguru town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.9373,
+   "lng": 80.8185,
+   "population_2011": 32091,
+   "is_district_hq": false
+  },
+  {
+   "name": "Palvancha",
+   "telugu": "పాల్వంచ",
+   "aliases": [
+    "Palvancha town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.5963,
+   "lng": 80.7087,
+   "population_2011": 80199,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sarapaka",
+   "telugu": "సారపాక",
+   "aliases": [
+    "Sarapaka town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.6922,
+   "lng": 80.8614,
+   "population_2011": 22149,
+   "is_district_hq": false
+  },
+  {
+   "name": "Yellandu",
+   "telugu": "ఇల్లెందు",
+   "aliases": [
+    "Yellandu town"
+   ],
+   "district": "Bhadradri Kothagudem",
+   "type": null,
+   "lat": 17.6,
+   "lng": 80.33,
+   "population_2011": 35056,
+   "is_district_hq": false
+  },
+  {
+   "name": "Hanumakonda",
+   "telugu": "హనుమకొండ",
+   "aliases": [
+    "Hanamkonda",
+    "Hanumkonda",
+    "హన్మకొండ",
+    "అనుముకొండ"
+   ],
+   "district": "Hanumakonda",
+   "type": null,
+   "lat": 18.0069,
+   "lng": 79.5579,
+   "population_2011": null,
+   "is_district_hq": true
+  },
+  {
+   "name": "Parkal",
+   "telugu": "పరకాల",
+   "aliases": [
+    "Parkal town"
+   ],
+   "district": "Hanumakonda",
+   "type": null,
+   "lat": 18.2,
+   "lng": 79.7167,
+   "population_2011": 20257,
+   "is_district_hq": false
+  },
+  {
+   "name": "Hyderabad",
+   "telugu": "హైదరాబాద్",
+   "aliases": [
+    "Hyderabad city",
+    "హైదరాబాదు",
+    "Bhagyanagar",
+    "భాగ్యనగరం",
+    "حیدرآباد",
+    "Cyberabad"
+   ],
+   "district": "Hyderabad",
+   "type": "Greater Hyderabad Municipal Corporation (GHMC)",
+   "lat": 17.3617,
+   "lng": 78.4747,
+   "population_2011": 6809970,
+   "is_district_hq": true
+  },
+  {
+   "name": "Secunderabad",
+   "telugu": "సికింద్రాబాద్",
+   "aliases": [
+    "Secunderabad Cantonment",
+    "సికింద్రాబాదు",
+    "Sikandarabad",
+    "Twin Cities"
+   ],
+   "district": "Hyderabad",
+   "type": "Census 2011 Secunderabad Cantonment Board",
+   "lat": 17.4399,
+   "lng": 78.4983,
+   "population_2011": 213698,
+   "is_district_hq": false
+  },
+  {
+   "name": "Dharmapuri",
+   "telugu": "ధర్మపురి",
+   "aliases": [
+    "Dharmapuri town"
+   ],
+   "district": "Jagtial",
+   "type": null,
+   "lat": 18.9475,
+   "lng": 79.094,
+   "population_2011": 17243,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jagtial",
+   "telugu": "జగిత్యాల",
+   "aliases": [
+    "Jagityal",
+    "Jagitial"
+   ],
+   "district": "Jagtial",
+   "type": "Municipality with Outgrowth",
+   "lat": 18.7957,
+   "lng": 78.9162,
+   "population_2011": 103930,
+   "is_district_hq": true
+  },
+  {
+   "name": "Korutla",
+   "telugu": "కోరుట్ల",
+   "aliases": [
+    "Korutla town"
+   ],
+   "district": "Jagtial",
+   "type": null,
+   "lat": 18.8235,
+   "lng": 78.7108,
+   "population_2011": 66504,
+   "is_district_hq": false
+  },
+  {
+   "name": "Metpally",
+   "telugu": "మెట్‌పల్లి",
+   "aliases": [
+    "Metpally town"
+   ],
+   "district": "Jagtial",
+   "type": null,
+   "lat": 18.8492,
+   "lng": 78.6262,
+   "population_2011": 50902,
+   "is_district_hq": false
+  },
+  {
+   "name": "Raikal",
+   "telugu": "రాయికల్",
+   "aliases": [
+    "Raikal town"
+   ],
+   "district": "Jagtial",
+   "type": null,
+   "lat": 18.9,
+   "lng": 78.8,
+   "population_2011": 16404,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jangaon",
+   "telugu": "జనగామ",
+   "aliases": [
+    "Janagama",
+    "Jangoan",
+    "జనగాం"
+   ],
+   "district": "Jangaon",
+   "type": "Municipality",
+   "lat": 17.7244,
+   "lng": 79.1571,
+   "population_2011": 52394,
+   "is_district_hq": true
+  },
+  {
+   "name": "Station Ghanpur",
+   "telugu": "ఘన్‌పూర్ (స్టేషన్)",
+   "aliases": [
+    "Station Ghanpur town"
+   ],
+   "district": "Jangaon",
+   "type": null,
+   "lat": 17.8565,
+   "lng": 79.3717,
+   "population_2011": 12721,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bhupalpally",
+   "telugu": "భూపాలపల్లి",
+   "aliases": [
+    "Bhupalapally",
+    "Bhoopalapally",
+    "Jayashankar Bhupalpally"
+   ],
+   "district": "Jayashankar Bhupalpally",
+   "type": "Census Town",
+   "lat": 18.4381,
+   "lng": 79.8685,
+   "population_2011": 42387,
+   "is_district_hq": true
+  },
+  {
+   "name": "Mahadevpur",
+   "telugu": "మహదేవ్‌పూర్",
+   "aliases": [
+    "Mahadevpur town"
+   ],
+   "district": "Jayashankar Bhupalpally",
+   "type": null,
+   "lat": 18.7316,
+   "lng": 79.9837,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Alampur",
+   "telugu": "ఆలంపూర్",
+   "aliases": [
+    "Alampur town"
+   ],
+   "district": "Jogulamba Gadwal",
+   "type": null,
+   "lat": 15.8771,
+   "lng": 78.1353,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Gadwal",
+   "telugu": "గద్వాల",
+   "aliases": [
+    "గద్వాల్",
+    "Gadwal town",
+    "Jogulamba Gadwal"
+   ],
+   "district": "Jogulamba Gadwal",
+   "type": "Municipality with Outgrowth",
+   "lat": 16.2347,
+   "lng": 77.7946,
+   "population_2011": 63177,
+   "is_district_hq": true
+  },
+  {
+   "name": "Ieeja",
+   "telugu": "అయిజ",
+   "aliases": [
+    "Ieeja town"
+   ],
+   "district": "Jogulamba Gadwal",
+   "type": null,
+   "lat": 16.0142,
+   "lng": 77.6703,
+   "population_2011": 27921,
+   "is_district_hq": false
+  },
+  {
+   "name": "Waddepalle",
+   "telugu": "వడ్డేపల్లి",
+   "aliases": [
+    "Waddepalle town"
+   ],
+   "district": "Jogulamba Gadwal",
+   "type": null,
+   "lat": 15.9359,
+   "lng": 77.8417,
+   "population_2011": 10463,
+   "is_district_hq": false
+  },
+  {
+   "name": "Banswada",
+   "telugu": "బాన్స్‌వాడ",
+   "aliases": [
+    "Banswada town"
+   ],
+   "district": "Kamareddy",
+   "type": null,
+   "lat": 18.3833,
+   "lng": 77.8833,
+   "population_2011": 28384,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bhiknur",
+   "telugu": "బిక్నూర్",
+   "aliases": [
+    "Bhiknur town"
+   ],
+   "district": "Kamareddy",
+   "type": null,
+   "lat": 18.215,
+   "lng": 78.4367,
+   "population_2011": 11787,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bichkunda",
+   "telugu": "బిచ్కుంద",
+   "aliases": [
+    "Bichkunda town"
+   ],
+   "district": "Kamareddy",
+   "type": null,
+   "lat": 18.4,
+   "lng": 77.7167,
+   "population_2011": 13213,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kamareddy",
+   "telugu": "కామారెడ్డి",
+   "aliases": [
+    "Kamareddi",
+    "Kammareddy"
+   ],
+   "district": "Kamareddy",
+   "type": "Municipality",
+   "lat": 18.3222,
+   "lng": 78.3387,
+   "population_2011": 80315,
+   "is_district_hq": true
+  },
+  {
+   "name": "Yellareddy",
+   "telugu": "ఎల్లారెడ్డి",
+   "aliases": [
+    "Yellareddy town"
+   ],
+   "district": "Kamareddy",
+   "type": null,
+   "lat": 18.1859,
+   "lng": 78.0212,
+   "population_2011": 14923,
+   "is_district_hq": false
+  },
+  {
+   "name": "Choppadandi",
+   "telugu": "చొప్పదండి",
+   "aliases": [
+    "Choppadandi town"
+   ],
+   "district": "Karimnagar",
+   "type": null,
+   "lat": 18.5833,
+   "lng": 79.1667,
+   "population_2011": 16459,
+   "is_district_hq": false
+  },
+  {
+   "name": "Huzurabad",
+   "telugu": "హుజూరాబాద్",
+   "aliases": [
+    "Huzurabad town"
+   ],
+   "district": "Karimnagar",
+   "type": null,
+   "lat": 18.2,
+   "lng": 79.42,
+   "population_2011": 37665,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jammikunta",
+   "telugu": "జమ్మికుంట",
+   "aliases": [
+    "Jammikunta town"
+   ],
+   "district": "Karimnagar",
+   "type": null,
+   "lat": 18.2864,
+   "lng": 79.4761,
+   "population_2011": 32645,
+   "is_district_hq": false
+  },
+  {
+   "name": "Karimnagar",
+   "telugu": "కరీంనగర్",
+   "aliases": [
+    "Karim Nagar",
+    "Elagandula"
+   ],
+   "district": "Karimnagar",
+   "type": "Municipal Corporation with Outgrowth",
+   "lat": 18.4348,
+   "lng": 79.1328,
+   "population_2011": 289821,
+   "is_district_hq": true
+  },
+  {
+   "name": "Khammam",
+   "telugu": "ఖమ్మం",
+   "aliases": [
+    "Khammamett",
+    "Kammamett"
+   ],
+   "district": "Khammam",
+   "type": "Municipality with Outgrowth",
+   "lat": 17.2465,
+   "lng": 80.15,
+   "population_2011": 196283,
+   "is_district_hq": true
+  },
+  {
+   "name": "Madhira",
+   "telugu": "మధిర",
+   "aliases": [
+    "Madhira town"
+   ],
+   "district": "Khammam",
+   "type": null,
+   "lat": 16.925,
+   "lng": 80.3641,
+   "population_2011": 22716,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sathupalli",
+   "telugu": "సత్తుపల్లి",
+   "aliases": [
+    "Sathupalli town"
+   ],
+   "district": "Khammam",
+   "type": null,
+   "lat": 17.2083,
+   "lng": 80.8361,
+   "population_2011": 31857,
+   "is_district_hq": false
+  },
+  {
+   "name": "Wyra",
+   "telugu": "వైరా",
+   "aliases": [
+    "Wyra town"
+   ],
+   "district": "Khammam",
+   "type": null,
+   "lat": 17.196,
+   "lng": 80.3555,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Asifabad",
+   "telugu": "ఆసిఫాబాద్",
+   "aliases": [
+    "Kumuram Bheem Asifabad",
+    "Komaram Bheem Asifabad",
+    "Asifabad town"
+   ],
+   "district": "Kumuram Bheem Asifabad",
+   "type": "Census Town",
+   "lat": 19.3593,
+   "lng": 79.296,
+   "population_2011": 23059,
+   "is_district_hq": true
+  },
+  {
+   "name": "Kagaznagar",
+   "telugu": "కాగజ్‌నగర్",
+   "aliases": [
+    "Kagaznagar town"
+   ],
+   "district": "Kumuram Bheem Asifabad",
+   "type": null,
+   "lat": 19.3333,
+   "lng": 79.4833,
+   "population_2011": 57583,
+   "is_district_hq": false
+  },
+  {
+   "name": "Dornakal",
+   "telugu": "డోర్నకల్",
+   "aliases": [
+    "Dornakal town"
+   ],
+   "district": "Mahabubabad",
+   "type": null,
+   "lat": 17.4447,
+   "lng": 80.1492,
+   "population_2011": 14425,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kesamudram",
+   "telugu": "కేసముద్రం",
+   "aliases": [
+    "Kesamudram town"
+   ],
+   "district": "Mahabubabad",
+   "type": null,
+   "lat": 17.6875,
+   "lng": 79.8944,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Mahabubabad",
+   "telugu": "మహబూబాబాద్",
+   "aliases": [
+    "Mahbubabad",
+    "Manukota",
+    "మానుకోట"
+   ],
+   "district": "Mahabubabad",
+   "type": "Census Town",
+   "lat": 17.5957,
+   "lng": 79.9999,
+   "population_2011": 42851,
+   "is_district_hq": true
+  },
+  {
+   "name": "Maripeda",
+   "telugu": "మరిపెడ",
+   "aliases": [
+    "Maripeda town"
+   ],
+   "district": "Mahabubabad",
+   "type": null,
+   "lat": 17.4031,
+   "lng": 79.8567,
+   "population_2011": 17685,
+   "is_district_hq": false
+  },
+  {
+   "name": "Thorrur",
+   "telugu": "తొర్రూర్",
+   "aliases": [
+    "Thorrur town"
+   ],
+   "district": "Mahabubabad",
+   "type": null,
+   "lat": 17.5857,
+   "lng": 79.6578,
+   "population_2011": 19100,
+   "is_district_hq": false
+  },
+  {
+   "name": "Devarakadra",
+   "telugu": "దేవరకద్ర",
+   "aliases": [
+    "Devarakadra town"
+   ],
+   "district": "Mahabubnagar",
+   "type": null,
+   "lat": 16.6167,
+   "lng": 77.85,
+   "population_2011": 8047,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jadcherla",
+   "telugu": "జడ్చర్ల",
+   "aliases": [
+    "Jadcherla town"
+   ],
+   "district": "Mahabubnagar",
+   "type": null,
+   "lat": 16.7667,
+   "lng": 78.15,
+   "population_2011": 17958,
+   "is_district_hq": false
+  },
+  {
+   "name": "Mahabubnagar",
+   "telugu": "మహబూబ్ నగర్",
+   "aliases": [
+    "Mahbubnagar",
+    "Mahboobnagar",
+    "Palamuru",
+    "పాలమూరు",
+    "మహబూబ్‌నగర్"
+   ],
+   "district": "Mahabubnagar",
+   "type": "Municipality with Outgrowth",
+   "lat": 16.7435,
+   "lng": 77.9923,
+   "population_2011": 190400,
+   "is_district_hq": true
+  },
+  {
+   "name": "Bellampalle",
+   "telugu": "బెల్లంపల్లి",
+   "aliases": [
+    "Bellampalle town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 19.0558,
+   "lng": 79.4931,
+   "population_2011": 55841,
+   "is_district_hq": false
+  },
+  {
+   "name": "Chennur",
+   "telugu": "చెన్నూర్",
+   "aliases": [
+    "Chennur town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 18.8535,
+   "lng": 79.7826,
+   "population_2011": 23579,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kyathanpally",
+   "telugu": "క్యాతన్‌పల్లి",
+   "aliases": [
+    "Kyathanpally town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 18.9234,
+   "lng": 79.4587,
+   "population_2011": 32385,
+   "is_district_hq": false
+  },
+  {
+   "name": "Luxettipet",
+   "telugu": "లక్సెట్టిపేట",
+   "aliases": [
+    "Luxettipet town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 18.8667,
+   "lng": 79.2167,
+   "population_2011": 11322,
+   "is_district_hq": false
+  },
+  {
+   "name": "Mancherial",
+   "telugu": "మంచిర్యాల",
+   "aliases": [
+    "Manchiryala",
+    "Mancheryal"
+   ],
+   "district": "Mancherial",
+   "type": "Municipality with Outgrowth",
+   "lat": 18.8762,
+   "lng": 79.445,
+   "population_2011": 89935,
+   "is_district_hq": true
+  },
+  {
+   "name": "Mandamarri",
+   "telugu": "మందమర్రి",
+   "aliases": [
+    "Mandamarri town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 18.9822,
+   "lng": 79.4811,
+   "population_2011": 52352,
+   "is_district_hq": false
+  },
+  {
+   "name": "Naspur",
+   "telugu": "నస్పూర్",
+   "aliases": [
+    "Naspur town"
+   ],
+   "district": "Mancherial",
+   "type": null,
+   "lat": 18.83,
+   "lng": 79.45,
+   "population_2011": 31244,
+   "is_district_hq": false
+  },
+  {
+   "name": "Medak",
+   "telugu": "మెదక్",
+   "aliases": [
+    "Methuku",
+    "Siddapur"
+   ],
+   "district": "Medak",
+   "type": "Municipality with Outgrowth",
+   "lat": 18.0459,
+   "lng": 78.2652,
+   "population_2011": 46880,
+   "is_district_hq": true
+  },
+  {
+   "name": "Narsapur",
+   "telugu": "నర్సాపూర్",
+   "aliases": [
+    "Narsapur town"
+   ],
+   "district": "Medak",
+   "type": null,
+   "lat": 17.7386,
+   "lng": 78.2828,
+   "population_2011": 18339,
+   "is_district_hq": false
+  },
+  {
+   "name": "Ramayampet",
+   "telugu": "రామాయంపేట",
+   "aliases": [
+    "Ramayampet town"
+   ],
+   "district": "Medak",
+   "type": null,
+   "lat": 18.1166,
+   "lng": 78.4298,
+   "population_2011": 16899,
+   "is_district_hq": false
+  },
+  {
+   "name": "Toopran",
+   "telugu": "తూప్రాన్",
+   "aliases": [
+    "Toopran town"
+   ],
+   "district": "Medak",
+   "type": null,
+   "lat": 17.8447,
+   "lng": 78.48,
+   "population_2011": 14401,
+   "is_district_hq": false
+  },
+  {
+   "name": "Boduppal",
+   "telugu": "బోడుప్పల్",
+   "aliases": [
+    "Boduppal town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.4139,
+   "lng": 78.5783,
+   "population_2011": 43692,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bolarum",
+   "telugu": "బొల్లారం",
+   "aliases": [
+    "Bolarum town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.5144,
+   "lng": 78.5136,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Dundigal",
+   "telugu": "దుండిగల్",
+   "aliases": [
+    "Dundigal town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.5781,
+   "lng": 78.4288,
+   "population_2011": 13465,
+   "is_district_hq": false
+  },
+  {
+   "name": "Ghatkesar",
+   "telugu": "ఘటకేసర్",
+   "aliases": [
+    "Ghatkesar town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.4494,
+   "lng": 78.6853,
+   "population_2011": 19763,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jawaharnagar",
+   "telugu": "జవహర్‌నగర్",
+   "aliases": [
+    "Jawaharnagar town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.5092,
+   "lng": 78.5542,
+   "population_2011": 44562,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kukatpally",
+   "telugu": "కూకట్‌పల్లి",
+   "aliases": [
+    "Kukatpally town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.4833,
+   "lng": 78.4167,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nagaram",
+   "telugu": "నాగారం",
+   "aliases": [
+    "Nagaram town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.4875,
+   "lng": 78.6012,
+   "population_2011": 30502,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nizampet",
+   "telugu": "నిజాంపేట్",
+   "aliases": [
+    "Nizampet town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.5197,
+   "lng": 78.3776,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Peerzadiguda",
+   "telugu": "పీర్జాదిగూడ",
+   "aliases": [
+    "Peerzadiguda town"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": null,
+   "lat": 17.3974,
+   "lng": 78.5783,
+   "population_2011": 32586,
+   "is_district_hq": false
+  },
+  {
+   "name": "Shamirpet",
+   "telugu": "షామీర్‌పేట్",
+   "aliases": [
+    "Shameerpet",
+    "Anthaipally"
+   ],
+   "district": "Medchal–Malkajgiri",
+   "type": "Census 2011 village (gram panchayat)",
+   "lat": 17.5917,
+   "lng": 78.5822,
+   "population_2011": 6903,
+   "is_district_hq": true
+  },
+  {
+   "name": "Eturnagaram",
+   "telugu": "ఏటూరునాగారం",
+   "aliases": [
+    "Eturnagaram town"
+   ],
+   "district": "Mulugu",
+   "type": null,
+   "lat": 18.3389,
+   "lng": 80.4292,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Mulugu",
+   "telugu": "ములుగు",
+   "aliases": [
+    "Mulug",
+    "ములుగు (పట్టణం)"
+   ],
+   "district": "Mulugu",
+   "type": "Census 2011 village (gram panchayat)",
+   "lat": 18.1932,
+   "lng": 79.9414,
+   "population_2011": 12135,
+   "is_district_hq": true
+  },
+  {
+   "name": "Venkatapuram",
+   "telugu": "వెంకటాపురం",
+   "aliases": [
+    "Venkatapuram town"
+   ],
+   "district": "Mulugu",
+   "type": null,
+   "lat": null,
+   "lng": null,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Achampet",
+   "telugu": "అచ్చంపేట",
+   "aliases": [
+    "Achampet town"
+   ],
+   "district": "Nagarkurnool",
+   "type": null,
+   "lat": 16.399,
+   "lng": 78.637,
+   "population_2011": 20721,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kalwakurthy",
+   "telugu": "కల్వకుర్తి",
+   "aliases": [
+    "Kalwakurthy town"
+   ],
+   "district": "Nagarkurnool",
+   "type": null,
+   "lat": 16.65,
+   "lng": 78.48,
+   "population_2011": 28060,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kollapur",
+   "telugu": "కొల్లాపూర్",
+   "aliases": [
+    "Kollapur town"
+   ],
+   "district": "Nagarkurnool",
+   "type": null,
+   "lat": 16.1046,
+   "lng": 78.3206,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nagarkurnool",
+   "telugu": "నాగర్ కర్నూల్",
+   "aliases": [
+    "Nagar Kurnool",
+    "Nagarkarnool",
+    "Nagarkurnul",
+    "నాగర్‌కర్నూల్"
+   ],
+   "district": "Nagarkurnool",
+   "type": "Census Town",
+   "lat": 16.487,
+   "lng": 78.3169,
+   "population_2011": 26801,
+   "is_district_hq": true
+  },
+  {
+   "name": "Chandur",
+   "telugu": "చండూరు",
+   "aliases": [
+    "Chandur town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 16.98,
+   "lng": 79.06,
+   "population_2011": 10880,
+   "is_district_hq": false
+  },
+  {
+   "name": "Chityal",
+   "telugu": "చిట్యాల",
+   "aliases": [
+    "Chityal town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 17.2333,
+   "lng": 79.1333,
+   "population_2011": 13752,
+   "is_district_hq": false
+  },
+  {
+   "name": "Devarakonda",
+   "telugu": "దేవరకొండ",
+   "aliases": [
+    "Devarakonda town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 16.7,
+   "lng": 78.9333,
+   "population_2011": 29731,
+   "is_district_hq": false
+  },
+  {
+   "name": "Miryalaguda",
+   "telugu": "మిర్యాలగూడ",
+   "aliases": [
+    "Miryalaguda town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 16.525,
+   "lng": 79.354,
+   "population_2011": 104918,
+   "is_district_hq": false
+  },
+  {
+   "name": "Munugode",
+   "telugu": "మునుగోడు",
+   "aliases": [
+    "Munugode town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 17.0667,
+   "lng": 79.0667,
+   "population_2011": 10141,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nakrekal",
+   "telugu": "నకిరేకల్",
+   "aliases": [
+    "Nakrekal town"
+   ],
+   "district": "Nalgonda",
+   "type": null,
+   "lat": 17.1667,
+   "lng": 79.4333,
+   "population_2011": 29126,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nalgonda",
+   "telugu": "నల్గొండ",
+   "aliases": [
+    "Nalagonda",
+    "Nilagiri",
+    "నల్లగొండ"
+   ],
+   "district": "Nalgonda",
+   "type": "Municipality with Outgrowth",
+   "lat": 17.0504,
+   "lng": 79.2669,
+   "population_2011": 154326,
+   "is_district_hq": true
+  },
+  {
+   "name": "Kosgi",
+   "telugu": "కోస్గి",
+   "aliases": [
+    "Kosgi town"
+   ],
+   "district": "Narayanpet",
+   "type": null,
+   "lat": 16.9839,
+   "lng": 77.7193,
+   "population_2011": 21215,
+   "is_district_hq": false
+  },
+  {
+   "name": "Makhtal",
+   "telugu": "మఖ్తల్",
+   "aliases": [
+    "Makhtal town"
+   ],
+   "district": "Narayanpet",
+   "type": null,
+   "lat": 16.5021,
+   "lng": 77.5075,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Narayanpet",
+   "telugu": "నారాయణపేట",
+   "aliases": [
+    "Narayanapet",
+    "Narayanpeta"
+   ],
+   "district": "Narayanpet",
+   "type": "Nagar Panchayat",
+   "lat": 16.7478,
+   "lng": 77.495,
+   "population_2011": 41752,
+   "is_district_hq": true
+  },
+  {
+   "name": "Bhainsa",
+   "telugu": "భైంసా",
+   "aliases": [
+    "Bhainsa town"
+   ],
+   "district": "Nirmal",
+   "type": null,
+   "lat": 19.1,
+   "lng": 77.9667,
+   "population_2011": 49764,
+   "is_district_hq": false
+  },
+  {
+   "name": "Khanapur",
+   "telugu": "ఖానాపూర్",
+   "aliases": [
+    "Khanapur town"
+   ],
+   "district": "Nirmal",
+   "type": null,
+   "lat": 19.0333,
+   "lng": 78.6667,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nirmal",
+   "telugu": "నిర్మల్",
+   "aliases": [
+    "Nirmal town"
+   ],
+   "district": "Nirmal",
+   "type": "Municipality",
+   "lat": 19.0925,
+   "lng": 78.3486,
+   "population_2011": 88433,
+   "is_district_hq": true
+  },
+  {
+   "name": "Armoor",
+   "telugu": "ఆర్మూరు",
+   "aliases": [
+    "Armoor town"
+   ],
+   "district": "Nizamabad",
+   "type": null,
+   "lat": 18.79,
+   "lng": 78.29,
+   "population_2011": 64023,
+   "is_district_hq": false
+  },
+  {
+   "name": "Balkonda",
+   "telugu": "బాల్కొండ",
+   "aliases": [
+    "Balkonda town"
+   ],
+   "district": "Nizamabad",
+   "type": null,
+   "lat": 18.8667,
+   "lng": 78.35,
+   "population_2011": 15644,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bheemgal",
+   "telugu": "భీంగల్",
+   "aliases": [
+    "Bheemgal town"
+   ],
+   "district": "Nizamabad",
+   "type": null,
+   "lat": 18.7,
+   "lng": 78.4667,
+   "population_2011": 15446,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bodhan",
+   "telugu": "బోధన్",
+   "aliases": [
+    "Bodhan town"
+   ],
+   "district": "Nizamabad",
+   "type": null,
+   "lat": 18.67,
+   "lng": 77.9,
+   "population_2011": 77573,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nandipet",
+   "telugu": "నందిపేట్",
+   "aliases": [
+    "Nandipet town"
+   ],
+   "district": "Nizamabad",
+   "type": null,
+   "lat": 18.9622,
+   "lng": 78.1772,
+   "population_2011": 11525,
+   "is_district_hq": false
+  },
+  {
+   "name": "Nizamabad",
+   "telugu": "నిజామాబాద్",
+   "aliases": [
+    "Nizambad",
+    "Indur",
+    "ఇందూరు",
+    "నిజామాబాదు"
+   ],
+   "district": "Nizamabad",
+   "type": "Municipal Corporation",
+   "lat": 18.6732,
+   "lng": 78.0978,
+   "population_2011": 311152,
+   "is_district_hq": true
+  },
+  {
+   "name": "Godavarikhani",
+   "telugu": "గోదావరిఖని",
+   "aliases": [
+    "Godavarikhani town"
+   ],
+   "district": "Peddapalli",
+   "type": null,
+   "lat": 18.7519,
+   "lng": 79.5133,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Manthani",
+   "telugu": "మంథని",
+   "aliases": [
+    "Manthani town"
+   ],
+   "district": "Peddapalli",
+   "type": null,
+   "lat": 18.65,
+   "lng": 79.6667,
+   "population_2011": 17927,
+   "is_district_hq": false
+  },
+  {
+   "name": "Peddapalli",
+   "telugu": "పెద్దపల్లి",
+   "aliases": [
+    "Peddapalle",
+    "Peddapally"
+   ],
+   "district": "Peddapalli",
+   "type": "Census Town",
+   "lat": 18.6177,
+   "lng": 79.3868,
+   "population_2011": 41171,
+   "is_district_hq": true
+  },
+  {
+   "name": "Ramagundam",
+   "telugu": "రామగుండం",
+   "aliases": [
+    "Ramagundam town"
+   ],
+   "district": "Peddapalli",
+   "type": null,
+   "lat": 18.8,
+   "lng": 79.45,
+   "population_2011": 242979,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sultanabad",
+   "telugu": "సుల్తానాబాద్",
+   "aliases": [
+    "Sultanabad town"
+   ],
+   "district": "Peddapalli",
+   "type": null,
+   "lat": 18.5264,
+   "lng": 79.3212,
+   "population_2011": 16116,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sircilla",
+   "telugu": "సిరిసిల్ల",
+   "aliases": [
+    "Siricilla",
+    "Sirsilla",
+    "Rajanna Sircilla"
+   ],
+   "district": "Rajanna Sircilla",
+   "type": "Municipality with Outgrowth",
+   "lat": 18.3898,
+   "lng": 78.8086,
+   "population_2011": 83186,
+   "is_district_hq": true
+  },
+  {
+   "name": "Vemulawada",
+   "telugu": "వేములవాడ",
+   "aliases": [
+    "Vemulawada town"
+   ],
+   "district": "Rajanna Sircilla",
+   "type": null,
+   "lat": 18.4667,
+   "lng": 78.8833,
+   "population_2011": 33706,
+   "is_district_hq": false
+  },
+  {
+   "name": "Amangal",
+   "telugu": "ఆమనగల్",
+   "aliases": [
+    "Amangal town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 16.85,
+   "lng": 78.533,
+   "population_2011": 23882,
+   "is_district_hq": false
+  },
+  {
+   "name": "Badangpet",
+   "telugu": "బడంగ్‌పేట",
+   "aliases": [
+    "Badangpet town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.3047,
+   "lng": 78.515,
+   "population_2011": 15913,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bandlaguda Jagir",
+   "telugu": "బండ్లగూడ జాగీర్",
+   "aliases": [
+    "Bandlaguda Jagir town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.3543,
+   "lng": 78.3853,
+   "population_2011": 12734,
+   "is_district_hq": false
+  },
+  {
+   "name": "Ibrahimpatnam",
+   "telugu": "ఇబ్రహీంపట్నం",
+   "aliases": [
+    "Ibrahimpatnam town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.1017,
+   "lng": 78.6294,
+   "population_2011": 12349,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kothur",
+   "telugu": "కొత్తూరు",
+   "aliases": [
+    "Kothur town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.1447,
+   "lng": 78.2886,
+   "population_2011": 10519,
+   "is_district_hq": false
+  },
+  {
+   "name": "Meerpet",
+   "telugu": "మీర్‌పేట",
+   "aliases": [
+    "Meerpet town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.32,
+   "lng": 78.52,
+   "population_2011": 32013,
+   "is_district_hq": false
+  },
+  {
+   "name": "Serilingampally",
+   "telugu": "శేరిలింగంపల్లి",
+   "aliases": [
+    "Serilingampally town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.48,
+   "lng": 78.33,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Shadnagar",
+   "telugu": "షాద్‌నగర్",
+   "aliases": [
+    "Shadnagar town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.0909,
+   "lng": 78.2185,
+   "population_2011": 45675,
+   "is_district_hq": false
+  },
+  {
+   "name": "Shamshabad",
+   "telugu": "శంషాబాద్",
+   "aliases": [
+    "Shamshabad town"
+   ],
+   "district": "Rangareddy",
+   "type": "Census Town",
+   "lat": 17.2611,
+   "lng": 78.3932,
+   "population_2011": 32583,
+   "is_district_hq": true
+  },
+  {
+   "name": "Turkayamjal",
+   "telugu": "తుర్కయాంజల్",
+   "aliases": [
+    "Turkayamjal town"
+   ],
+   "district": "Rangareddy",
+   "type": null,
+   "lat": 17.2728,
+   "lng": 78.5708,
+   "population_2011": 15689,
+   "is_district_hq": false
+  },
+  {
+   "name": "Ameenpur",
+   "telugu": "అమీన్‌పూర్",
+   "aliases": [
+    "Ameenpur town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.5241,
+   "lng": 78.3242,
+   "population_2011": 36452,
+   "is_district_hq": false
+  },
+  {
+   "name": "Andole",
+   "telugu": "ఆందోల్",
+   "aliases": [
+    "Andole town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.8144,
+   "lng": 78.0772,
+   "population_2011": 5457,
+   "is_district_hq": false
+  },
+  {
+   "name": "Jogipet",
+   "telugu": "జోగిపేట",
+   "aliases": [
+    "Jogipet town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.8333,
+   "lng": 78.0667,
+   "population_2011": 18494,
+   "is_district_hq": false
+  },
+  {
+   "name": "Narayankhed",
+   "telugu": "నారాయణఖేడ్",
+   "aliases": [
+    "Narayankhed town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 18.0333,
+   "lng": 77.7833,
+   "population_2011": 15610,
+   "is_district_hq": false
+  },
+  {
+   "name": "Patancheru",
+   "telugu": "పటాన్‌చెరు",
+   "aliases": [
+    "Patancheru town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.53,
+   "lng": 78.27,
+   "population_2011": null,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sadasivpet",
+   "telugu": "సదాశివపేట",
+   "aliases": [
+    "Sadasivpet town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.6167,
+   "lng": 77.95,
+   "population_2011": 47920,
+   "is_district_hq": false
+  },
+  {
+   "name": "Sangareddy",
+   "telugu": "సంగారెడ్డి",
+   "aliases": [
+    "Sangareddi",
+    "Sanga Reddy",
+    "Sangareddy peta"
+   ],
+   "district": "Sangareddy",
+   "type": "Municipality with Outgrowth",
+   "lat": 17.6119,
+   "lng": 78.0819,
+   "population_2011": 72344,
+   "is_district_hq": true
+  },
+  {
+   "name": "Zaheerabad",
+   "telugu": "జహీరాబాద్",
+   "aliases": [
+    "Zaheerabad town"
+   ],
+   "district": "Sangareddy",
+   "type": null,
+   "lat": 17.68,
+   "lng": 77.62,
+   "population_2011": 71166,
+   "is_district_hq": false
+  },
+  {
+   "name": "Dubbaka",
+   "telugu": "దుబ్బాక",
+   "aliases": [
+    "Dubbaka town"
+   ],
+   "district": "Siddipet",
+   "type": null,
+   "lat": 18.1914,
+   "lng": 78.6783,
+   "population_2011": 12349,
+   "is_district_hq": false
+  },
+  {
+   "name": "Gajwel",
+   "telugu": "గజ్వేల్",
+   "aliases": [
+    "Gajwel town"
+   ],
+   "district": "Siddipet",
+   "type": null,
+   "lat": 17.8517,
+   "lng": 78.6828,
+   "population_2011": 24961,
+   "is_district_hq": false
+  },
+  {
+   "name": "Husnabad",
+   "telugu": "హుస్నాబాద్",
+   "aliases": [
+    "Husnabad town"
+   ],
+   "district": "Siddipet",
+   "type": null,
+   "lat": 18.1307,
+   "lng": 79.2082,
+   "population_2011": 22082,
+   "is_district_hq": false
+  },
+  {
+   "name": "Siddipet",
+   "telugu": "సిద్దిపేట",
+   "aliases": [
+    "Siddipeta"
+   ],
+   "district": "Siddipet",
+   "type": "Municipality with Outgrowth",
+   "lat": 18.1018,
+   "lng": 78.852,
+   "population_2011": 66737,
+   "is_district_hq": true
+  },
+  {
+   "name": "Huzurnagar",
+   "telugu": "హుజూర్‌నగర్",
+   "aliases": [
+    "Huzurnagar town"
+   ],
+   "district": "Suryapet",
+   "type": null,
+   "lat": 16.9,
+   "lng": 79.8833,
+   "population_2011": 35850,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kodad",
+   "telugu": "కోదాడ",
+   "aliases": [
+    "Kodad town"
+   ],
+   "district": "Suryapet",
+   "type": null,
+   "lat": 16.9978,
+   "lng": 79.9653,
+   "population_2011": 64234,
+   "is_district_hq": false
+  },
+  {
+   "name": "Neredcherla",
+   "telugu": "నేరేడుచర్ల",
+   "aliases": [
+    "Neredcherla town"
+   ],
+   "district": "Suryapet",
+   "type": null,
+   "lat": 16.8321,
+   "lng": 79.4356,
+   "population_2011": 13897,
+   "is_district_hq": false
+  },
+  {
+   "name": "Suryapet",
+   "telugu": "సూర్యాపేట",
+   "aliases": [
+    "Suryapeta",
+    "Suraypet",
+    "సూర్యపేట"
+   ],
+   "district": "Suryapet",
+   "type": "Municipality with Outgrowth",
+   "lat": 17.1405,
+   "lng": 79.6225,
+   "population_2011": 106805,
+   "is_district_hq": true
+  },
+  {
+   "name": "Kodangal",
+   "telugu": "కొడంగల్",
+   "aliases": [
+    "Kodangal town"
+   ],
+   "district": "Vikarabad",
+   "type": null,
+   "lat": 17.107,
+   "lng": 77.627,
+   "population_2011": 14294,
+   "is_district_hq": false
+  },
+  {
+   "name": "Parigi",
+   "telugu": "పరిగి",
+   "aliases": [
+    "Parigi town"
+   ],
+   "district": "Vikarabad",
+   "type": null,
+   "lat": 17.1833,
+   "lng": 77.8833,
+   "population_2011": 18241,
+   "is_district_hq": false
+  },
+  {
+   "name": "Tandur",
+   "telugu": "తాండూరు",
+   "aliases": [
+    "Tandur town"
+   ],
+   "district": "Vikarabad",
+   "type": null,
+   "lat": 17.23,
+   "lng": 77.58,
+   "population_2011": 65115,
+   "is_district_hq": false
+  },
+  {
+   "name": "Vikarabad",
+   "telugu": "వికారాబాద్",
+   "aliases": [
+    "Vicarabad",
+    "వికారాబాదు"
+   ],
+   "district": "Vikarabad",
+   "type": "Municipality",
+   "lat": 17.3379,
+   "lng": 77.904,
+   "population_2011": 53143,
+   "is_district_hq": true
+  },
+  {
+   "name": "Amarchinta",
+   "telugu": "అమరచింత",
+   "aliases": [
+    "Amarchinta town"
+   ],
+   "district": "Wanaparthy",
+   "type": null,
+   "lat": 16.374,
+   "lng": 77.7729,
+   "population_2011": 11225,
+   "is_district_hq": false
+  },
+  {
+   "name": "Atmakur",
+   "telugu": "ఆత్మకూరు",
+   "aliases": [
+    "Atmakur town"
+   ],
+   "district": "Wanaparthy",
+   "type": null,
+   "lat": 16.3364,
+   "lng": 77.8056,
+   "population_2011": 12297,
+   "is_district_hq": false
+  },
+  {
+   "name": "Kothakota",
+   "telugu": "కొత్తకోట",
+   "aliases": [
+    "Kothakota town"
+   ],
+   "district": "Wanaparthy",
+   "type": null,
+   "lat": 16.3667,
+   "lng": 77.9667,
+   "population_2011": 19042,
+   "is_district_hq": false
+  },
+  {
+   "name": "Pebbair",
+   "telugu": "పెబ్బేరు",
+   "aliases": [
+    "Pebbair town"
+   ],
+   "district": "Wanaparthy",
+   "type": null,
+   "lat": 16.2167,
+   "lng": 77.9833,
+   "population_2011": 12289,
+   "is_district_hq": false
+  },
+  {
+   "name": "Wanaparthy",
+   "telugu": "వనపర్తి",
+   "aliases": [
+    "Vanaparthy",
+    "Wanparthy",
+    "Wanaparthi"
+   ],
+   "district": "Wanaparthy",
+   "type": "Municipality",
+   "lat": 16.3618,
+   "lng": 78.0611,
+   "population_2011": 60949,
+   "is_district_hq": true
+  },
+  {
+   "name": "Narsampet",
+   "telugu": "నర్సంపేట",
+   "aliases": [
+    "Narsampet town"
+   ],
+   "district": "Warangal",
+   "type": null,
+   "lat": 17.9264,
+   "lng": 79.8969,
+   "population_2011": 30963,
+   "is_district_hq": false
+  },
+  {
+   "name": "Warangal",
+   "telugu": "వరంగల్",
+   "aliases": [
+    "Warangal city",
+    "Orugallu",
+    "ఓరుగల్లు",
+    "Ekashila Nagaram",
+    "Varangal",
+    "Greater Warangal"
+   ],
+   "district": "Warangal",
+   "type": "Municipal Corporation",
+   "lat": 17.9821,
+   "lng": 79.5971,
+   "population_2011": 615998,
+   "is_district_hq": true
+  },
+  {
+   "name": "Wardhannapet",
+   "telugu": "వర్ధన్నపేట",
+   "aliases": [
+    "Wardhannapet town"
+   ],
+   "district": "Warangal",
+   "type": null,
+   "lat": 17.7736,
+   "lng": 79.575,
+   "population_2011": 13715,
+   "is_district_hq": false
+  },
+  {
+   "name": "Alair",
+   "telugu": "ఆలేరు",
+   "aliases": [
+    "Alair town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.65,
+   "lng": 79.05,
+   "population_2011": 18054,
+   "is_district_hq": false
+  },
+  {
+   "name": "Bhongir",
+   "telugu": "భువనగిరి",
+   "aliases": [
+    "Bhuvanagiri",
+    "Bhongiri",
+    "Yadadri",
+    "యాదాద్రి"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": "Municipality",
+   "lat": 17.5173,
+   "lng": 78.8863,
+   "population_2011": 53339,
+   "is_district_hq": true
+  },
+  {
+   "name": "Bhoodan Pochampally",
+   "telugu": "భూదాన్ పోచంపల్లి",
+   "aliases": [
+    "Bhoodan Pochampally town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.3461,
+   "lng": 78.8122,
+   "population_2011": 12972,
+   "is_district_hq": false
+  },
+  {
+   "name": "Choutuppal",
+   "telugu": "చౌటుప్పల్",
+   "aliases": [
+    "Choutuppal town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.2508,
+   "lng": 78.8972,
+   "population_2011": 19092,
+   "is_district_hq": false
+  },
+  {
+   "name": "Mothkur",
+   "telugu": "మోత్కూర్",
+   "aliases": [
+    "Mothkur town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.45,
+   "lng": 79.2667,
+   "population_2011": 12616,
+   "is_district_hq": false
+  },
+  {
+   "name": "Ramannapeta",
+   "telugu": "రామన్నపేట",
+   "aliases": [
+    "Ramannapeta town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.2833,
+   "lng": 79.1,
+   "population_2011": 10202,
+   "is_district_hq": false
+  },
+  {
+   "name": "Yadagirigutta",
+   "telugu": "యాదగిరిగుట్ట",
+   "aliases": [
+    "Yadagirigutta town"
+   ],
+   "district": "Yadadri Bhuvanagiri",
+   "type": null,
+   "lat": 17.5864,
+   "lng": 78.9461,
+   "population_2011": 15232,
+   "is_district_hq": false
+  }
+ ],
+ "villages_and_localities": [],
+ "geojson_sources": {
+  "note": "Assembly and district boundary GeoJSON are generated separately by frontend/scripts/build_state_geojson.js."
+ }
+}

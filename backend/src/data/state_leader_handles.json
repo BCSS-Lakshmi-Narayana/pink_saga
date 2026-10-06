@@ -1,0 +1,203 @@
+{
+ "_meta": {
+  "purpose": "Official social-media accounts of Telangana leaders, parties and government bodies. Merged into politicalData.js / politicalEntities.js so the sentiment pipeline recognises a leader when a post names the handle AND when the leader/party is the AUTHOR.",
+  "researched": "2026-09-30. Every X handle below was fetched live from api.fxtwitter.com (public profile JSON) and its bio read before being recorded here. Follower counts are from that same fetch.",
+  "status": "CONFIRMED = the account's own bio states the office or party role, or an official site links it. LIKELY = strong circumstantial match not confirmed from the account itself. Nothing is listed on inference alone.",
+  "deliberately_absent": [
+   "N. Ramchander Rao (BJP Telangana state president) — no official account found. @NRamchanderRao exists but has 2 followers and the bio 'sining'; it is not him and encoding it would mis-attribute every post from that account.",
+   "Bomma Mahesh Kumar Goud (TPCC president) — only 3-follower namesakes found.",
+   "J. Santosh Kumar (BRS general secretary) — @JSanthoshKumar is a different person (Santhosh Janakiraman).",
+   "Telangana Rakshana Sena party account — the party is months old and no official handle was found. K. Kavitha's personal account is listed under people.",
+   "All YouTube channel IDs — not verified for any party or leader here."
+  ],
+  "note_trs_collision": "@trspartyonline is the BRS-era handle. Its live bio reads '@trspartyonline handle is now archived.. Please follow @brsparty for official updates'. It is recorded as ARCHIVED, not as a live BRS account, and must not be confused with K. Kavitha's Telangana Rakshana Sena, which also abbreviates to TRS.",
+  "keys": "people = leader id in config/politicalData.js, or 'ac:<constituencykey>' for a seat-derived MLA. parties = party id. government = institutional accounts."
+ },
+ "people": {
+  "kcr": [
+   {
+    "platform": "x",
+    "handle": "KCRBRSPresident",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/KCRBRSPresident — bio: \"Official handle of BRS Party President and Telangana's First Chief Minister K Chandrashekar Rao\"",
+    "note": "47.7K followers — very low for a figure of his standing, consistent with his minimal posting since Dec 2023. Low volume here is expected, not a collection fault."
+   }
+  ],
+  "ktr": [
+   {
+    "platform": "x",
+    "handle": "KTRBRS",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/KTRBRS — bio: \"Personal account of Working president of BRS & Former Minister | MLA from Siricilla, Telangana\"",
+    "note": "4.6M followers — by a wide margin the most-followed BRS account and the party's main public voice."
+   }
+  ],
+  "harish-rao": [
+   {
+    "platform": "x",
+    "handle": "BRSHarish",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/BRSHarish — bio: \"Former Minister | MLA from Siddipet | BRS Party | Telangana State.\" 1.4M followers"
+   },
+   {
+    "platform": "facebook",
+    "handle": "TrsHarish",
+    "status": "LIKELY",
+    "source": "facebook.com/TrsHarish"
+   }
+  ],
+  "kavitha": [
+   {
+    "platform": "x",
+    "handle": "RaoKavitha",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/RaoKavitha — bio: \"Founder & President, Telangana Rakshana Sena - TRS Party  Former Member of Parliament\" 1.3M followers",
+    "note": "⚠ NOT a BRS account. She was suspended from BRS on 2 Sep 2025 and founded her own party on 25 Apr 2026. Her bio's 'TRS Party' means Telangana RAKSHANA Sena, not the old Telangana Rashtra Samithi."
+   },
+   {
+    "platform": "facebook",
+    "handle": "KavithaKalvakuntla",
+    "status": "LIKELY",
+    "source": "facebook.com/KavithaKalvakuntla"
+   }
+  ],
+  "revanth-reddy": [
+   {
+    "platform": "x",
+    "handle": "revanth_anumula",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/revanth_anumula — bio: \"Chief Minister of Telangana\" 630K followers"
+   }
+  ],
+  "bhatti-vikramarka": [
+   {
+    "platform": "x",
+    "handle": "Bhatti_Mallu",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/Bhatti_Mallu — bio: \"Deputy Chief Minister of Telangana || Minister for Finance, Planning & Energy\" 54.5K followers"
+   }
+  ],
+  "kishan-reddy": [
+   {
+    "platform": "x",
+    "handle": "kishanreddybjp",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/kishanreddybjp — bio: \"Union Minister For Coal and Mines, Govt of India | MP - Secunderabad\" 396K followers"
+   }
+  ],
+  "bandi-sanjay": [
+   {
+    "platform": "x",
+    "handle": "bandisanjay_bjp",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/bandisanjay_bjp — bio: \"Minister of State for Home Affairs, Govt. of India | Member of Parliament - Karimnagar\" 418K followers"
+   }
+  ],
+  "eatala-rajender": [
+   {
+    "platform": "x",
+    "handle": "Eatala_Rajender",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/Eatala_Rajender — bio: \"Member of Parliament - Malkajgiri, Telangana | Chairperson - JCOP\" 476K followers"
+   }
+  ],
+  "asaduddin-owaisi": [
+   {
+    "platform": "x",
+    "handle": "asadowaisi",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/asadowaisi — bio: \"President @aimim_national & Member of Parliament Lok Sabha (Hyderabad Constituency)\" 3.25M followers"
+   }
+  ],
+  "akbaruddin-owaisi": [
+   {
+    "platform": "x",
+    "handle": "AkbarOwaisi_MIM",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/AkbarOwaisi_MIM — bio: \"•MLA - Telangana •Floor Leader AIMIM Party •Chairman Salar-E-Millat Educational…\" 125K followers"
+   }
+  ],
+  "raja-singh": [
+   {
+    "platform": "x",
+    "handle": "Tigerrajasingh",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/Tigerrajasingh — bio: \"MLA - Goshamahal / Official Twitter Account\" 660K followers",
+    "note": "Independent since resigning from BJP in 2025 — do not file under the BJP party account."
+   }
+  ]
+ },
+ "parties": {
+  "brs": [
+   {
+    "platform": "x",
+    "handle": "BRSparty",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/BRSparty — bio: \"Official Twitter handle of Bharat Rashtra Samithi. BRS Party, formerly known as TRS Party…\" 945K followers"
+   },
+   {
+    "platform": "x",
+    "handle": "trspartyonline",
+    "status": "ARCHIVED",
+    "source": "api.fxtwitter.com/trspartyonline — bio: \"@trspartyonline handle is now archived.. Please follow @brsparty for official updates\" 1.1K followers",
+    "note": "Recorded so posts that still tag it resolve to BRS. It is NOT a live account and must not be treated as a current publishing source."
+   },
+   {
+    "platform": "facebook",
+    "handle": "BRSParty",
+    "status": "LIKELY",
+    "source": "facebook.com/BRSParty (~1.26M followers)"
+   },
+   {
+    "platform": "instagram",
+    "handle": "brsparty",
+    "status": "LIKELY",
+    "source": "instagram.com/brsparty (~602K followers)"
+   }
+  ],
+  "inc": [
+   {
+    "platform": "x",
+    "handle": "INCTelangana",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/INCTelangana — bio: \"Official Twitter handle of Telangana Pradesh Congress\" 192K followers"
+   }
+  ],
+  "bjp": [
+   {
+    "platform": "x",
+    "handle": "BJP4Telangana",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/BJP4Telangana — bio: \"Official BJP Telangana Account\" 310K followers"
+   },
+   {
+    "platform": "instagram",
+    "handle": "bjp4telangana",
+    "status": "LIKELY",
+    "source": "instagram.com/bjp4telangana"
+   }
+  ],
+  "aimim": [
+   {
+    "platform": "x",
+    "handle": "aimim_national",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/aimim_national — bio: \"Official twitter account of All India Majlis-e-Ittehadul Muslimeen.\" 1.05M followers"
+   }
+  ],
+  "trs-k": [],
+  "cpi": [],
+  "cpm": []
+ },
+ "government": {
+  "telangana-cmo": [
+   {
+    "platform": "x",
+    "handle": "TelanganaCMO",
+    "status": "CONFIRMED",
+    "source": "api.fxtwitter.com/TelanganaCMO — bio: \"Official account of CMO Telangana.\" 1.68M followers",
+    "note": "⚠ THE RIVAL'S OFFICE. In ruling-party deployments the CMO was our own account and counted as owned voice. Here it belongs to the Congress government the client opposes."
+   }
+  ]
+ }
+}

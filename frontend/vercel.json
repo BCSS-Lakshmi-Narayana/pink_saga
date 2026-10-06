@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "http://103.211.37.124:8000/api/:path*"
+    },
+    {
+      "source": "/location-api/:path*",
+      "destination": "http://103.211.37.124:8000/api/location-extraction/:path*"
+    }
+  ]
+}
