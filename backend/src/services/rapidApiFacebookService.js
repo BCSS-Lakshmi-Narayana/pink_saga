@@ -1,7 +1,7 @@
 const axios = require('axios');
 const blugateClient = require('./blugateClient');
 
-const FACEBOOK_BASE = `${blugateClient.GATEWAY_BASE}/facebook`;
+const FACEBOOK_BASE = blugateClient.platformBase('facebook');
 
 // Simple in-memory cooldown to handle BluGate 429s gracefully (single client key — no rotation).
 const fbState = {
@@ -118,7 +118,7 @@ const rapidGet = async (path, params) => {
     try {
         return await blugateClient.withRateLimitRetry(() => axios.get(`${FACEBOOK_BASE}${path}`, {
             params: blugateClient.cleanParams(params),
-            headers: blugateClient.getHeaders(),
+            headers: blugateClient.getHeaders('facebook'),
             timeout: 20000,
             ...blugateClient.responseOptions(),
         }), { retries: 1, label: 'BluGate Facebook' });

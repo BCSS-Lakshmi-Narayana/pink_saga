@@ -3,10 +3,14 @@ const { chatJson } = require("./llmProvider");
 const {
   STATE_NAME,
   CLIENT_DESCRIPTION,
+  RULING_GOVERNMENT_DESCRIPTION,
   OUR_CAMP_SUMMARY,
   OUR_CAMP_LEADERS,
   OPPOSITION_SUMMARY,
 } = require("../config/deployment");
+const { POLITICAL_ENTITIES } = require("../config/politicalEntities");
+const { RIVALS_SHORT } = require("../config/politicalPromptContext");
+const { matchRosterEntity } = require("./entityResolver");
 const {
   CAMPAIGN_TOPICS,
   TOPIC_TAXONOMY_VERSION,
@@ -83,6 +87,36 @@ const fitToTokenBudget = (text, budget) => {
  * Default provider is Ollama (qwen2.5:7b) with RapidAPI as fallback.
  * Controlled by GlobalProfileSettings.flags.llm_provider.
  */
+/**
+ * Pass A's "whose side is this post about" label, as OUR_GROUP | OPPOSITION | NEUTRAL.
+ *
+ * Generic words are mapped here; a PARTY or LEADER NAME the model returns is
+ * resolved through the roster (entityResolver), so which side BJP, INC, AIMIM or
+ * the government sit on comes from politicalData.js and nowhere else. It used to
+ * hard-code NDA/BJP as our group and INC/Congress as opposition — a BJP-client
+ * deployment's truth that put BJP on the client's side here.
+ */
+const groupOfAlignment = (alignment) => (alignment === 'ally' ? 'OUR_GROUP' : alignment === 'opposition' ? 'OPPOSITION' : 'NEUTRAL');
+const TARGET_PARTY_WORDS = {
+  OUR_GROUP: 'OUR_GROUP', OURS: 'OUR_GROUP', OUR_CAMP: 'OUR_GROUP', OUR_PARTY: 'OUR_GROUP', CLIENT: 'OUR_GROUP', ALLY: 'OUR_GROUP',
+  OPPOSITION: 'OPPOSITION', OPP: 'OPPOSITION', RIVAL: 'OPPOSITION', RIVALS: 'OPPOSITION', RIVAL_CAMP: 'OPPOSITION',
+  // "the government" is a roster entity; its side is whatever the roster says (the rival camp here).
+  GOVERNMENT: groupOfAlignment(POLITICAL_ENTITIES.state_government && POLITICAL_ENTITIES.state_government.alignment),
+  THE_GOVERNMENT: groupOfAlignment(POLITICAL_ENTITIES.state_government && POLITICAL_ENTITIES.state_government.alignment),
+  STATE_GOVERNMENT: groupOfAlignment(POLITICAL_ENTITIES.state_government && POLITICAL_ENTITIES.state_government.alignment),
+  GOVT: groupOfAlignment(POLITICAL_ENTITIES.state_government && POLITICAL_ENTITIES.state_government.alignment),
+  RULING_PARTY: groupOfAlignment(POLITICAL_ENTITIES.state_government && POLITICAL_ENTITIES.state_government.alignment),
+  NEUTRAL: 'NEUTRAL', NONE: 'NEUTRAL', UNKNOWN: 'NEUTRAL',
+};
+const normalizeTargetParty = (value) => {
+  const raw = String(value == null ? '' : value).trim();
+  if (!raw) return 'NEUTRAL';
+  const word = raw.toUpperCase().replace(/[-\s]/g, '_');
+  if (TARGET_PARTY_WORDS[word]) return TARGET_PARTY_WORDS[word];
+  const hit = matchRosterEntity(raw);
+  return hit ? groupOfAlignment(hit.affiliation) : 'NEUTRAL';
+};
+
 async function categorizeText(rawText) {
   // 1. Ensure Mapping Data is loaded (avoid empty categorization lists)
   await mappingService.waitForLoad();
@@ -160,27 +194,27 @@ RULES:
 ════════════════════════
 JOB 3: SENTIMENT ANALYSIS
 ════════════════════════
-Identify the sentiment in the context of ${CLIENT_DESCRIPTION}.
-  Our camp       : ${OUR_CAMP_SUMMARY} — leaders include ${OUR_CAMP_LEADERS.join(', ')}.
-  Opposition     : ${OPPOSITION_SUMMARY}.
+Sentiment here is RELATIVE TO THE CLIENT, not the tone of the words. Identify it in the context of ${CLIENT_DESCRIPTION}.
+  Our camp   : ${OUR_CAMP_SUMMARY} — leaders include ${OUR_CAMP_LEADERS.join(', ')}.
+  Rival camp : ${RULING_GOVERNMENT_DESCRIPTION} (the client's ADVERSARY, not our camp); other parties: ${RIVALS_SHORT}.
 
-MIXED-PARTY POSTS: When a post mentions BOTH our camp AND an opposition party/leader (e.g. "X did great work, unlike the current government" or "the government failed the people but the opposition delivered"), first work out which clause is actually about which entity, then score sentiment for OUR side of that comparison ONLY. Praise of the opposition does not make the post positive, and criticism of the opposition does not make it negative — judge our camp's own tone independently of what's said about the other party.
-- 'positive':
-    * Praise, gratitude or support towards the Chief Minister, our camp's leaders, our party, or the ${STATE_NAME} government.
-    * Appreciation for government schemes, governance and development work across ${STATE_NAME} (infrastructure, welfare schemes, jobs, tourism).
-    * Criticism, mockery, or reporting of scandals regarding the opposition parties and their leaders.
-    * General positive greetings, festival messages, and celebrations involving our camp's leaders.
-- 'negative':
-    * Direct criticism, complaints, or anger directed at the Chief Minister, our camp's leaders, our party, or the ${STATE_NAME} government.
-    * Genuine public grievances within ${STATE_NAME} (electricity, water, roads, jobs, mining, tourism, law & order).
-    * Hate speech, communal incitement, or personal attacks against our camp's leaders.
-- 'neutral':
-    * Purely informational news, questions, or vague/balanced statements without clear positive or negative political tone.
+First work out WHO the post is aimed at, then judge what that does to the client:
+- 'positive' (good for the client):
+    * Praise, thanks, support or defence of our camp's leaders or party.
+    * Criticism, mockery, allegations or scandal reporting about the government, Congress, BJP, AIMIM or any other rival.
+    * Greetings and celebrations involving our camp's leaders.
+- 'negative' (bad for the client):
+    * Criticism, allegations or anger aimed at our camp's leaders or party; claims our camp failed or did wrong.
+    * Praise of the government or a rival, especially when it contrasts them favourably against our camp.
+    * Hate speech or personal attacks against our camp's leaders.
+- 'neutral': a simple mention, factual reporting, election results, a quoted statement without context, a balanced comparison, a greeting taking no side.
+- Praise of the Chief Minister or the ${STATE_NAME} government is NOT positive for the client; criticism of them is NOT negative. Negative words alone do not make it 'negative'.
+- Mixed posts: score only what the post does to OUR side. Sarcasm and rhetorical questions reverse their literal polarity.
 
 ════════════════════════
 JOB 4: RISK ASSESSMENT
 ════════════════════════
-Determine the risk level and score:
+Determine the MODERATION risk level and score (safety of the content itself — NOT whether it helps or hurts the client):
 - 'low' (0-40): Harmless, informational, or minor citizen complaints.
 - 'medium' (41-71): Moderate complaints, political criticism, or infrastructure issues.
 - 'high' (72-100): Severe threats, hateful rhetoric, communal incitement, or major corruption allegations.
@@ -256,7 +290,7 @@ OUTPUT FORMAT (STRICT JSON ONLY):
 "target_party" tells us WHOSE side the post is actually about, so downstream
 checks know what your "sentiment" value means:
 - "OUR_GROUP"  → the post is primarily about our camp: ${OUR_CAMP_SUMMARY} or its leaders.
-- "OPPOSITION" → the post is primarily about the opposition: ${OPPOSITION_SUMMARY}.
+- "OPPOSITION" → the post is primarily about the rival camp: the government or another party (${RIVALS_SHORT}).
 - "NEUTRAL"    → neither side is the subject (off-topic, generic news, a civic
                  complaint naming nobody, a greeting). Use this when unsure.
 
@@ -358,13 +392,7 @@ ${text}
     // Consumed by analysisService.buildQualityGate to decide whether a
     // disagreement with the Stage 4 verdict is a genuine contradiction (both
     // client-relative) or an expected difference (generic tone vs client-relative).
-    const ALLOWED_TARGET_PARTIES = ['OUR_GROUP', 'OPPOSITION', 'NEUTRAL'];
-    let finalTargetParty = String(result.target_party || 'NEUTRAL').toUpperCase().trim().replace(/[-\s]/g, '_');
-    if (finalTargetParty === 'OURS' || finalTargetParty === 'ALLY' || finalTargetParty === 'NDA' || finalTargetParty === 'BJP') {
-      finalTargetParty = 'OUR_GROUP';
-    }
-    if (finalTargetParty === 'OPP' || finalTargetParty === 'INC' || finalTargetParty === 'CONGRESS') finalTargetParty = 'OPPOSITION';
-    if (!ALLOWED_TARGET_PARTIES.includes(finalTargetParty)) finalTargetParty = 'NEUTRAL';
+    const finalTargetParty = normalizeTargetParty(result.target_party);
 
     return {
       category: finalCategory,
@@ -407,5 +435,6 @@ ${text}
 }
 
 module.exports = {
-  categorizeText
+  categorizeText,
+  normalizeTargetParty,
 };

@@ -25,6 +25,7 @@
  */
 
 const { chatJson, withForcedProvider } = require('./llmProvider');
+const { RULING_GOVERNMENT_DESCRIPTION } = require('../config/deployment');
 
 /**
  * Everything tunable is read from the environment, so the model, the host, the
@@ -49,7 +50,7 @@ const TIMEOUT_MS = num('CM_ADVICE_TIMEOUT_MS', 45000);
  * decides how fast the brief loads.
  */
 const BUDGET_MS = num('CM_ADVICE_BUDGET_MS', 12000);
-/** Only the findings a Chief Minister will actually read get a model call. */
+/** Only the findings the party leader will actually read get a model call. */
 const MAX_FINDINGS = num('CM_ADVICE_MAX', 8);
 /** Lower is steadier wording run to run; higher reads less like a template. */
 const TEMPERATURE = Number.isFinite(Number(process.env.CM_ADVICE_TEMPERATURE))
@@ -104,33 +105,41 @@ const writeCache = (k, value) => {
 const snippet = (t, n = 220) => String(t || '').replace(/\s+/g, ' ').slice(0, n);
 
 /**
- * The brief is read by a Chief Minister, so the prompt asks for an instruction
- * an office can act on this week — not analysis, which the card already shows
- * above the action line.
+ * The brief is read by a senior leader of the client party, which is in OPPOSITION.
+ * So the prompt asks for something the PARTY can do this week — a statement, a
+ * press conference, a question in the House, cadre outreach, a fact-check, a
+ * promise-vs-delivery comparison — and forbids what only a government can do.
+ *
+ * (This used to say "The Chief Minister is reading this… write what HE should
+ * order", written for ruling-party deployments. For BRS that produced advice such
+ * as "direct the collector…" that the party has no power to give.)
  */
 const buildPrompt = (r, ctx) => {
   const ev = r.evidence || {};
   const themes = (r.themes || []).map((t) => `${t.term} (in ${t.posts} posts)`).join(', ');
   const quotes = (r.quotes || []).map((q, i) => `${i + 1}. "${snippet(q)}"`).join('\n');
 
-  return `The Chief Minister of ${ctx.state} is reading this. Our party is ${ctx.party}.
-You are his chief of staff writing the single line of advice under a finding.
+  return `A senior leader of ${ctx.party}, the OPPOSITION party in ${ctx.state}, is reading this. ${ctx.party} is NOT in government: ${RULING_GOVERNMENT_DESCRIPTION}.
+You are the party's chief of staff writing the single line of advice under a finding.
 
 A monitoring system found this in the last ${ctx.days} days. Every figure is measured, not estimated.
 
 FINDING: ${r.headline}
 ${r.detail || ''}
 ${themes ? `WORDS RECURRING IN THE CRITICISM: ${themes}` : ''}
-${ev.pro !== undefined ? `SUPPORTIVE: ${ev.pro}   OPPOSING: ${ev.anti}` : ''}
-${ev.opposition !== undefined ? `OPPOSITION POSTED: ${ev.opposition}   WE POSTED: ${ev.ours}` : ''}
+${ev.pro !== undefined ? `SUPPORTIVE OF ${ctx.party}: ${ev.pro}   OPPOSING ${ctx.party}: ${ev.anti}` : ''}
+${ev.opposition !== undefined ? `THE GOVERNMENT AND RIVAL PARTIES POSTED: ${ev.opposition}   ${ctx.party} POSTED: ${ev.ours}` : ''}
 ${ctx.districts ? `CONCENTRATED IN: ${ctx.districts}` : ''}
 ${quotes ? `WHAT PEOPLE ACTUALLY WROTE:\n${quotes}` : ''}
 
-Write the single action the CM's office should take this week.
+Write the single action the party should take this week.
 
 Rules:
-- The CM is the reader. NEVER say "brief the CM", "inform the CM" or "advise the CM" — he already knows, he is looking at it. Write what HE should order.
-- Name the actual grievance from the quotes above, not the topic label. If a post names a scheme, a machine, a scandal or an amount, use it.
+- The reader is the party leader: never say "brief the leader" or "inform the leader" — they are looking at it. Write what the PARTY should do.
+- Use only what an opposition party can legitimately do: a public response, press conference or statement, a question or notice in the Assembly or Council, an issue-based campaign, district or cadre mobilisation, constituency outreach, a fact-check or counter-narrative, a social-media response, gathering evidence, an RTI application, a legal notice where appropriate, a promise-vs-delivery comparison against the government.
+- NEVER tell the party to order, direct or instruct a government department, a collector, a minister or an official, to issue a government order, or to "take administrative action" — it holds no office. It can DEMAND, QUESTION, EXPOSE or CAMPAIGN instead.
+- Name the actual grievance from the quotes above, not the topic label. If a post names a scheme, a scandal or an amount, use it.
+- If the criticism is aimed at ${ctx.party} itself (including its own years in office), advise how to ANSWER it with evidence — never invent a defence.
 - One or two sentences, under 40 words. Plain English. Start with a verb.
 - Do not repeat the numbers; they are on screen directly above your sentence.
 - Invent nothing. Every fact must come from the evidence above.

@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const Alert = require('../models/Alert');
 const Grievance = require('../models/Grievance');
+const { buildStanceClause, normalizeStanceFilter, GRIEVANCE_STANCE_PATHS } = require('../utils/stanceFilter');
 
 // ─── helpers ──────────────────────────────────────────────────────────────────
 
@@ -516,7 +517,7 @@ function classifyGrievance(g) {
 async function buildGrievancesData(filters = {}) {
   const {
     startDate, endDate, platform, limit = 100,
-    sentiment, grievance_type, category, search, scope
+    sentiment, stance, grievance_type, category, search, scope
   } = filters;
 
   const query = { is_active: true };
@@ -535,8 +536,19 @@ async function buildGrievancesData(filters = {}) {
     };
   }
 
-  const normalizedSentiment = sentiment ? String(sentiment).toLowerCase() : 'negative';
-  if (['positive', 'negative', 'neutral'].includes(normalizedSentiment)) {
+  /**
+   * WHAT THE REPORT SELECTS ON — two different questions:
+   *   stance    = effect on the CLIENT (opposing / supportive / neutral / mixed).
+   *   sentiment = the post's TONE (positive / negative / neutral), only when asked for explicitly.
+   * With neither given the report lists content ADVERSE TO BRS (stance opposing). It used to default
+   * to tone 'negative', which mixes attacks on BRS with attacks on the Congress government (good
+   * for BRS) and omits praise of the government that hurts BRS.
+   */
+  const toneRequested = sentiment ? String(sentiment).toLowerCase() : null;
+  const requestedStance = normalizeStanceFilter(stance);
+  const stanceMode = requestedStance || (toneRequested && ['positive', 'negative', 'neutral'].includes(toneRequested) ? null : 'opposing');
+  const normalizedSentiment = stanceMode ? null : toneRequested;
+  if (normalizedSentiment) {
     query['analysis.sentiment'] = normalizedSentiment;
   }
   if (platform) query.platform = platform;
@@ -575,6 +587,11 @@ async function buildGrievancesData(filters = {}) {
     if (endDate) { const e = new Date(endDate); e.setHours(23,59,59,999); query.created_at.$lte = e; }
   }
 
+  if (stanceMode) {
+    const stanceClause = buildStanceClause(stanceMode, GRIEVANCE_STANCE_PATHS);
+    if (stanceClause) query.$and = [...(query.$and || []), stanceClause];
+  }
+
   const total = await Grievance.countDocuments(query);
   const rawGrievances = await Grievance.find(query)
     .sort({ created_at: -1 })
@@ -603,7 +620,7 @@ async function buildGrievancesData(filters = {}) {
         handle: g.posted_by?.handle ? `@${g.posted_by.handle.replace(/^@/, '')}` : '',
         platform: g.platform || 'x',
         category: cat,
-        sentiment: g.analysis?.sentiment || normalizedSentiment,
+        sentiment: g.analysis?.sentiment || 'neutral',
         posts: 0,
         date: g.created_at,
         link: url
@@ -664,7 +681,7 @@ async function buildGrievancesData(filters = {}) {
       handle: g.posted_by?.handle ? `@${g.posted_by.handle.replace(/^@/, '')}` : '',
       platform: g.platform || 'x',
       category: classifyGrievance(g),
-      sentiment: g.analysis?.sentiment || normalizedSentiment,
+      sentiment: g.analysis?.sentiment || 'neutral',
       date: g.created_at,
       link: g.tweet_url || fallbackUrl
     };
@@ -684,7 +701,8 @@ async function buildGrievancesData(filters = {}) {
     top5,
     hateSpeechCount,
     threatCount,
-    sentiment: normalizedSentiment
+    sentiment: normalizedSentiment,
+    stance: stanceMode
   };
 }
 
@@ -692,12 +710,17 @@ function buildGrievancesHtml(data, filters) {
   const {
     profiles, posts, total, totalProfiles, totalPosts, byPlatform, catCounts,
     severityTiers, dailyMap, sortedDays, top5, hateSpeechCount, threatCount,
-    sentiment: dataSentiment
+    sentiment: dataSentiment,
+    stance: dataStance
   } = data;
 
+  // The header and footer say WHICH question the list answers (client stance vs tone).
   const sentimentLabelMap = { positive: 'Positive', negative: 'Negative', neutral: 'Neutral', moderate: 'Neutral' };
-  const effectiveSentiment = dataSentiment || 'negative';
-  const sentimentDisplay = sentimentLabelMap[effectiveSentiment] || 'Negative';
+  const stanceLabelMap = { opposing: 'Adverse to BRS', supportive: 'Supportive of BRS', neutral: 'Neutral toward BRS', mixed: 'Mixed toward BRS' };
+  const stanceToneStyle = { opposing: 'negative', supportive: 'positive', neutral: 'neutral', mixed: 'neutral' };
+  const effectiveSentiment = dataStance ? (stanceToneStyle[dataStance] || 'negative') : (dataSentiment || 'negative');
+  const sentimentDisplay = dataStance ? (stanceLabelMap[dataStance] || 'Adverse to BRS') : (sentimentLabelMap[effectiveSentiment] || 'Negative');
+  const selectionKind = dataStance ? 'Stance' : 'Tone';
   const profilesMode = filters.viewMode === 'profiles';
   const rows = profilesMode ? profiles : (posts || []);
   const rowCountLabel = profilesMode ? 'profiles' : 'posts';
@@ -830,7 +853,7 @@ function buildGrievancesHtml(data, filters) {
   <div class="footer">
     <span>Social Intelligence Unit · Generated ${fmtDatetime(new Date())} · ${profilesMode ? `Top ${totalProfiles} of ${total} profiles` : `${rows.length} of ${total} posts`}</span>
     <span class="footer-confidential">CONFIDENTIAL</span>
-    <span>All sentiment: ${sentimentDisplay}</span>
+    <span>${selectionKind}: ${sentimentDisplay}</span>
   </div>
 
   <script>
@@ -878,7 +901,7 @@ function buildGrievancesHtml(data, filters) {
   return baseHtml(
     'Grievances Report',
     scopeSubtitle('Social Intelligence Unit · Grievance Monitoring', filters.scope),
-    `ALL ${sentimentDisplay.toUpperCase()} SENTIMENT`,
+    dataStance ? `ALL POSTS: ${sentimentDisplay.toUpperCase()}` : `ALL ${sentimentDisplay.toUpperCase()} TONE`,
     headerColor,
     fmtDatetime(new Date()),
     periodStr,

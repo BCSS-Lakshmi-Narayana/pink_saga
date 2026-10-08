@@ -21,8 +21,8 @@ import APGeographicHighlights from '../components/dashboard/apDashboard/APGeogra
 import APConstituencyPanel from '../components/dashboard/apDashboard/APConstituencyPanel';
 
 const LEADERSHIP_TARGET_ENTITY = {
-  'portrait-primary': 'bsk',
-  'portrait-party-president': 'bsk_son',
+  'portrait-primary': 'kcr',
+  'portrait-working-president': 'ktr',
 };
 
 const StateMap = ({ embedded = false }) => {

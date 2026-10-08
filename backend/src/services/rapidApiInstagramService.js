@@ -1,7 +1,7 @@
 const axios = require('axios');
 const blugateClient = require('./blugateClient');
 
-const INSTAGRAM_BASE = `${blugateClient.GATEWAY_BASE}/instagram`;
+const INSTAGRAM_BASE = blugateClient.platformBase('instagram');
 
 // ─── Cooldown Tracking (single BluGate client key — no rotation) ──────────
 let cooldownUntil = 0;
@@ -59,7 +59,7 @@ const rapidPost = async (path, data, _retryCount = 0) => {
     try {
         const response = await axios.post(`${INSTAGRAM_BASE}${path}`, data, {
             headers: {
-                ...blugateClient.getHeaders(),
+                ...blugateClient.getHeaders('instagram'),
                 'Content-Type': 'application/json'
             },
             timeout: 30000, // 30s timeout

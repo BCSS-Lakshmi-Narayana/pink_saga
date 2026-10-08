@@ -32,7 +32,7 @@ const searchGlobal = async (username) => {
     }
 
     // 2. YouTube
-    if (blugateClient.hasCredentials()) {
+    if (blugateClient.hasCredentials('youtube')) {
         try {
             // Use 'search' endpoint instead of 'channels' to find multiple
             const ytRes = await blugateClient.get('youtube', 'search', {

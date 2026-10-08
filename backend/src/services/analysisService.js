@@ -5,6 +5,8 @@ const { categorizeText } = require('./llmService');
 const mappingService = require('./mappingService');
 const { buildPoliticalContext, detectLanguageHints } = require('./politicalContextService');
 const { analyzePoliticalSentiment } = require('./politicalSentimentService');
+const { deriveClientImpact } = require('./clientImpact');
+const { resolveGovernmentEra } = require('../config/politicalEntities');
 // Owns the STAGE3_INCLUDE_ORIGINAL switch. Inert unless that flag is 'true'.
 const { buildStage3Input } = require('./stage3Input');
 const cacheService = require('./cacheService');
@@ -17,19 +19,21 @@ const PlatformPolicy = require('../models/PlatformPolicy');
 // LLM verdict instead of re-spending Pass A + Stage 4 tokens on it.
 const TEXT_ANALYSIS_CACHE_TTL_SECONDS = Number(process.env.ANALYSIS_TEXT_CACHE_TTL_SECONDS || 7 * 24 * 60 * 60);
 const ANALYSIS_REVIEW_CONFIDENCE_FLOOR = Number(process.env.ANALYSIS_REVIEW_CONFIDENCE_FLOOR || 0.6);
-const textAnalysisCacheKey = (text, authorHandle = '') => {
+const textAnalysisCacheKey = (text, authorHandle = '', governmentEra = '') => {
   // Links are dropped: the same post re-shared with a different t.co link
   // must get the SAME verdict, not a fresh (and possibly different) one.
   const normalized = String(text || '').replace(/https?:\/\/\S+/g, ' ').trim().replace(/\s+/g, ' ');
   // The verdict depends on WHO posted (author-is-target correction, cross-camp
   // prior), so the same text from a different author is a different entry.
   const author = String(authorHandle || '').trim().replace(/^@+/, '').toLowerCase();
-  const hash = crypto.createHash('sha256').update(`${author}|${normalized}`).digest('hex');
+  // WHICH government a bare "the government" means depends on the post's date, so the same words posted in the
+  // BRS era, in the current era, or with no date are three different verdicts (see resolveGovernmentEra).
+  const hash = crypto.createHash('sha256').update(`${author}|${governmentEra}|${normalized}`).digest('hex');
   // v2: the cached object's SHAPE changed with the target-aware rewrite (it now
   // carries target_sentiment / target_tone / validation / needs_review). Bumping
   // the key namespace retires v1 entries instead of serving verdicts that are
   // missing every new field.
-  return `analysis:text:v13:${hash}`;
+  return `analysis:text:v14:${hash}`;
 };
 
 const clamp01 = (n, fallback = 0) => {
@@ -225,7 +229,7 @@ const analyzeContent = async (text, options = {}) => {
   try {
     // --- CACHE: identical/near-identical text already analyzed (reposts, RTs,
     // the same story ingested via multiple keyword sweeps) ---
-    const cacheKey = textAnalysisCacheKey(text, options.authorHandle);
+    const cacheKey = textAnalysisCacheKey(text, options.authorHandle, resolveGovernmentEra(text, { postDate: options.postDate || null }).era);
     const cached = await cacheService.get(cacheKey);
     if (cached) {
       log(`Cache hit for text (skipping Pass A + Stage 4 LLM calls): "${text.substring(0, 50)}..."`);
@@ -370,6 +374,8 @@ const analyzeContent = async (text, options = {}) => {
       taggedKeyword: options.taggedKeyword || '',
       authorHandle: options.authorHandle || '',
       platform: options.platform || '',
+      // When the post was written: it settles WHICH government a bare "the government" means.
+      postDate: options.postDate || null,
     });
     log(`Political context: mode=${politicalCtx.mode} target=${politicalCtx.primary_target || 'none'} target_relevance=${politicalCtx.target_relevance.toFixed(2)} author=${politicalCtx.author_alignment || 'unknown'}`);
 
@@ -394,22 +400,18 @@ const analyzeContent = async (text, options = {}) => {
     const political = await analyzePoliticalSentiment(stage3Text, politicalCtx);
     log(`Stance=${political.stance} target_sentiment=${political.target_sentiment} target_tone=${political.target_tone} beneficiary=${political.beneficiary} provider=${political.provider}`);
 
-    // ── risk_level is the Alerts page's Negative/Neutral/Positive bucket ──
-    // (see frontend/src/pages/Alerts.js pill config: high=Negative,
-    // low=Neutral or Positive). That bucket must reflect stance
-    // RELATIVE TO the client government, not generic Pass-A moderation risk —
-    // otherwise a pro-government post that happens to mention violence/crime keywords
-    // lands in "Negative", and an anti-government post with mild language lands in
-    // "Positive". So target_sentiment is the single source of truth for both
-    // risk_level and risk_score here; we no longer let Pass A's risk survive
-    // in either direction.
-    // ── Sentiment is the post's RAW tone; risk follows it; stance is separate ──
-    //   sentiment  = generic_sentiment from Stage 3 (the content's own tone)
-    //   risk       = positive → low 15, neutral → low 20, negative → high 75
-    //   stance     = derived from the TARGET by the stance engine (pro/anti client)
-    // So "Congress looted Telangana" is sentiment negative, risk high, stance pro client.
-    // Pass A's sentiment is client-relative, so it is never used as the tone;
-    // when Stage 3 gives no tone, neutral is the honest answer.
+    // ── FOUR DIFFERENT QUESTIONS, FOUR DIFFERENT FIELDS ──
+    //   TONE            `sentiment` (= generic_sentiment): how the content reads.
+    //   TARGET SENTIMENT `target_tone`: the tone aimed at the identified target entity.
+    //   BRS STANCE      `political_stance` + `target_sentiment`: does it help or hurt the CLIENT.
+    //   MODERATION RISK `moderation_risk`: is the content unsafe (threats, hate, incitement).
+    //
+    // `risk_level` / `risk_score` below are TONE BANDS, kept as they have always been because
+    // the Alerts page's Negative/Neutral/Positive pills and every existing aggregate read them.
+    // They are NOT a measure of risk to the client: "the Congress government failed the
+    // farmers" is negative tone (HIGH band) and favourable to BRS. Anything client-facing that
+    // asks "is this hostile to BRS?" must use `client_impact` / `hostile_to_client` below, which
+    // follow the stance (services/clientImpact.js).
     const finalSentiment = political.generic_sentiment || 'neutral';
     switch (finalSentiment) {
         case 'negative':
@@ -427,7 +429,14 @@ const analyzeContent = async (text, options = {}) => {
             finalRiskScore = 20;
             break;
     }
-    log(`Raw sentiment=${finalSentiment} → risk ${finalRiskLevel} (${finalRiskScore}); stance=${political.stance} (client-relative ${political.target_sentiment})`);
+    log(`Raw sentiment=${finalSentiment} → tone band ${finalRiskLevel} (${finalRiskScore}); stance=${political.stance} (client-relative ${political.target_sentiment})`);
+
+    const impact = deriveClientImpact({
+      tone: finalSentiment,
+      stance: political.stance,
+      moderation_level: llmResult.risk_level,
+      hate_speech: political.hate_speech,
+    });
 
     const finalGenericSentiment = finalSentiment;
     // The quality gate compares CLIENT-relative verdicts (Pass A vs Stage 4).
@@ -465,6 +474,14 @@ const analyzeContent = async (text, options = {}) => {
        * counts raw tone.
        */
       sentiment: finalSentiment,
+      // ── Client impact, apart from tone ───────────────────────────
+      // `risk_level` above is a TONE band. These are the client-facing answers.
+      brs_stance: impact.brs_stance,
+      client_impact: impact.client_impact,
+      hostile_to_client: impact.hostile_to_client,
+      moderation_risk: impact.moderation_risk,
+      attribution: political.attribution || null,
+      ambiguous_entities: political.ambiguous_entities || [],
       // ── Target-aware political fields ────────────────────────────
       target_sentiment: political.target_sentiment,
       // Legacy mirror of target_sentiment — same value, same object literal,
@@ -520,6 +537,11 @@ const analyzeContent = async (text, options = {}) => {
         grievance_reasoning: llmResult.grievance_reasoning || '',
         intent: currentCategory,
         sentiment: finalSentiment,
+        brs_stance: impact.brs_stance,
+        client_impact: impact.client_impact,
+        hostile_to_client: impact.hostile_to_client,
+        moderation_risk: impact.moderation_risk,
+        attribution: political.attribution || null,
         target_sentiment: political.target_sentiment,
         bsk_sentiment: political.target_sentiment, // legacy mirror
         generic_sentiment: finalGenericSentiment,
@@ -549,7 +571,7 @@ const analyzeContent = async (text, options = {}) => {
     // 3. Final Metadata for UI
     finalResult.reasons = [
       finalResult.explanation,
-      `Risk Assessment: ${finalRiskLevel.toUpperCase()} (${finalRiskScore}%)`,
+      `Tone band: ${finalRiskLevel.toUpperCase()} (${finalRiskScore}%) · Impact on client: ${impact.client_impact}`,
       ...finalResult.violated_policies.map(p => `Policy: ${p.policy_name}`),
       ...finalResult.legal_sections.map(l => `Legal: ${l.act} ${l.section}`)
     ].filter(Boolean);

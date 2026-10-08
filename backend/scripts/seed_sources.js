@@ -45,6 +45,11 @@ const argv = process.argv.slice(2);
 const dryRun = argv.includes('--dry-run');
 const withLeaders = argv.includes('--with-leaders');
 const withAdversaries = argv.includes('--with-adversaries');
+// --exclude=@a,@b : skip these identifiers (e.g. national outlets / national party handles that add API cost but
+// little Telangana signal). Matching is case-insensitive and ignores a leading @.
+const excludeArg = argv.find((a) => a.startsWith('--exclude='));
+const excluded = new Set((excludeArg ? excludeArg.slice('--exclude='.length).split(',') : [])
+    .map((x) => x.trim().replace(/^@/, '').toLowerCase()).filter(Boolean));
 
 /** X accounts from the verified handle registry, as source rows. */
 const leaderSources = () => {
@@ -100,23 +105,24 @@ const adversarySources = () => (ADVERSARIES.adversaries || [])
         ...SOURCES,
         ...(withLeaders ? leaderSources() : []),
         ...(withAdversaries ? adversarySources() : []),
-    ];
+    ].filter((r) => !excluded.has(String(r.identifier || '').replace(/^@/, '').toLowerCase()));
     const dbName = process.env.DB_NAME ? String(process.env.DB_NAME).trim() : undefined;
     await mongoose.connect(process.env.MONGODB_URI, dbName ? { dbName } : undefined);
     console.log(`Database: ${mongoose.connection.name}${dryRun ? '   (DRY-RUN: nothing is written)' : ''}`);
 
-    const canResolveYoutube = blugateClient.hasCredentials();
+    const canResolveYoutube = blugateClient.hasCredentials('youtube');
     const seen = new Set();
     const counts = { added: 0, existing: 0, duplicate: 0, failed: 0 };
 
     for (const s of wanted) {
-        const idKey = `${s.platform}:${String(s.identifier).toLowerCase()}`;
+        const idKey = `${s.platform}:${String(s.identifier).replace(/^@/, "").toLowerCase()}`;
         if (seen.has(idKey)) { counts.duplicate += 1; continue; }
         seen.add(idKey);
 
         const existing = await Source.findOne({
             $or: [
-                { platform: s.platform, identifier: new RegExp(`^${String(s.identifier).replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+                // "@BRSparty" and "brsparty" are the same X account: ignore a leading @ and case on both sides.
+                { platform: s.platform, identifier: new RegExp(`^@?${String(s.identifier).replace(/^@/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
                 { display_name: s.display_name, platform: s.platform },
             ],
         }).lean();

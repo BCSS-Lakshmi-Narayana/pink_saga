@@ -6,6 +6,7 @@ const parseFilters = (query) => ({
   platform:       query.platform       || null,
   status:         query.status         || 'active',
   sentiment:      query.sentiment      || null,
+  stance:         query.stance         || null,
   grievance_type: query.grievance_type || null,
   category:       query.category       || null,
   search:         query.search         || null,

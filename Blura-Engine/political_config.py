@@ -38,16 +38,19 @@ def _gn(template, query, source_name, language):
 
 
 # ── RSS Feeds ──────────────────────────────────────────────────────────────────
-# "state_only": True marks outlets whose feed carries only Telangana news.
-# Their items skip the keyword relevance gate (a local story rarely names a
-# party or leader).
+# "state_only": True marks feeds that are a Telangana SECTION of a paper (The Hindu - Telangana,
+# TOI - Hyderabad, Hans India - Telangana). Their items skip the keyword relevance gate, because a
+# local story rarely names a party or leader.
+# It must NOT be set on a whole-site feed (Telangana Today, Namasthe Telangana, V6 Velugu, Siasat,
+# Mana Telangana): those carry world, sport and market news too, and state_only lets all of it in.
+# Those feeds go through the normal gate: a relevance keyword OR a detected Telangana town.
 RSS_FEEDS = [
 
     # ── Telangana outlets (verified live, item counts as of 2026-09-30) ──
-    {"url": "https://telanganatoday.com/feed", "source_name": "Telangana Today", "language": "en", "state_only": True},
-    {"url": "https://ntnews.com/feed", "source_name": "Namasthe Telangana", "language": "te", "state_only": True},
-    {"url": "https://www.v6velugu.com/feed", "source_name": "V6 Velugu", "language": "te", "state_only": True},
-    {"url": "https://www.siasat.com/feed/", "source_name": "Siasat", "language": "en", "state_only": True},
+    {"url": "https://telanganatoday.com/feed", "source_name": "Telangana Today", "language": "en"},
+    {"url": "https://ntnews.com/feed", "source_name": "Namasthe Telangana", "language": "te"},
+    {"url": "https://www.v6velugu.com/feed", "source_name": "V6 Velugu", "language": "te"},
+    {"url": "https://www.siasat.com/feed/", "source_name": "Siasat", "language": "en"},
     {"url": "https://www.sakshi.com/rss.xml", "source_name": "Sakshi", "language": "te"},
     {"url": "https://www.deccanchronicle.com/google_feeds.xml", "source_name": "Deccan Chronicle", "language": "en"},
     {"url": "https://www.thehindu.com/news/national/telangana/feeder/default.rss", "source_name": "The Hindu – Telangana", "language": "en", "state_only": True},
@@ -85,6 +88,35 @@ RSS_FEEDS = [
     _gn(_GN_TE, "భూభారతి ధరణి", "Google News – Bhu Bharati (te)", "te"),
     _gn(_GN_EN, "HYDRAA demolition Hyderabad", "Google News – HYDRAA", "en"),
     _gn(_GN_EN, "Musi riverfront project", "Google News – Musi", "en"),
+
+    # ── Phase 2: more Telangana outlets (probed live 2026-10-07; only feeds that returned items) ──
+    {"url": "https://www.thehansindia.com/rss/telangana", "source_name": "The Hans India – Telangana", "language": "en", "state_only": True},
+    {"url": "https://www.manatelangana.news/feed", "source_name": "Mana Telangana", "language": "te"},
+    # Outlets with no usable native feed (Eenadu, TV channels, Andhra Jyothy, Sakshi's main feed is thin) are
+    # reached through site-scoped Google News queries. These are NOT state_only: they must mention BRS/the
+    # government to pass the relevance gate, so one query per outlet stays low-noise.
+    _gn(_GN_TE, "site:eenadu.net తెలంగాణ బీఆర్ఎస్", "Eenadu", "te"),
+    _gn(_GN_TE, "site:andhrajyothy.com బీఆర్ఎస్", "Andhra Jyothy", "te"),
+    _gn(_GN_TE, "site:sakshi.com బీఆర్ఎస్", "Sakshi", "te"),
+    _gn(_GN_TE, "site:ntvtelugu.com బీఆర్ఎస్", "NTV Telugu", "te"),
+    _gn(_GN_TE, "site:tv9telugu.com బీఆర్ఎస్", "TV9 Telugu", "te"),
+    _gn(_GN_TE, "site:10tv.in బీఆర్ఎస్", "10TV", "te"),
+    _gn(_GN_EN, "site:thehansindia.com BRS Telangana", "The Hans India", "en"),
+    _gn(_GN_EN, "site:telanganatoday.com BRS", "Telangana Today", "en"),
+    _gn(_GN_EN, "site:siasat.com BRS", "Siasat", "en"),
+
+    # ── Phase 2: what OTHER actors say about BRS, and the people who say it ──
+    _gn(_GN_EN, "Congress slams BRS Telangana", "Google News – Congress on BRS", "en"),
+    _gn(_GN_EN, "BJP slams BRS Telangana", "Google News – BJP on BRS", "en"),
+    _gn(_GN_EN, "Owaisi BRS", "Google News – AIMIM on BRS", "en"),
+    _gn(_GN_EN, "Bandi Sanjay", "Google News – Bandi Sanjay", "en"),
+    _gn(_GN_EN, "Kishan Reddy Telangana BJP", "Google News – Kishan Reddy", "en"),
+    _gn(_GN_EN, "Bhatti Vikramarka", "Google News – Bhatti Vikramarka", "en"),
+    _gn(_GN_EN, "Ponguleti Srinivas Reddy", "Google News – Ponguleti", "en"),
+    _gn(_GN_EN, "Uttam Kumar Reddy", "Google News – Uttam Kumar Reddy", "en"),
+    _gn(_GN_EN, "BRS MLAs disqualification defection", "Google News – BRS defections", "en"),
+    _gn(_GN_EN, "Telangana local body elections", "Google News – Local body polls", "en"),
+    _gn(_GN_EN, "Telangana urea shortage farmers", "Google News – Urea / farmers", "en"),
 ]
 
 
@@ -150,32 +182,48 @@ PRIORITY_LANGUAGES = ("te",)
 
 # Fallback when the rsskeywords Mongo collection is empty.
 POLITICAL_RELEVANCE_KEYWORDS = [
+    # Phase 2: qualified forms replace bare words that matched other states / other people
+    # (bare "congress", "chief minister", "bjp", "rama rao" [also N. T. Rama Rao], "kavitha", "santosh kumar",
+    # "cag", "musi"). Anything that names BRS/KCR/KTR/Harish or a Telangana minister still passes on its own.
     # ── ours ──
-    "brs", "bharat rashtra samithi", "telangana rashtra samithi",
-    "kcr", "chandrashekar rao", "chandrasekhar rao",
-    "ktr", "rama rao", "taraka rama rao",
-    "harish rao", "santosh kumar", "kavitha",
-    "బీఆర్ఎస్", "కేసీఆర్", "కేటీఆర్", "హరీష్ రావు", "కవిత",
+    "brs", "bharat rashtra samithi", "bharat rashtra samiti", "telangana rashtra samithi", "trs party",
+    "pink party", "telangana bhavan", "brs party", "brs mla", "brs working president",
+    "kcr", "kcr garu", "chandrashekar rao", "chandrasekhar rao", "k chandrashekar rao", "kalvakuntla",
+    "ktr", "kt rama rao", "k t rama rao", "kalvakuntla taraka rama rao", "taraka rama rao",
+    "harish rao", "t harish rao", "harish anna", "j santosh kumar", "santosh kumar mp",
+    "k kavitha", "mlc kavitha", "kalvakuntla kavitha", "kavitha kalvakuntla",
+    "బీఆర్ఎస్", "భారత రాష్ట్ర సమితి", "టీఆర్ఎస్", "తెలంగాణ రాష్ట్ర సమితి", "తెలంగాణ భవన్",
+    "కేసీఆర్", "కేటీఆర్", "హరీష్ రావు", "హరీశ్ రావు", "హరీష్‌రావు", "కవిత", "గులాబీ పార్టీ", "గులాబీ దళపతి",
     # ── the government ──
-    "revanth reddy", "telangana cm", "chief minister", "bhatti vikramarka",
-    "uttam kumar reddy", "sridhar babu", "ponguleti", "komatireddy", "seethakka",
-    "congress", "tpcc", "telangana government",
-    "రేవంత్ రెడ్డి", "ముఖ్యమంత్రి", "కాంగ్రెస్", "తెలంగాణ ప్రభుత్వం",
+    "revanth reddy", "revanth", "telangana cm", "tg cm", "telangana chief minister", "bhatti vikramarka",
+    "deputy cm bhatti", "uttam kumar reddy", "sridhar babu", "ponguleti", "komatireddy", "seethakka",
+    "damodar raja narasimha", "konda surekha", "tummala nageswara rao", "jupally krishna rao",
+    "telangana congress", "tg congress", "tpcc", "mahesh kumar goud", "telangana government",
+    "tg government", "praja palana", "praja palanan", "congress government in telangana",
+    "రేవంత్ రెడ్డి", "రేవంత్", "తెలంగాణ ముఖ్యమంత్రి", "సీఎం రేవంత్", "తెలంగాణ కాంగ్రెస్",
+    "తెలంగాణ ప్రభుత్వం", "ప్రజాపాలన", "భట్టి విక్రమార్క", "ఉత్తమ్ కుమార్ రెడ్డి", "పొంగులేటి",
+    "శ్రీధర్ బాబు", "సీతక్క", "కోమటిరెడ్డి", "మహేష్ కుమార్ గౌడ్",
     # ── rivals ──
-    "bjp", "kishan reddy", "bandi sanjay", "ramchander rao", "eatala rajender",
-    "aimim", "owaisi", "asaduddin owaisi", "akbaruddin owaisi",
-    "raja singh", "telangana rakshana sena",
-    "బీజేపీ", "ఎంఐఎం", "ఒవైసీ", "రాజా సింగ్",
+    "telangana bjp", "tg bjp", "bjp telangana", "kishan reddy", "bandi sanjay", "ramchander rao",
+    "eatala rajender", "etela rajender", "dk aruna", "dharmapuri arvind", "raghunandan rao",
+    "aimim", "owaisi", "asaduddin owaisi", "akbaruddin owaisi", "majlis",
+    "raja singh", "telangana rakshana sena", "telangana jagruthi",
+    "తెలంగాణ బీజేపీ", "బీజేపీ", "కిషన్ రెడ్డి", "బండి సంజయ్", "ఈటల", "ఎంఐఎం", "ఒవైసీ", "అక్బరుద్దీన్", "రాజా సింగ్",
     # ── issues and schemes ──
-    "kaleshwaram", "medigadda", "phone tapping", "formula e",
+    "kaleshwaram", "medigadda", "annaram", "sundilla", "phone tapping", "formula e", "formula-e",
     "rythu bandhu", "rythu bharosa", "dalit bandhu", "dharani", "bhu bharati",
-    "mission bhagiratha", "indiramma", "gruha jyothi", "hydraa", "musi",
-    "bc reservation", "loan waiver", "unemployment", "job notification",
-    "కాళేశ్వరం", "ఫోన్ ట్యాపింగ్", "రైతుబంధు", "రైతు భరోసా", "ధరణి", "భూభారతి",
-    "నిరుద్యోగం", "రుణమాఫీ", "హైడ్రా", "మూసీ",
+    "mission bhagiratha", "mission kakatiya", "kcr kit", "kalyana lakshmi", "aasara pension",
+    "indiramma", "gruha jyothi", "mahalakshmi scheme", "hydraa", "musi river", "musi riverfront",
+    "musi rejuvenation", "bc reservation", "telangana loan waiver", "rythu runa mafi",
+    "telangana unemployment", "group 1 telangana", "tgpsc", "tspsc", "job calendar",
+    "telangana local body", "gram panchayat elections telangana", "ghmc", "greater hyderabad",
+    "కాళేశ్వరం", "మేడిగడ్డ", "ఫోన్ ట్యాపింగ్", "రైతుబంధు", "రైతు భరోసా", "ధరణి", "భూభారతి",
+    "మిషన్ భగీరథ", "కళ్యాణలక్ష్మి", "ఆసరా పెన్షన్", "దళితబంధు", "ఇందిరమ్మ", "గృహజ్యోతి",
+    "నిరుద్యోగం", "రుణమాఫీ", "హైడ్రా", "మూసీ", "జీహెచ్ఎంసీ", "స్థానిక సంస్థల ఎన్నికలు",
     # ── institutions ──
-    "assembly", "vidhan sabha", "legislative council", "acb", "cag",
-    "అసెంబ్లీ", "శాసనసభ", "ఏసీబీ",
+    "telangana assembly", "tg assembly", "telangana legislative council", "telangana vidhan sabha",
+    "telangana high court", "acb telangana", "telangana acb",
+    "అసెంబ్లీ", "శాసనసభ", "శాసనమండలి", "ఏసీబీ",
 ]
 
 
@@ -330,7 +378,7 @@ LOCATION_KEYWORDS = {
     "Kollapur": ["kollapur", "కొల్లాపూర్", "kollapur town"],
     "Chandur": ["chandur", "చండూరు", "chandur town"],
     "Chityal": ["chityal", "చిట్యాల", "chityal town"],
-    "Devarakonda": ["devarakonda", "దేవరకొండ", "devarakonda town"],
+    "Devarakonda": ["దేవరకొండ", "devarakonda town"],
     "Miryalaguda": ["miryalaguda", "మిర్యాలగూడ", "miryalaguda town"],
     "Munugode": ["munugode", "మునుగోడు", "munugode town"],
     "Nakrekal": ["nakrekal", "నకిరేకల్", "nakrekal town"],
@@ -570,3 +618,53 @@ STATE_NAME = 'Telangana'
 # not the bounding-box midpoint — the state's shape is far from rectangular.
 STATE_LAT = 17.801203
 STATE_LNG = 79.008393
+
+
+# ── Phase 2: assembly-constituency location terms, generated from the CENTRAL geography data ──────────────────
+# The backend already owns the authoritative AC list (state_mlas.json: AC -> district) and its Telugu + spelling
+# aliases (state_constituency_aliases.json). Rather than hand-copy 119 more names into this file (a third copy to
+# keep in sync), they are loaded here. Everything already declared above wins: AC terms are only ADDED for
+# names not already present, and detect_district() keeps its "earliest match, first declared wins ties" rule.
+def _extend_locations_from_central_data():
+    import json
+    import os
+    base = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'backend', 'src', 'data')
+    try:
+        with open(os.path.join(base, 'state_mlas.json'), encoding='utf-8') as f:
+            acs = json.load(f)
+        with open(os.path.join(base, 'state_constituency_aliases.json'), encoding='utf-8') as f:
+            aliases = json.load(f).get('aliases', {})
+        with open(os.path.join(base, 'state_geo.json'), encoding='utf-8') as f:
+            geo = json.load(f)
+    except (OSError, ValueError):
+        return  # engine still runs on the hand-written tables above
+
+    centroid = {d['name']: (d['centroid']['lat'], d['centroid']['lng']) for d in geo.get('districts', []) if d.get('centroid')}
+    # Latin forms that are also places in other states or people's surnames; their Telugu forms are still used.
+    ambiguous_latin = {'dharmapuri', 'khanapur', 'devarakonda', 'narsapur', 'ibrahimpatnam', 'alampur', 'achampet'}
+    known = {t.lower() for terms in LOCATION_KEYWORDS.values() for t in terms}
+    by_key = {}
+    for ac in acs:
+        by_key[ac['key']] = ac
+    added = 0
+    for alias, key in aliases.items():
+        ac = by_key.get(key)
+        if not ac or not ac.get('district'):
+            continue
+        a = alias.strip().lower()
+        if not a or a in known:
+            continue
+        if a.isascii() and (a in ambiguous_latin or len(a) < 4):
+            continue
+        city = ac['constituency'].title()
+        LOCATION_KEYWORDS.setdefault(city, [])
+        if a not in LOCATION_KEYWORDS[city]:
+            LOCATION_KEYWORDS[city].append(alias.strip())
+            known.add(a)
+            added += 1
+        lat, lng = centroid.get(ac['district'], (None, None))
+        LOCATION_META.setdefault(city, (ac['district'], lat, lng))
+    return added
+
+
+_extend_locations_from_central_data()

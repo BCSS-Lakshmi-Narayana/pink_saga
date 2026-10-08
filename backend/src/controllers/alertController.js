@@ -229,7 +229,10 @@ const canonicalSentimentValue = (value) => {
  * `content.*` rungs of that chain are hydrated after the query runs and cannot
  * be matched on here.
  */
-// Negative / Neutral / Positive filter = the post's RAW sentiment.
+// Negative / Neutral / Positive filter = the post's RAW TONE, not its effect on the client.
+// (A post attacking the Congress government is "Negative" here and favourable to BRS. The
+// client-relative question is the separate Supportive / Opposing / Neutral STANCE filter:
+// utils/stanceFilter.js. Despite the name, applyBskSentimentFilter below is the TONE filter.)
 const ALERT_SENTIMENT_PATHS = [
   'llm_analysis.generic_sentiment',
   'llm_analysis.sentiment',
@@ -1434,6 +1437,7 @@ const investigateLink = async (req, res) => {
           media: metadata.media || (platform === 'youtube' ? [{ url: resolvedUrl, type: 'video' }] : [])
         },
         analysisId: manualAnalysisId,
+        postDate: metadata.published_at || metadata.created_at || metadata.date || null,
         skipForensics: true
       });
       console.log(`[Investigation] Analysis completed for ID: ${contentId}. Risk: ${analysis.risk_level}`);

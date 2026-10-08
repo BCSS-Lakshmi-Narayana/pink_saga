@@ -23,7 +23,7 @@
  *
  * FILES TO DROP INTO /public (until then the UI shows a neutral placeholder,
  * it does not break):
- *   /leader-portrait.jpg   — KCR
+ *   /leader-portrait.png   — KCR
  *   /leader-portrait-2.jpg — KTR
  *   /party-logo.png        — BRS mark, used in the navbar and as og:image
  *   /party-flag.jpg        — BRS flag, decorative
@@ -56,7 +56,7 @@ export const BRAND = {
 export const PARTY_PORTRAITS = [
   {
     id: 'portrait-primary',
-    src: '/leader-portrait.jpg',
+    src: '/leader-portrait.png',
     alt: 'K. Chandrashekar Rao — President, Bharat Rashtra Samithi',
     caption: 'Party President · BRS',
   },
@@ -86,7 +86,7 @@ export const PARTY_MARK = {
 };
 
 /* ─── Local fallback served from /public ─────────────────────────── */
-export const LOCAL_FALLBACK = '/leader-portrait.jpg';
+export const LOCAL_FALLBACK = '/leader-portrait.png';
 export const LOCAL_LOGO = '/party-logo.png';
 
 /* ─── Seats worth watching ───────────────────────────────────────────

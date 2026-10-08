@@ -114,9 +114,9 @@ const PRIORITY = {
  */
 const CURATED_ALIASES = {
     // ── ours ──
-    "kcr": ["kcr", "k chandrashekar rao", "kalvakuntla chandrashekar rao", "chandrashekar rao", "chandrasekhar rao", "k chandrasekhar rao", "kcr garu", "former cm kcr", "ex cm kcr", "brs chief", "brs president", "brs supremo", "@kcrbrspresident", "#kcr", "కేసీఆర్", "కల్వకుంట్ల చంద్రశేఖర్ రావు", "చంద్రశేఖర్ రావు", "కేసీఆర్ గారు", "బీఆర్ఎస్ అధినేత"],
-    "ktr": ["ktr", "k t rama rao", "kt rama rao", "kalvakuntla taraka rama rao", "taraka rama rao", "brs working president", "working president ktr", "former it minister ktr", "@ktrbrs", "#ktr", "కేటీఆర్", "కల్వకుంట్ల తారక రామారావు", "తారక రామారావు", "కేటీఆర్ గారు"],
-    "harish-rao": ["harish rao", "t harish rao", "thanneeru harish rao", "tanneeru harish rao", "former finance minister harish rao", "former irrigation minister harish rao", "@brsharish", "హరీష్ రావు", "తన్నీరు హరీష్ రావు", "హరీశ్ రావు"],
+    "kcr": ["kcr", "kcr sir", "kcr anna", "k chandrashekar rao", "kalvakuntla chandrashekar rao", "chandrashekar rao", "chandrasekhar rao", "k chandrasekhar rao", "kcr garu", "former cm kcr", "ex cm kcr", "brs chief", "brs president", "brs supremo", "@kcrbrspresident", "#kcr", "కేసీఆర్", "కల్వకుంట్ల చంద్రశేఖర్ రావు", "చంద్రశేఖర్ రావు", "కేసీఆర్ గారు", "బీఆర్ఎస్ అధినేత"],
+    "ktr": ["ktr", "ktr garu", "ktr anna", "ktr sir", "k t rama rao", "kt rama rao", "kalvakuntla taraka rama rao", "taraka rama rao", "brs working president", "working president ktr", "former it minister ktr", "@ktrbrs", "#ktr", "కేటీఆర్", "కల్వకుంట్ల తారక రామారావు", "తారక రామారావు", "కేటీఆర్ గారు"],
+    "harish-rao": ["harish rao", "harish rao garu", "harish anna", "harish garu", "t harish rao", "thanneeru harish rao", "tanneeru harish rao", "former finance minister harish rao", "former irrigation minister harish rao", "@brsharish", "హరీష్ రావు", "తన్నీరు హరీష్ రావు", "హరీశ్ రావు"],
     "sabitha-indra-reddy": ["sabitha indra reddy", "sabitha indrareddy", "సబితా ఇంద్రా రెడ్డి", "సబిత ఇంద్రా రెడ్డి"],
     "talasani-srinivas-yadav": ["talasani srinivas yadav", "talasani", "తలసాని శ్రీనివాస్ యాదవ్", "తలసాని"],
     "kotha-prabhakar-reddy": ["kotha prabhakar reddy", "కొత్త ప్రభాకర్ రెడ్డి"],
@@ -124,8 +124,28 @@ const CURATED_ALIASES = {
     "vaddiraju-ravichandra": ["vaddiraju ravichandra", "ravichandra vaddiraju", "వడ్డిరాజు రవిచంద్ర"],
     "damodar-rao": ["d damodar rao", "divakonda damodar rao", "దామోదర్ రావు"],
 
+    /*
+     * MLAs elected on a BRS ticket in 2023 who now function with the government
+     * (see DEFECTED_MLAS in politicalData.js). Distinctive names only: a bare
+     * "Sanjay Kumar" or "Prakash Goud" would match half the state, so those carry
+     * the full form. Telugu spellings are transliterations - verify against the
+     * Assembly's member list before relying on them.
+     */
+    "mla-14-banswada": ["pocharam srinivas reddy", "pocharam", "పోచారం శ్రీనివాస్ రెడ్డి", "పోచారం శ్రీనివాసరెడ్డి", "పోచారం"],
+    "mla-21-jagtial": ["jagtial mla sanjay kumar", "dr sanjay kumar jagtial", "డాక్టర్ సంజయ్ కుమార్"],
+    "mla-40-patancheru": ["gudem mahipal reddy", "mahipal reddy patancheru", "గూడెం మహిపాల్ రెడ్డి"],
+    "mla-51-rajendranagar": ["t prakash goud", "prakash goud rajendranagar", "టీ ప్రకాష్ గౌడ్"],
+    "mla-52-serilingampally": ["arekapudi gandhi", "gandhi arekapudi", "ఆరెకపూడి గాంధీ", "అరికెపూడి గాంధీ"],
+    "mla-53-chevella": ["kale yadaiah", "yadaiah kale", "కాలే యాదయ్య"],
+    "mla-79-gadwal": ["bandla krishna mohan reddy", "krishna mohan reddy gadwal", "బండ్ల కృష్ణమోహన్ రెడ్డి"],
+    "mla-99-ghanpurstation": ["kadiyam srihari", "srihari kadiyam", "కడియం శ్రీహరి"],
+    "mla-119-bhadrachalam": ["tellam venkata rao", "tellam venkat rao", "తెల్లం వెంకట్రావు"],
+
+    // Brother of the minister. The bare surname is shared and resolved by cue (ALIAS_CUES).
+    "mla-93-munugode": ["komatireddy raj gopal reddy", "komatireddy rajagopal reddy", "komatireddy rajgopal reddy", "rajagopal reddy munugode", "komatireddy", "కోమటిరెడ్డి రాజగోపాల్ రెడ్డి", "కోమటిరెడ్డి"],
+
     // ── the government ──
-    "revanth-reddy": ["revanth reddy", "a revanth reddy", "anumula revanth reddy", "cm revanth", "cm revanth reddy", "telangana cm", "chief minister revanth reddy", "revanth sarkar", "revanth government", "@revanth_anumula", "@telanganacmo", "#revanthreddy", "రేవంత్ రెడ్డి", "అనుముల రేవంత్ రెడ్డి", "ముఖ్యమంత్రి రేవంత్ రెడ్డి", "సీఎం రేవంత్", "రేవంత్ సర్కార్"],
+    "revanth-reddy": ["revanth reddy", "revanth garu", "revanth anna", "revanth reddy garu", "a revanth reddy", "anumula revanth reddy", "cm revanth", "cm revanth reddy", "telangana cm", "chief minister revanth reddy", "@revanth_anumula", "#revanthreddy", "రేవంత్ రెడ్డి", "అనుముల రేవంత్ రెడ్డి", "ముఖ్యమంత్రి రేవంత్ రెడ్డి", "సీఎం రేవంత్"],
     "bhatti-vikramarka": ["bhatti vikramarka", "mallu bhatti vikramarka", "deputy cm bhatti", "dy cm bhatti", "భట్టి విక్రమార్క", "మల్లు భట్టి విక్రమార్క", "ఉప ముఖ్యమంత్రి భట్టి"],
     "uttam-kumar-reddy": ["uttam kumar reddy", "n uttam kumar reddy", "nalamada uttam kumar reddy", "irrigation minister uttam", "ఉత్తమ్ కుమార్ రెడ్డి", "నలమాద ఉత్తమ్ కుమార్ రెడ్డి"],
     "sridhar-babu": ["sridhar babu", "d sridhar babu", "duddilla sridhar babu", "it minister sridhar babu", "శ్రీధర్ బాబు", "దుద్దిళ్ల శ్రీధర్ బాబు"],
@@ -147,7 +167,7 @@ const CURATED_ALIASES = {
 
     // ── AIMIM ──
     "asaduddin-owaisi": ["asaduddin owaisi", "asad owaisi", "barrister owaisi", "aimim chief", "@asadowaisi", "అసదుద్దీన్ ఒవైసీ", "అసద్ ఒవైసీ", "ఒవైసీ"],
-    "akbaruddin-owaisi": ["akbaruddin owaisi", "akbar owaisi", "@akbarowaisi_mim", "అక్బరుద్దీన్ ఒవైసీ", "అక్బర్ ఒవైసీ"],
+    "akbaruddin-owaisi": ["akbaruddin owaisi", "akbar owaisi", "@akbarowaisi_mim", "అక్బరుద్దీన్ ఒవైసీ", "అక్బర్ ఒవైసీ", "owaisi", "ఒవైసీ"],
 
     // ── left ──
     "kunamneni-sambasiva-rao": ["kunamneni sambasiva rao", "kunamneni", "cpi state secretary", "కూనంనేని సాంబశివరావు", "కూనంనేని"],
@@ -188,8 +208,8 @@ const PARTY_ALIASES = {
      * his estranged daughter attacking each other — the worst possible pair to
      * conflate. Only unambiguous full forms are listed.
      */
-    brs: ["brs", "brs party", "bharat rashtra samithi", "bharath rashtra samithi", "telangana rashtra samithi", "telangana rashtra samiti", "car party", "pink party", "@brsparty", "#brs", "#brsparty", "బీఆర్ఎస్", "భారత్ రాష్ట్ర సమితి", "తెలంగాణ రాష్ట్ర సమితి", "కారు పార్టీ", "గులాబీ పార్టీ"],
-    inc: ["congress", "indian national congress", "telangana congress", "tpcc", "telangana pradesh congress committee", "hand symbol party", "congress government", "congress sarkar", "@inctelangana", "@incindia", "#congress", "కాంగ్రెస్", "భారత జాతీయ కాంగ్రెస్", "తెలంగాణ కాంగ్రెస్", "టీపీసీసీ", "హస్తం పార్టీ", "కాంగ్రెస్ ప్రభుత్వం"],
+    brs: ["brs", "brs party", "bharat rashtra samithi", "bharath rashtra samithi", "telangana rashtra samithi", "telangana rashtra samiti", "car party", "pink party", "@brsparty", "#brs", "#brsparty", "బీఆర్ఎస్", "భారత్ రాష్ట్ర సమితి", "తెలంగాణ రాష్ట్ర సమితి", "కారు పార్టీ", "గులాబీ పార్టీ", "brs government", "brs govt", "kcr government", "kcr govt", "kcr sarkar", "కేసీఆర్ ప్రభుత్వం", "బీఆర్ఎస్ ప్రభుత్వం"],
+    inc: ["congress", "indian national congress", "telangana congress", "tpcc", "telangana pradesh congress committee", "hand symbol party", "@inctelangana", "@incindia", "#congress", "కాంగ్రెస్", "భారత జాతీయ కాంగ్రెస్", "తెలంగాణ కాంగ్రెస్", "టీపీసీసీ", "హస్తం పార్టీ"],
     bjp: ["bjp", "bjp telangana", "telangana bjp", "bharatiya janata party", "bharatiya janta party", "lotus party", "saffron party", "@bjp4telangana", "@bjp4india", "#bjp", "బీజేపీ", "భారతీయ జనతా పార్టీ", "కమలం పార్టీ", "తెలంగాణ బీజేపీ"],
     aimim: ["aimim", "mim", "majlis", "ittehadul muslimeen", "all india majlis-e-ittehadul muslimeen", "owaisi party", "@aimim_national", "#aimim", "ఎంఐఎం", "ఏఐఎంఐఎం", "మజ్లిస్"],
     "trs-k": ["telangana rakshana sena", "telangana rashtra sena", "rakshana sena", "kavitha party", "telangana jagruthi", "jagruthi party", "తెలంగాణ రక్షణ సేన", "తెలంగాణ జాగృతి", "రక్షణ సేన"],
@@ -327,13 +347,31 @@ const STATE_GOVERNMENT_ENTITY = {
     alignment: 'opposition',
     scope: 'state',
     priority: PRIORITY.RULING_PARTY,
+    /*
+     * Only what verifiably names THIS state's government. Social handles are added
+     * only after being checked against the account's own bio: @TelanganaCMO is
+     * ("Official account of CMO Telangana", state_leader_handles.json / the adversary
+     * registry). Departmental and PR handles are NOT listed because none has been
+     * verified — add them with the same evidence, not on a guess.
+     *
+     * "congress government" / "revanth government" etc. are listed HERE and not under
+     * the INC party or Revanth Reddy: they mean the ADMINISTRATION, a distinct target
+     * from the party and from the man.
+     */
     aliases: [
-        'government of chhattisgarh', 'chhattisgarh government', 'govt of chhattisgarh', 'chhattisgarh govt',
-        'cg government', 'cg govt', 'chhattisgarh sarkar', 'sushasan sarkar', '#sushasansarkar', 'vishnudev sarkar',
-        '@dprchhattisgarh', 'dpr chhattisgarh', '@cggovt', '@healthcggov', '@schooleducggov', '@pwdcggov',
-        '@urbancgofficial', '@muncipalraipur',
-        'छत्तीसगढ़ सरकार', 'छत्तीसगढ़ शासन', 'राज्य सरकार', 'प्रदेश सरकार', 'सुशासन सरकार', 'सुशासन',
-        'विष्णुदेव सरकार', 'जनसंपर्क छत्तीसगढ़',
+        'government of telangana', 'govt of telangana', 'telangana government', 'telangana govt',
+        'telangana state government', 'telangana state govt', 'telangana sarkar',
+        'tg government', 'tg govt', 'tg sarkar', 'ts government', 'ts govt', 'ts sarkar',
+        'congress government', 'congress govt', 'congress sarkar', 'congress government telangana',
+        'revanth government', 'revanth govt', 'revanth sarkar',
+        'revanth reddy government', 'revanth reddy govt', 'revanth reddy sarkar',
+        'praja palana', 'prajapalana', 'praja palana government', 'praja palana sarkar', '#prajapalana',
+        'indiramma rajyam', '#indirammarajyam',
+        'telangana cmo', 'cmo telangana', '@telanganacmo',
+        'తెలంగాణ ప్రభుత్వం', 'తెలంగాణ సర్కార్', 'రాష్ట్ర ప్రభుత్వం',
+        'కాంగ్రెస్ ప్రభుత్వం', 'కాంగ్రెస్ సర్కార్',
+        'రేవంత్ ప్రభుత్వం', 'రేవంత్ సర్కార్', 'రేవంత్ రెడ్డి ప్రభుత్వం',
+        'ప్రజాపాలన', 'ప్రజా పాలన', 'ఇందిరమ్మ రాజ్యం',
     ],
 };
 
@@ -362,7 +400,15 @@ const deriveRosterAliases = (leader) => {
 const buildLeaderEntity = (leader, { alignment, priority, scope = leader.scope || 'state' }) => ({
     canonical: leader.name,
     type: 'person',
-    party: (leader.party || '').toLowerCase() || null,
+    // A defector was ELECTED as BRS but functions with the party they crossed to.
+    // `party` is the party they act for today (so the stance engine's same-party
+    // guards treat them as INC); the ticket they won on is kept as `elected_party`.
+    party: leader.defection_unresolved
+        ? String(leader.functions_with || 'INC').toLowerCase()
+        : (leader.party || '').toLowerCase() || null,
+    ...(leader.defection_unresolved
+        ? { defected: true, elected_party: String(leader.elected_party || leader.party || '').toLowerCase(), current_party: String(leader.functions_with || 'INC').toLowerCase() }
+        : {}),
     role: leader.role || null,
     constituency: leader.constituency || null,
     district: leader.district || null,
@@ -805,6 +851,148 @@ const ALIAS_BLOCKED_CONTEXTS = {
      * "दुर्ग" — remove the inflected senses, then test what is left.
      */
     'కవిత': /కవిత(లు|ల|ం|్వం|్వ|ా)/g,
+    /**
+     * "Taraka Rama Rao" is also N. T. Rama Rao (NTR) and his grandson Jr NTR.
+     * Strip those namesake phrases first; a bare "taraka rama rao" that remains
+     * is KTR. Full forms (K T Rama Rao, Kalvakuntla ...) are unaffected.
+     */
+    'taraka rama rao': /nandamuri\s+taraka\s+rama\s+rao|jr\.?\s*ntr|ntr\s+jr|n\.?\s*t\.?\s*r\.?\s+(?:jr|junior)/g,
+    'తారక రామారావు': /నందమూరి\s+తారక\s+రామారావు/g,
+};
+
+/**
+ * Aliases that are real names ONLY with a nearby cue. Without one they are a
+ * different person or an ordinary word, so the alias is ignored (not deleted:
+ * with the cue it still resolves).
+ *   chandrashekar rao / chandrasekhar rao - thousands of other people.
+ *   bandi - an ordinary Telugu word (cart, vehicle); Bandi Sanjay's short name.
+ * The cue is tested against the same lower-cased text the alias is looked for in.
+ */
+const KCR_CUE = /\b(?:kcr|brs|trs|bharat rashtra|bharath rashtra|telangana|kalvakuntla|gajwel|erravelli|farmhouse|former (?:cm|chief minister)|chief minister|leader of (?:the )?opposition|pink party)\b|కేసీఆర్|తెలంగాణ|బీఆర్ఎస్|టీఆర్ఎస్|గజ్వేల్|గులాబీ|ముఖ్యమంత్రి/;
+const BANDI_CUE = /\b(?:sanjay|bjp|karimnagar|union minister|minister of state|mos|home minister|mp)\b|సంజయ్|బీజేపీ|కరీంనగర్|కేంద్ర మంత్రి/;
+const CONTEXT_REQUIRED_ALIASES = {
+    'chandrashekar rao': KCR_CUE,
+    'chandrasekhar rao': KCR_CUE,
+    'చంద్రశేఖర్ రావు': KCR_CUE,
+    bandi: BANDI_CUE,
+};
+
+/**
+ * A bare FIRST NAME that identifies a roster person only in context. "Revanth" / "రేవంత్" is how the party's own
+ * accounts and Telugu posts routinely address the Chief Minister ("step down, Revanth"), but the name is also
+ * worn by other people, so it is never a plain alias. It is recognised when
+ *   - the post carries a Telangana political cue (`cue`), or
+ *   - the post comes from an account that is itself in the roster (an official party / leader handle), which
+ *     is the context that makes the reference unambiguous.
+ * "Revanth Reddy" and the other full forms stay ordinary aliases and are matched first.
+ */
+const REVANTH_POLITICAL_CUE = /(?<![a-z0-9_])(?:telangana|congress|brs|kcr|ktr|harish rao|cm|chief minister|minister|government|govt|hyderabad|resign|step down|rythu|farmers?)(?![a-z0-9_])|తెలంగాణ|కాంగ్రెస్|బీఆర్ఎస్|కేసీఆర్|కేటీఆర్|సీఎం|ముఖ్యమంత్రి|మంత్రి|ప్రభుత్వం|హైదరాబాద్|దిగిపో|రాజీనామా|రైతు/i;
+const BARE_FIRST_NAME_ALIASES = [
+    { key: 'revanth-reddy', rx: /(?:^|[^a-z0-9_])revanth(?![a-z0-9_])|రేవంత్/i, cue: REVANTH_POLITICAL_CUE },
+];
+
+/**
+ * Bare names claimed by more than one entity, settled by what the text says.
+ * Only an UNAMBIGUOUS cue picks a winner; otherwise the alias stays ambiguous
+ * (lower confidence, routed to review) instead of silently crediting one person.
+ */
+const ALIAS_CUES = {
+    komatireddy: [
+        { key: 'komatireddy-venkat-reddy', rx: /venkat|minister|roads|buildings|bhongir|nalgonda mp/ },
+        { key: 'mla-93-munugode', rx: /raj ?gopal|rajagopal|munugode|mla munugode/ },
+    ],
+    'కోమటిరెడ్డి': [
+        { key: 'komatireddy-venkat-reddy', rx: /వెంకట్|మంత్రి|భువనగిరి/ },
+        { key: 'mla-93-munugode', rx: /రాజగోపాల్|మునుగోడు/ },
+    ],
+    owaisi: [
+        { key: 'asaduddin-owaisi', rx: /\basad(?:uddin)?\b|barrister|aimim (?:chief|president)|hyderabad mp/ },
+        { key: 'akbaruddin-owaisi', rx: /\bakbar(?:uddin)?\b|chandrayangutta|floor leader/ },
+    ],
+    'ఒవైసీ': [
+        { key: 'asaduddin-owaisi', rx: /అసద్|అసదుద్దీన్/ },
+        { key: 'akbaruddin-owaisi', rx: /అక్బర్|అక్బరుద్దీన్|చాంద్రాయణ/ },
+    ],
+};
+
+/**
+ * WHICH GOVERNMENT? "The government of Telangana" was the BRS government until 6 Dec 2023 and is the
+ * Congress government after it. The roster entity `state_government` is the CURRENT one, so a bare
+ * "Telangana govt" in a post about the KCR years must NOT resolve to it (that would flip the sign of a
+ * post that is about BRS's own record). Era is settled only from evidence, in this order:
+ *   1. explicit text cues   ("KCR/BRS/TRS government", "under KCR", "previous/former government",
+ *                            "ten years", "in 2019", a BRS-built scheme + a past creation verb)  -> 'brs'
+ *                           ("Revanth/Praja Palana/Congress government", Indiramma, 2024-2026,
+ *                            a Congress-built scheme)                                             -> 'current'
+ *   2. the post's own date  (before 7 Dec 2023 -> 'brs', on/after -> 'current')
+ *   3. otherwise 'ambiguous' - the caller must NOT guess: the target stays unresolved and the verdict
+ *      goes to review.
+ * Conflicting text cues (a comparison of the two governments) are 'ambiguous' too.
+ * Only generic forms are era-sensitive; "Congress government", "Revanth sarkar", "Praja Palana" are
+ * unambiguously current and "KCR/BRS government" unambiguously historical - they resolve by alias.
+ */
+const GOVERNMENT_CHANGEOVER = Date.UTC(2023, 11, 7); // Revanth Reddy sworn in 7 Dec 2023
+const ERA_SENSITIVE_GOVERNMENT_ALIASES = new Set([
+    'government of telangana', 'govt of telangana', 'telangana government', 'telangana govt',
+    'telangana state government', 'telangana state govt', 'telangana sarkar',
+    'tg government', 'tg govt', 'tg sarkar', 'ts government', 'ts govt', 'ts sarkar',
+    'తెలంగాణ ప్రభుత్వం', 'తెలంగాణ సర్కార్', 'రాష్ట్ర ప్రభుత్వం',
+]);
+const BRS_ERA_RX = /\b(?:kcr|brs|trs)\s+(?:government|govt|sarkar|regime|rule|era|tenure|years)\b|\b(?:under|during)\s+(?:the\s+)?(?:kcr|brs|trs)\b|\b(?:previous|former|earlier|erstwhile|prior|old|past)\s+(?:government|govt|sarkar|regime|rule|administration)\b|\b(?:ten|10|nine|9)\s+years\b|\bin\s+20(?:1[4-9]|2[0-2])\b|కేసీఆర్ ప్రభుత్వం|బీఆర్ఎస్ ప్రభుత్వం|టీఆర్ఎస్ ప్రభుత్వం|గత ప్రభుత్వం|పదేళ్ల|పదేండ్ల/i;
+const CURRENT_ERA_RX = /\b(?:revanth|praja\s?palana|indiramma|bhatti|cm\s+revanth)\b|\bcongress\s+(?:government|govt|sarkar|rule|regime)\b|\bsince\s+(?:dec(?:ember)?\s+)?2023\b|\b202[4-6]\b|రేవంత్|ప్రజాపాలన|కాంగ్రెస్ ప్రభుత్వం/i;
+const CREATION_VERB_RX = /\b(?:built|launched|introduced|started|constructed|completed|inaugurated|began|implemented|created|delivered)\b/i;
+const GENERIC_GOVERNMENT_WORD_RX = /\b(?:government|govt|sarkar)\b|ప్రభుత్వం|సర్కార్/i;
+// Phrases that name WHOSE government it is. They resolve by alias and are not era-sensitive, so they are
+// removed before asking "is there a generic government reference left?".
+const NAMED_GOVERNMENT_RX = /\b(?:kcr|brs|trs|revanth(?:\s+reddy)?|congress|praja\s?palana)\s+(?:government|govt|sarkar|palana)\b|\bpraja\s?palana\b|కేసీఆర్ ప్రభుత్వం|బీఆర్ఎస్ ప్రభుత్వం|టీఆర్ఎస్ ప్రభుత్వం|కాంగ్రెస్ ప్రభుత్వం|కాంగ్రెస్ సర్కార్|రేవంత్ ప్రభుత్వం|రేవంత్ సర్కార్|రేవంత్ రెడ్డి ప్రభుత్వం|ప్రజాపాలన|ప్రజా పాలన/gi;
+
+const resolveGovernmentEra = (text, { postDate = null } = {}) => {
+    const raw = String(text || '');
+    const t = raw.toLowerCase();
+    const referenced = GENERIC_GOVERNMENT_WORD_RX.test(raw.replace(NAMED_GOVERNMENT_RX, ' '));
+    if (!referenced) return { era: 'none', reason: 'no generic government reference', referenced: false };
+    const keys = findAliasMatches(raw).flatMap((m) => m.entityKeys);
+    const builtBy = (who) => keys.some((k) => POLITICAL_ENTITIES[k] && POLITICAL_ENTITIES[k].type === 'scheme' && POLITICAL_ENTITIES[k].built_by === who);
+    const brs = BRS_ERA_RX.test(t) || (builtBy(OUR_PARTY.id) && CREATION_VERB_RX.test(t));
+    const cur = CURRENT_ERA_RX.test(t) || builtBy('inc');
+    if (brs && !cur) return { era: 'brs', reason: 'text cue', referenced };
+    if (cur && !brs) return { era: 'current', reason: 'text cue', referenced };
+    if (brs && cur) return { era: 'ambiguous', reason: 'conflicting cues (both governments)', referenced };
+    if (postDate) {
+        const ms = new Date(postDate).getTime();
+        if (Number.isFinite(ms)) return { era: ms >= GOVERNMENT_CHANGEOVER ? 'current' : 'brs', reason: 'post date', referenced };
+    }
+    return { era: 'ambiguous', reason: 'no cue and no post date', referenced };
+};
+
+/** Pick the one candidate whose cue appears in `text`; null when none or several do. */
+const pickByCue = (alias, entityKeys, text) => {
+    const cues = ALIAS_CUES[alias];
+    if (!cues) return null;
+    const lower = String(text || '').toLowerCase();
+    const hits = cues.filter((c) => entityKeys.includes(c.key) && c.rx.test(lower));
+    return hits.length === 1 ? hits[0].key : null;
+};
+
+/**
+ * "TRS" - this party until Oct 2022, and the abbreviation Kavitha's new party
+ * recycled. It is therefore NOT an alias of either; it is settled from context:
+ *   - a Kavitha / Rakshana-Sena / Jagruthi cue            -> 'trs-k'
+ *   - a BRS-side cue (KCR, KTR, Harish, Car/Pink party, the Telangana movement,
+ *     BRS-era schemes) or a 2014-2022 year                -> 'brs' (historical)
+ *   - both, or neither                                      -> null (ambiguous -> review)
+ */
+const TRS_TOKEN = /(?:^|[^a-z0-9_])trs(?:[^a-z0-9_]|$)|టీఆర్ఎస్/i;
+const TRSK_CUE = /kavitha|rakshana|rashtra sena|jagruthi|కవిత|రక్షణ సేన|జాగృతి/i;
+const TRS_BRS_CUE = /\b(?:kcr|ktr|harish rao|brs|bharat rashtra|car party|pink party|gulabi|kaleshwaram|mission bhagiratha|mission kakatiya|rythu bandhu|dalit bandhu|dharani|2bhk|telangana movement|telangana bhavan|201[4-9]|202[0-2])\b|కేసీఆర్|కేటీఆర్|హరీష్|బీఆర్ఎస్|గులాబీ|కారు పార్టీ|తెలంగాణ ఉద్యమం|కాళేశ్వరం/i;
+const resolveTrsMention = (text) => {
+    const raw = String(text || '');
+    if (!TRS_TOKEN.test(raw)) return { present: false, key: null };
+    const k = TRSK_CUE.test(raw);
+    const b = TRS_BRS_CUE.test(raw);
+    if (k && !b) return { present: true, key: 'trs-k' };
+    if (b && !k) return { present: true, key: OUR_PARTY.id };
+    return { present: true, key: null };
 };
 
 /**
@@ -820,6 +1008,7 @@ const CASE_SENSITIVE_ALIASES = {
 
 const aliasOccursIn = (haystackLower, alias, rawText = null) => {
     if (!haystackLower.includes(alias)) return false;
+    if (CONTEXT_REQUIRED_ALIASES[alias] && !CONTEXT_REQUIRED_ALIASES[alias].test(haystackLower)) return false;
     if (CASE_SENSITIVE_ALIASES[alias] && rawText != null) return CASE_SENSITIVE_ALIASES[alias].test(rawText);
     const blocker = ALIAS_BLOCKED_CONTEXTS[alias];
     if (blocker) {
@@ -908,6 +1097,17 @@ const getEntity = (key) => (key ? POLITICAL_ENTITIES[key] || null : null);
  * roster as a Union Minister and a prominent BRS critic, rather than to
  * whoever happens to be the current client.
  */
+/**
+ * ⚠ These are the keys as STORED in older data (the Bandi Sanjay Kumar deployment this codebase
+ * descends from): `bsk` is Bandi Sanjay, a BJP rival here, and must never be read as KCR or BRS.
+ * `bsk_son` (his son's key there) is DELIBERATELY unmapped: it is not KTR and not any other roster
+ * entity, so it resolves to nothing rather than to the wrong person.
+ *
+ * bskRelevanceFilterService emits its OWN `bsk` / `bsk_son` / `bjp_telangana` values (meaning
+ * KCR / KTR / the BRS organisation or government). Those are a different namespace and must not
+ * be passed here; that service now also returns explicit `target_key` / `target_entity_key`.
+ * The current database holds none of these legacy values in any entity field (checked).
+ */
 const LEGACY_ENTITY_KEYS = {
     bsk: 'bandi-sanjay',
     bjp_telangana: 'bjp',
@@ -932,8 +1132,14 @@ module.exports = {
     resolveAliasCandidates,
     findAliasMatches,
     aliasOccursIn,
+    BARE_FIRST_NAME_ALIASES,
 
     PRIORITY,
+    GOVERNMENT_SCHEMES,
+    pickByCue,
+    resolveTrsMention,
+    resolveGovernmentEra,
+    ERA_SENSITIVE_GOVERNMENT_ALIASES,
 
     PRIMARY_TARGET_KEY,
     SECONDARY_TARGET_KEY,

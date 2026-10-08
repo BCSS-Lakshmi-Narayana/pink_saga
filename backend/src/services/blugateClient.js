@@ -14,20 +14,96 @@ const DEFAULT_GATEWAY_BASE = 'https://blugate.blurasaga.com/api/gateway';
 
 const GATEWAY_BASE = String(process.env.BLUGATE_BASE_URL || DEFAULT_GATEWAY_BASE).trim().replace(/\/+$/, '');
 
-const hasCredentials = () => !!(process.env.BLUGATE_API_KEY && process.env.BLUGATE_CLIENT_CODE);
+const hasGatewayCredentials = () => !!(process.env.BLUGATE_API_KEY && process.env.BLUGATE_CLIENT_CODE);
 
-const getHeaders = () => {
-    const apiKey = process.env.BLUGATE_API_KEY;
-    const clientCode = process.env.BLUGATE_CLIENT_CODE;
+/**
+ * DIRECT-PROVIDER FALLBACK. This deployment may have no BluGate account. When
+ * BLUGATE_API_KEY / BLUGATE_CLIENT_CODE are not both set, every platform call is
+ * sent straight to the provider BluGate would have fronted, using the keys in
+ * .env. BluGate mirrors each provider's own paths and params, so only the base
+ * URL and auth change:
+ *   twitter   → RapidAPI twitter241        RAPIDAPI_TWITTER_KEY | RAPIDAPI_X_KEY | RAPIDAPI_KEY
+ *   facebook  → RapidAPI facebook-scraper3 RAPIDAPI_FACEBOOK_KEY(S) | RAPIDAPI_KEY
+ *   instagram → RapidAPI instagram120      RAPIDAPI_INSTAGRAM_KEY(S) | RAPIDAPI_KEY
+ *   youtube   → YouTube Data API v3        YOUTUBE_API_KEY (sent as ?key=)
+ * Hosts can be overridden with RAPIDAPI_<PLATFORM>_HOST. A configured BluGate
+ * account always wins.
+ */
+const firstEnv = (...names) => {
+    for (const name of names) {
+        const raw = process.env[name];
+        const value = raw ? String(raw).split(',')[0].trim() : '';
+        if (value) return value;
+    }
+    return '';
+};
 
-    if (!apiKey || !clientCode) {
-        throw new Error('BLUGATE_API_KEY / BLUGATE_CLIENT_CODE is not configured');
+const DIRECT = {
+    twitter: {
+        host: () => firstEnv('RAPIDAPI_TWITTER_HOST', 'RAPIDAPI_X_HOST', 'RAPIDAPI_HOST') || 'twitter241.p.rapidapi.com',
+        key: () => firstEnv('RAPIDAPI_TWITTER_KEY', 'RAPIDAPI_X_KEY', 'RAPIDAPI_KEY'),
+    },
+    facebook: {
+        host: () => firstEnv('RAPIDAPI_FACEBOOK_HOST') || 'facebook-scraper3.p.rapidapi.com',
+        key: () => firstEnv('RAPIDAPI_FACEBOOK_KEY', 'RAPIDAPI_FACEBOOK_KEYS', 'RAPIDAPI_KEY'),
+    },
+    instagram: {
+        host: () => firstEnv('RAPIDAPI_INSTAGRAM_HOST') || 'instagram120.p.rapidapi.com',
+        key: () => firstEnv('RAPIDAPI_INSTAGRAM_KEY', 'RAPIDAPI_INSTAGRAM_KEYS', 'RAPIDAPI_KEY'),
+    },
+    youtube: {
+        base: 'https://www.googleapis.com/youtube/v3',
+        key: () => firstEnv('YOUTUBE_API_KEY'),
+    },
+};
+
+/** True when `platform` can be reached: via BluGate, or via its direct key. */
+const hasDirectCredentials = (platform) => !!(DIRECT[platform] && DIRECT[platform].key());
+
+/**
+ * Can we fetch? With a platform: that platform is reachable (BluGate or its own
+ * key). Without one: BluGate is configured, or any direct key is.
+ */
+const hasCredentials = (platform) => {
+    if (hasGatewayCredentials()) return true;
+    if (platform) return hasDirectCredentials(platform);
+    return Object.keys(DIRECT).some(hasDirectCredentials);
+};
+
+/** Base URL for a platform: the BluGate route, or the provider's own host. */
+const platformBase = (platform) => {
+    if (hasGatewayCredentials()) return `${GATEWAY_BASE}/${platform}`;
+    const direct = DIRECT[platform];
+    if (!direct) throw new Error(`Unknown platform '${platform}'`);
+    return direct.base || `https://${direct.host()}`;
+};
+
+const getHeaders = (platform) => {
+    if (hasGatewayCredentials()) {
+        return {
+            Authorization: `Bearer ${process.env.BLUGATE_API_KEY}`,
+            'x-client-id': process.env.BLUGATE_CLIENT_CODE
+        };
     }
 
-    return {
-        Authorization: `Bearer ${apiKey}`,
-        'x-client-id': clientCode
-    };
+    const direct = DIRECT[platform];
+    if (!direct) {
+        throw new Error('BLUGATE_API_KEY / BLUGATE_CLIENT_CODE is not configured, and no platform was given for the direct-key fallback');
+    }
+    const key = direct.key();
+    if (!key) {
+        throw new Error(`No credentials for ${platform}: set BLUGATE_API_KEY + BLUGATE_CLIENT_CODE, or the direct key for ${platform} in .env`);
+    }
+    // YouTube's key travels as a query param (see authParams), not a header.
+    if (direct.base) return {};
+    return { 'x-rapidapi-key': key, 'x-rapidapi-host': direct.host() };
+};
+
+/** Query params the direct provider needs for auth (YouTube only); {} on BluGate. */
+const authParams = (platform) => {
+    if (hasGatewayCredentials()) return {};
+    const direct = DIRECT[platform];
+    return direct && direct.base && direct.key() ? { key: direct.key() } : {};
 };
 
 /**
@@ -126,11 +202,11 @@ const request = async (platform, { method = 'get', path = '', params, data, head
     const cleanPath = String(path || '').replace(/^\/+/, '');
     return withRateLimitRetry(() => axios({
         method,
-        url: `${GATEWAY_BASE}/${platform}/${cleanPath}`,
-        params: cleanParams(params),
+        url: `${platformBase(platform)}/${cleanPath}`,
+        params: cleanParams({ ...params, ...authParams(platform) }),
         data,
         timeout,
-        headers: { ...getHeaders(), ...headers },
+        headers: { ...getHeaders(platform), ...headers },
         ...responseOptions(),
     }), { label: `BluGate ${platform}` });
 };
@@ -146,6 +222,9 @@ module.exports = {
     decodeBody,
     GATEWAY_BASE,
     hasCredentials,
+    hasGatewayCredentials,
+    platformBase,
+    authParams,
     getHeaders,
     cleanParams,
     request,

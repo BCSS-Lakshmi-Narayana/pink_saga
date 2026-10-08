@@ -57,7 +57,7 @@ class GlobalSearchService {
                 xError = e;
             }
         }
-        if ((!xResults || xResults.length === 0) && (!blugateClient.hasCredentials() && !process.env.X_BEARER_TOKEN)) {
+        if ((!xResults || xResults.length === 0) && (!blugateClient.hasCredentials('twitter') && !process.env.X_BEARER_TOKEN)) {
             try {
                 const { scrapeProfile, getHealthyAccount } = require('./scraperService');
                 const account = await getHealthyAccount();
@@ -117,7 +117,7 @@ class GlobalSearchService {
                 xError = e;
             }
         }
-        if ((!xResults || xResults.length === 0) && (!blugateClient.hasCredentials() && !process.env.X_BEARER_TOKEN)) {
+        if ((!xResults || xResults.length === 0) && (!blugateClient.hasCredentials('twitter') && !process.env.X_BEARER_TOKEN)) {
             try {
                 const { scrapeProfile, getHealthyAccount } = require('./scraperService');
                 const account = await getHealthyAccount();

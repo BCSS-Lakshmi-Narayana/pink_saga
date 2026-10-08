@@ -371,9 +371,25 @@ const grievanceSchema = new mongoose.Schema({
     client_relevance: { type: String, enum: ['relevant', 'not_relevant', 'uncertain'], default: 'uncertain' },
     target: {
       type: String,
-      enum: ['ruling_party', 'state_government', 'opposition', 'other', 'unknown', 'none'],
+      // The KIND of target: our_party | state_government | rival_party | leader | institution | issue.
+      // `ruling_party` / `opposition` / `other` are the legacy values (stored rows keep validating;
+      // `ruling_party` meant the client camp, `opposition` the rival camp) and are no longer written.
+      enum: ['our_party', 'state_government', 'rival_party', 'leader', 'institution', 'issue', 'unknown', 'none',
+        'ruling_party', 'opposition', 'other'],
       default: 'unknown',
     },
+    /**
+     * What the post means for the CLIENT, kept apart from tone and from moderation risk.
+     * (`risk_level` is a TONE band and is not a client-impact measure — see services/clientImpact.js.)
+     * `hostile_to_client` is the only flag client-facing "hostile" counts may use.
+     */
+    client_impact: { type: String, enum: ['favourable', 'adverse', 'neutral', 'mixed'] },
+    hostile_to_client: { type: Boolean, default: false },
+    moderation_risk: { type: String, enum: ['low', 'medium', 'high'] },
+    /** Who MAKES the claim (not who it is about) and whether it is an allegation. */
+    attribution: { type: mongoose.Schema.Types.Mixed },
+    /** Entities the pipeline refused to guess (e.g. a bare "TRS"). */
+    ambiguous_entities: [{ type: String }],
     /** Pass A's read of whose side the post is about — a cross-check input. */
     target_party: { type: String },
 
@@ -409,7 +425,7 @@ const grievanceSchema = new mongoose.Schema({
       type: String,
       enum: [
         'pro_target', 'anti_target', 'pro_target_indirect', 'anti_target_indirect',
-        'neutral', 'unrelated',
+        'neutral', 'mixed', 'unrelated',
         // retired — accepted for stored records, never written
         'pro_bsk', 'anti_bsk', 'pro_bsk_indirect', 'anti_bsk_indirect',
       ],
@@ -417,7 +433,7 @@ const grievanceSchema = new mongoose.Schema({
     /** Same value as `stance`, in the current vocabulary only. */
     political_stance: {
       type: String,
-      enum: ['pro_target', 'anti_target', 'pro_target_indirect', 'anti_target_indirect', 'neutral', 'unrelated'],
+      enum: ['pro_target', 'anti_target', 'pro_target_indirect', 'anti_target_indirect', 'neutral', 'mixed', 'unrelated'],
     },
     // 'bsk'/'bjp' are retired beneficiary values, kept for stored records.
     beneficiary: { type: String, enum: ['ours', 'opposition', 'none', 'bsk', 'bjp'] },

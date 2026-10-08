@@ -12,6 +12,8 @@ const STANCE_GROUPS = {
     supportive: ['pro_target', 'pro_target_indirect', 'pro_bsk', 'pro_bsk_indirect', 'pro_client'],
     opposing: ['anti_target', 'anti_target_indirect', 'anti_bsk', 'anti_bsk_indirect', 'anti_client'],
     neutral: ['neutral', 'unrelated'],
+    // Clearly conflicting sentiment toward the client itself: neither supportive nor opposing.
+    mixed: ['mixed'],
 };
 const ALL_STANCES = Object.values(STANCE_GROUPS).flat();
 
@@ -34,6 +36,7 @@ const normalizeStanceFilter = (value) => {
     if (v === 'supportive' || v === 'pro' || v === 'pro_client') return 'supportive';
     if (v === 'opposing' || v === 'anti' || v === 'anti_client') return 'opposing';
     if (v === 'neutral') return 'neutral';
+    if (v === 'mixed' || v === 'mixed_client') return 'mixed';
     return null;
 };
 

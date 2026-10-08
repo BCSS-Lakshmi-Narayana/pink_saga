@@ -55,9 +55,11 @@ const partyLabel = (p) => {
     return `${p.name}${aka ? ` (${aka})` : ''}`;
 };
 
-const namedLeaders = (leaders, n) => (leaders || [])
+// De-duplicated: a leader can appear twice (an MLA row and an MP row for the same person,
+// e.g. Asaduddin Owaisi), which printed "Asaduddin Owaisi, Akbaruddin Owaisi, Asaduddin Owaisi".
+const namedLeaders = (leaders, n) => [...new Set((leaders || [])
     .filter((l) => !l.derived)
-    .map((l) => l.shortName || l.name)
+    .map((l) => l.shortName || l.name))]
     .slice(0, n);
 
 /** "BRS (Bharat Rashtra Samithi/BRS Party)" plus any allies — our camp in one line. */

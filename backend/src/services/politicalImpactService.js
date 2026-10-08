@@ -73,8 +73,8 @@ const computeImpact = async (opts = {}) => {
         'detected_location.constituency': 1,
         'detected_location.district': 1,
         'detected_location.lok_sabha': 1,
+        'analysis.target_sentiment': 1,
         'analysis.bsk_sentiment': 1,
-        'analysis.sentiment': 1,
         'analysis.severity': 1,
         'analysis.risk_level': 1,
         engagement: 1,
@@ -92,7 +92,12 @@ const computeImpact = async (opts = {}) => {
         };
         b.count += 1;
 
-        const sent = d.analysis?.bsk_sentiment || d.analysis?.sentiment;
+        // CLIENT-RELATIVE sentiment only (target_sentiment, or its legacy mirror bsk_sentiment).
+        // This used to fall back to `analysis.sentiment`, which is the post's raw TONE: a row with
+        // no client-relative verdict was then scored by its tone, and a post attacking the
+        // Congress government (negative tone, GOOD for BRS) counted against BRS in its own
+        // constituency. A row without a client-relative verdict is simply left out of the score.
+        const sent = d.analysis?.target_sentiment || d.analysis?.bsk_sentiment;
         if (sent === 'negative') { b.sentSum += -1; b.sentCount += 1; }
         else if (sent === 'positive') { b.sentSum += 1; b.sentCount += 1; }
         else if (sent === 'neutral') { b.sentSum += 0; b.sentCount += 1; }

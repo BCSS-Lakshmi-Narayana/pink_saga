@@ -38,6 +38,7 @@ const {
   OUR_PARTY, OPPOSITION_PARTIES, OUR_FRONTBENCH, PARTY_CHIEF, OPPOSITION_LEADERS,
 } = require('../config/politicalData');
 const { adviseAll } = require('../services/recommendationAdviceService');
+const { normalizeStance } = require('../services/stanceVocabulary');
 
 /* ── voice classification ─────────────────────────────────────────────── */
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -128,9 +129,18 @@ const classifyVoice = (handle, displayName) => {
 };
 
 /* ── stance / sentiment helpers ───────────────────────────────────────── */
-const PRO = new Set(['pro_target', 'pro_target_indirect']);
-const ANTI = new Set(['anti_target', 'anti_target_indirect']);
-const sideOf = (s) => (PRO.has(s) ? 'pro' : ANTI.has(s) ? 'anti' : s === 'neutral' ? 'neutral' : 'unrelated');
+/**
+ * Which side of the CLIENT (BRS) a stance is on. Reads every vocabulary through
+ * stanceVocabulary (legacy pro_bsk / pro_client rows included — they used to fall
+ * through to 'unrelated' here). `mixed` takes no side, so it joins neutral and stays
+ * out of every net-score denominator.
+ */
+const sideOf = (s) => {
+  const n = normalizeStance(s);
+  if (n.startsWith('pro_')) return 'pro';
+  if (n.startsWith('anti_')) return 'anti';
+  return n === 'neutral' || n === 'mixed' ? 'neutral' : 'unrelated';
+};
 const engagementOf = (e) => (e?.likes || 0) + (e?.retweets || 0) + (e?.replies || 0) + (e?.quotes || 0);
 const dayKey = (d) => new Date(d).toISOString().slice(0, 10);
 
@@ -374,8 +384,15 @@ const getCMBrief = async (req, res) => {
         .toLowerCase(),
     );
     const byRisk = { critical: 0, high: 0, medium: 0, neutral: 0, low: 0 };
+    // `hostile`, `legalReady`, `policyReady` and `highRisk` are CLIENT-facing: they count content
+    // that is ADVERSE TO BRS (stance anti_*). They used to count every moderation-flagged or
+    // negative-toned alert, so a sharp post attacking the Congress government — favourable to
+    // BRS — was reported as a hostile post to file a complaint against. `flagged` /
+    // `highTone` keep the unfiltered counts (content/tone), under names that say what they are.
     let hostile = 0; let legalReady = 0; let policyReady = 0; let highRisk = 0;
+    let flagged = 0; let highTone = 0;
     for (const a of alerts) {
+      const adverse = sideOf(a.llm_analysis?.political_stance) === 'anti';
       // The carve-out applies ONLY to `low`. apDashboardController line 651:
       //   if (r._id.neutral && level === 'low') summary.neutral += count;
       //   else summary[level] += count;
@@ -387,12 +404,18 @@ const getCMBrief = async (req, res) => {
       if (byRisk[risk] !== undefined) byRisk[risk] += 1;
       const intent = String(a.threat_details?.intent || '').trim();
       if (intent && intent.toLowerCase() !== 'normal') {
-        hostile += 1;
-        intents.set(intent, (intents.get(intent) || 0) + 1);
+        flagged += 1;
+        if (adverse) {
+          hostile += 1;
+          intents.set(intent, (intents.get(intent) || 0) + 1);
+        }
       }
-      if (a.legal_sections?.length) legalReady += 1;
-      if (a.violated_policies?.length) policyReady += 1;
-      if (a.risk_level === 'high' || a.risk_level === 'critical') highRisk += 1;
+      if (adverse && a.legal_sections?.length) legalReady += 1;
+      if (adverse && a.violated_policies?.length) policyReady += 1;
+      if (a.risk_level === 'high' || a.risk_level === 'critical') {
+        highTone += 1;
+        if (adverse) highRisk += 1;
+      }
     }
     /**
      * Alerts by STANCE. Alert.js says alerts carry none, but every alert in the
@@ -412,6 +435,8 @@ const getCMBrief = async (req, res) => {
 
     const threats = {
       total: alerts.length, hostile, high_risk: highRisk,
+      // Unfiltered counts, for anyone who wants content/tone regardless of who it favours.
+      flagged, high_tone: highTone,
       legal_ready: legalReady, policy_ready: policyReady,
       untriaged: alerts.filter((a) => a.status === 'active').length,
       by_risk: byRisk,
@@ -836,7 +861,8 @@ const getCMBrief = async (req, res) => {
         .filter(Boolean);
     };
 
-    const blankLeader = (l) => ({
+    const blankLeader = (l, rival = false) => ({
+      rival,
       id: l.id,
       name: l.name,
       role: l.role || null,
@@ -847,7 +873,10 @@ const getCMBrief = async (req, res) => {
       topics: new Map(), quotes: [],
     });
 
-    const scoreLeaders = (list, index) => {
+    // `pro` / `anti` are always CLIENT-relative (does the post help or hurt BRS?). For a RIVAL
+    // leader that is the reverse of the leader's own standing — a post that criticises Revanth
+    // Reddy is `pro` (good for BRS) — so finishLeader also reports `leader_standing` for them.
+    const scoreLeaders = (list, index, rival = false) => {
       const acc = new Map();
       for (const d of list) {
         const side = sideOf(d.analysis?.political_stance);
@@ -857,7 +886,7 @@ const getCMBrief = async (req, res) => {
           const leader = index.get(nameNorm(nm));
           if (!leader || seen.has(leader.id)) continue;
           seen.add(leader.id);
-          if (!acc.has(leader.id)) acc.set(leader.id, blankLeader(leader));
+          if (!acc.has(leader.id)) acc.set(leader.id, blankLeader(leader, rival));
           const r = acc.get(leader.id);
           r.mentions += 1;
           r[side] += 1;
@@ -899,6 +928,13 @@ const getCMBrief = async (req, res) => {
       anti: r.anti,
       neutral: r.neutral,
       net: netScore(r.pro, r.anti, r.neutral),
+      // Which question `pro` / `anti` / `net` answer: "does it help or hurt BRS?".
+      axis: 'client_relative',
+      // For a rival leader, how people regard THAT LEADER (the reverse of the client-relative
+      // counts). Null for our own leaders, where the two are the same thing.
+      leader_standing: r.rival
+        ? { supportive: r.anti, critical: r.pro, net: netScore(r.anti, r.pro) }
+        : null,
       confident: r.mentions >= MIN_CONFIDENT,
       topics: [...r.topics.values()].sort((a, b) => b.anti - a.anti || b.total - a.total).slice(0, 5),
       quotes: r.quotes.sort((a, b) => b.engagement - a.engagement).slice(0, 4),
@@ -906,7 +942,7 @@ const getCMBrief = async (req, res) => {
 
     const curOur = scoreLeaders(organic, OUR_INDEX);
     const prevOur = scoreLeaders(prevOrganic, OUR_INDEX);
-    const curOpp = scoreLeaders(organic, OPP_INDEX);
+    const curOpp = scoreLeaders(organic, OPP_INDEX, true);
 
     /**
      * The brief's principal. In a ruling-party deployment this was whoever held
@@ -1178,7 +1214,7 @@ const getCMBrief = async (req, res) => {
           ? `Put our position on ${i.topic} on record — we are being out-posted ${i.opposition_posts} to ${i.our_posts}.`
           : worsening
             ? `Find what changed on ${i.topic} in the last two weeks before it sets.`
-            : `Brief the department holding ${i.topic} and answer the specific complaints.`,
+            : `Prepare the party's response on ${i.topic}: a press statement that answers the specific complaints with evidence.`,
         themes,
         evidence: {
           total: i.total, pro: i.pro, anti: i.anti, reach,
@@ -1214,7 +1250,7 @@ const getCMBrief = async (req, res) => {
         detail: `${d.news_negative} negative articles and ${d.social_anti} opposing posts`
           + (themes.length ? `, recurring on ${themes.map((t) => t.term).join(', ')}` : '')
           + '.',
-        action: `Send the collector a brief for ${d.district} and place a local response in the district press.`,
+        action: `Mobilise the ${d.district} district unit: cadre outreach, a local press note and a promise-vs-delivery sheet.`,
         themes,
         evidence: { news: d.news, social: d.social, adverse },
         quotes: posts
@@ -1243,7 +1279,7 @@ const getCMBrief = async (req, res) => {
           + (m.role ? `, as ${m.role}` : '')
           + (subject ? `, mostly over ${subject.topic}` : '') + '.',
         action: subject
-          ? `Have ${m.name}'s office answer on ${subject.topic} directly.`
+          ? `Have ${m.name} answer on ${subject.topic} directly, with a press statement or a social-media response.`
           : `Ask ${m.name}'s office for a line on the criticism.`,
         themes: [],
         evidence: { mentions: m.mentions, pro: m.pro, anti: m.anti },

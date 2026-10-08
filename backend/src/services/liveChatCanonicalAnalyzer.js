@@ -57,7 +57,7 @@ function isValidCanonicalResult(result) {
 async function analyzeLiveComment(text) {
   try {
     const result = await withForcedProvider('ollama', () =>
-      analyzeContent(text, { platform: 'youtube_live', skipForensics: true })
+      analyzeContent(text, { platform: 'youtube_live', skipForensics: true, postDate: new Date() })
     );
     if (!isValidCanonicalResult(result)) {
       return { ok: false, reason: (result && result.explanation) || 'canonical_engine_incomplete_result' };

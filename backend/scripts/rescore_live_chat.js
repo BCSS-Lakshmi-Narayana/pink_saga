@@ -4,6 +4,8 @@
  *   2. batched LLM pass                        — political messages only
  *
  * Use after a change to the polarity rules, the prompt, or the entity graph.
+ * Stances written here are BRS-relative (pro_client = good for BRS); the state government is
+ * the client's adversary, not part of "our camp" (see liveChatBatchAnalyzer.ALLOWED_ABOUT).
  * Messages carrying the retired `pro_bsk` / `anti_bsk` stance vocabulary were
  * scored by the old per-message path and are the main reason to run this.
  *
@@ -18,6 +20,16 @@ const LiveChatMessage = require('../src/models/LiveChatMessage');
 const LiveStream = require('../src/models/LiveStream');
 const { analyzeFast, enforceBatchConsistency, resyncStreamCounts } = require('../src/services/youtubeLiveService');
 const { analyzeBatch } = require('../src/services/liveChatBatchAnalyzer');
+const { POLITICAL_ENTITIES } = require('../src/config/politicalEntities');
+
+// Polarity guard. Every stance this script writes is BRS-relative: attacks on the state
+// government are GOOD for the client. That only holds while the roster puts the government on
+// the rival side, so refuse to rewrite stored stances against a roster that does not.
+const GOV = POLITICAL_ENTITIES.state_government;
+if (!GOV || GOV.alignment !== 'opposition') {
+    console.error('Refusing to run: the state-government entity is not on the client\'s rival side in the roster, so re-scoring would invert stored stances.');
+    process.exit(1);
+}
 
 const STALE_ONLY = process.argv.includes('--stale-only');
 const LEXICON_ONLY = process.argv.includes('--lexicon');

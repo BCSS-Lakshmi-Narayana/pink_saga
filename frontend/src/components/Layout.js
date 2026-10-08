@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
-import { PARTY_HERO, LOCAL_FALLBACK, BRAND } from '../config/partyMedia';
+import { LOCAL_LOGO, LOCAL_FALLBACK, BRAND } from '../config/partyMedia';
 import { APP_NAVIGATION } from '../config/navigation';
 import { roleLabel } from '../lib/roleLabels';
 
@@ -113,8 +113,8 @@ const Layout = () => {
             <div className="flex items-center gap-3 lg:gap-4">
               <div className="relative h-10 w-10 lg:h-14 lg:w-14 rounded-full ring-2 ring-pink-700/40 shadow-lg overflow-hidden bg-white/10">
                 <img
-                  src={PARTY_HERO.src}
-                  alt={PARTY_HERO.alt}
+                  src={LOCAL_LOGO}
+                  alt={`${BRAND.partyName} logo`}
                   referrerPolicy="no-referrer"
                   className="h-full w-full object-cover"
                   onError={(e) => {
