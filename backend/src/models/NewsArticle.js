@@ -62,7 +62,7 @@ const newsArticleSchema = new mongoose.Schema({
   // defaults until an article is analysed here.
   political_stance: {
     type: String,
-    enum: ['pro_target', 'anti_target', 'pro_target_indirect', 'anti_target_indirect', 'neutral', 'unrelated'],
+    enum: ['pro_target', 'anti_target', 'pro_target_indirect', 'anti_target_indirect', 'neutral', 'mixed', 'unrelated'],
     default: 'neutral',
   },
   target_sentiment: { type: String, enum: ['positive', 'negative', 'neutral', 'moderate'], default: 'neutral' },
@@ -70,6 +70,10 @@ const newsArticleSchema = new mongoose.Schema({
   target_tone: { type: String, enum: ['positive', 'negative', 'neutral', 'moderate'], default: 'neutral' },
   // Follows the RAW `sentiment` (positive → low, neutral → low, negative →
   // high), the same bands Alerts and Mentions use. Set by rssAnalysisService.
+  // `risk_level` below is a TONE band (negative reads high), not risk to the client.
+  // `client_impact` / `hostile_to_client` answer the client-facing question from the stance.
+  client_impact: { type: String, enum: ['favourable', 'adverse', 'neutral', 'mixed'], default: null },
+  hostile_to_client: { type: Boolean, default: false },
   risk_level: { type: String, enum: ['low', 'medium', 'high'], default: null },
   risk_score: { type: Number, default: null },
   emotion: {
@@ -85,7 +89,7 @@ const newsArticleSchema = new mongoose.Schema({
   client_relevance: { type: String, enum: ['relevant', 'not_relevant', 'uncertain'], default: 'uncertain' },
   target: {
     type: String,
-    enum: ['ruling_party', 'state_government', 'opposition', 'other', 'unknown', 'none'],
+    enum: ['our_party', 'state_government', 'rival_party', 'leader', 'institution', 'issue', 'unknown', 'none', 'ruling_party', 'opposition', 'other'],
     default: 'unknown',
   },
   /**

@@ -330,6 +330,12 @@ const buildGrievanceAnalysisUpdate = (analysisData, { videoTranscript = '' } = {
         'analysis.review_reason': analysisData.review_reason || '',
         'analysis.client_relevance': analysisData.client_relevance || 'uncertain',
         'analysis.target': analysisData.target || 'unknown',
+        // Client impact / moderation / attribution, kept apart from tone (see services/clientImpact.js).
+        ...(analysisData.client_impact ? { 'analysis.client_impact': analysisData.client_impact } : {}),
+        'analysis.hostile_to_client': !!analysisData.hostile_to_client,
+        ...(analysisData.moderation_risk ? { 'analysis.moderation_risk': analysisData.moderation_risk } : {}),
+        'analysis.attribution': analysisData.attribution || null,
+        'analysis.ambiguous_entities': analysisData.ambiguous_entities || [],
         'analysis.target_party': (analysisData.llm_analysis && analysisData.llm_analysis.target_party) || '',
         'analysis.target_entity': analysisData.target_entity || null,
         'analysis.target_entity_canonical': analysisData.target_entity_canonical || null,
@@ -400,7 +406,7 @@ const analyzeGrievanceContent = async (grievanceId, text, platform) => {
         try {
             const grievanceDoc = await Grievance.findOne(
                 { id: grievanceId },
-                'content.media posted_by.handle tagged_account'
+                'content.media posted_by.handle tagged_account post_date detected_date'
             ).lean();
             grievanceCtx = grievanceDoc;
             const videoItems = (grievanceDoc?.content?.media || [])
@@ -427,7 +433,9 @@ const analyzeGrievanceContent = async (grievanceId, text, platform) => {
             platform: platform || 'x',
             skipForensics: true,
             taggedKeyword: grievanceCtx?.tagged_account || '',
-            authorHandle: grievanceCtx?.posted_by?.handle || ''
+            authorHandle: grievanceCtx?.posted_by?.handle || '',
+            // When the post was written: settles which government a bare "the government" means.
+            postDate: grievanceCtx?.post_date || grievanceCtx?.detected_date || null
         });
         if (!isAnalysisComplete(analysisData)) {
             await markGrievancePending(grievanceId, (analysisData?.analysis_incomplete_reasons || []).join(',') || analysisData?.explanation || 'incomplete');
@@ -495,9 +503,9 @@ const rapidApiGet = async (path, rawParams, maxRetries = 2) => {
     // strips blank values, so no null-param hit ever reaches BluGate.
     const { params } = rapidApiXService.prepareXRequest(path, rawParams);
     for (let attempt = 0; ; attempt++) {
-        const res = await blugateClient.withRateLimitRetry(() => axios.get(`${blugateClient.GATEWAY_BASE}/twitter${path}`, {
+        const res = await blugateClient.withRateLimitRetry(() => axios.get(`${blugateClient.platformBase('twitter')}${path}`, {
             params,
-            headers: blugateClient.getHeaders(),
+            headers: blugateClient.getHeaders('twitter'),
             ...blugateClient.responseOptions(),
         }), { label: 'BluGate X search' });
 
@@ -1782,6 +1790,65 @@ const searchXByKeyword = async (query, limit = 50) => {
 };
 
 /**
+ * Where a tracking keyword itself points. A post found by the keyword
+ * "Sircilla farmers" is about Sircilla even when its text never repeats the
+ * place, so the keyword's location is the fallback for posts the text-based
+ * classifier cannot place.
+ *   1. a keyword scoped to a constituency (Keyword.constituency) → that seat;
+ *   2. a keyword whose text names a seat (classifier, master index) → that seat;
+ *   3. a keyword naming only a district / town → district level, no seat.
+ * Handles are skipped (they name people). Returns null when the keyword names no place.
+ */
+const resolveKeywordLocation = async (kw) => {
+    try {
+        if (!kw || kw.kind === 'handle') return null;
+        const { getMasterRow } = require('./constituencyMasterService');
+        const toSeat = (row, reasoning, token, source) => (row ? {
+            city: row.ac_name,
+            district: row.district || null,
+            constituency: row.ac_name,
+            lok_sabha: row.lok_sabha || null,
+            location_found: true,
+            confidence: 0.8,
+            source: 'keyword_location',
+            reasoning,
+            matched_token: token,
+            match_source: source,
+            auto_assigned: true,
+            manual_review_required: false,
+        } : null);
+
+        if (kw.constituency) {
+            const hit = toSeat(await getMasterRow(kw.constituency), `Found via keyword scoped to ${kw.constituency}.`, kw.keyword, 'keyword_scope');
+            if (hit) return hit;
+        }
+
+        const text = String(kw.keyword || '').replace(/^[@#]+/, '').trim();
+        if (!text) return null;
+
+        const { classifyLocation } = require('./locationClassifierService');
+        const seat = await classifyLocation(text);
+        if (seat && seat.constituency) {
+            return toSeat(await getMasterRow(seat.constituency), `Found via keyword "${text}" naming ${seat.constituency}.`, seat.matched_token || text, 'keyword_text');
+        }
+
+        const place = locateDistrict(text);
+        if (place) {
+            return {
+                city: place.city, district: place.district, constituency: null, lok_sabha: null,
+                location_found: true, confidence: 0.7, source: 'keyword_location',
+                reasoning: `Found via keyword "${text}" naming ${place.city} (${place.district} district).`,
+                matched_token: place.matched_token, match_source: 'keyword_district',
+                auto_assigned: true, manual_review_required: false,
+            };
+        }
+    } catch (err) {
+        console.warn(`[KeywordLocation] could not resolve location for "${kw && kw.keyword}": ${err.message}`);
+    }
+    return null;
+};
+
+/**
  * Create a Grievance doc from a generic post object (platform-agnostic).
  */
 const createGrievanceFromPost = async (post, platform, taggedKeyword, forceLocation = null, options = {}) => {
@@ -1883,6 +1950,41 @@ const createGrievanceFromPost = async (post, platform, taggedKeyword, forceLocat
     // Extract and persist location only if NOT forced
     if (!forceLocation) {
         await extractAndSaveLocation(grievance.id, post.text || '', post.author || {}, { tagged_account: grievance.tagged_account });
+
+        // Fallback: the post names no place (or only a district) but the keyword that
+        // found it does. A seat from the post text always wins.
+        if (options.keywordLocation) {
+            try {
+                const placed = await Grievance.findOne({ id: grievance.id }).select('detected_location').lean();
+                const hasSeat = !!placed?.detected_location?.constituency;
+                const hasPlace = hasSeat || !!placed?.detected_location?.district;
+                const kl = options.keywordLocation;
+                if (!hasSeat && (kl.constituency || !hasPlace)) {
+                    const update = { detected_location: kl };
+                    if (kl.constituency) {
+                        const routing = await resolveRouting(kl.constituency);
+                        if (routing) {
+                            update.routing_targets = {
+                                ac_key: routing.ac_key || null,
+                                district_key: routing.district_key || null,
+                                lok_sabha_key: routing.lok_sabha_key || null,
+                                dashboards: routing.dashboards || null,
+                                siblings_in_district: routing.siblings_in_district || [],
+                                siblings_in_ls: routing.siblings_in_ls || [],
+                                constituencies: [kl.constituency],
+                                ac_dashboards: routing.dashboards?.ac ? [routing.dashboards.ac] : [],
+                                mla_user_ids: (routing.mla_users || []).map((u) => u.id).filter(Boolean),
+                                mp_user_ids: (routing.mp_users || []).map((u) => u.id).filter(Boolean),
+                                scope_keys: routing.scope_keys || [],
+                            };
+                        }
+                    }
+                    await Grievance.findOneAndUpdate({ id: grievance.id }, { $set: update });
+                }
+            } catch (klErr) {
+                console.warn(`[KeywordLocation] could not apply keyword location to ${grievance.id}: ${klErr.message}`);
+            }
+        }
     }
 
     // Trigger background media archival if video exists
@@ -1943,6 +2045,8 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
 
             const variants = generateKeywordVariants(rawKeyword);
             const baseKeyword = rawKeyword.replace(/^[@#]+/, '').trim();
+            const keywordLocation = await resolveKeywordLocation(kw);
+            const kwOptions = keywordLocation ? { keywordLocation } : {};
             console.log(`[KeywordFetch] Keyword: "${rawKeyword}" → variants: ${variants.join(', ')}`);
 
             // Run selected platforms in parallel for speed
@@ -1989,7 +2093,7 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
                                     media: fbMedia,
                                     engagement: { likes: fbPost.metrics?.likes || 0, retweets: fbPost.metrics?.shares || 0, replies: fbPost.metrics?.comments || 0, views: fbPost.metrics?.views || 0, quotes: 0 }
                                 };
-                                const created = await createGrievanceFromPost(post, 'facebook', rawKeyword);
+                                const created = await createGrievanceFromPost(post, 'facebook', rawKeyword, null, kwOptions);
                                 if (created) count++;
                             }
                         } catch (err) {
@@ -2076,7 +2180,7 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
                                     },
                                     context: Object.keys(ctx).length > 0 ? ctx : undefined,
                                 };
-                                const created = await createGrievanceFromPost(post, 'x', rawKeyword);
+                                const created = await createGrievanceFromPost(post, 'x', rawKeyword, null, kwOptions);
                                 if (created) count++;
                             }
                         } catch (err) {
@@ -2127,7 +2231,7 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
                                 media: igMedia,
                                 engagement: { likes: igPost.metrics?.likes || 0, retweets: 0, replies: igPost.metrics?.comments || 0, views: igPost.metrics?.views || 0, quotes: 0 }
                             };
-                            const created = await createGrievanceFromPost(post, 'instagram', rawKeyword);
+                            const created = await createGrievanceFromPost(post, 'instagram', rawKeyword, null, kwOptions);
                             if (created) count++;
                         }
                     } catch (err) {
@@ -2170,7 +2274,7 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
                                     media: thumbnail ? [{ type: 'photo', url: thumbnail, preview_url: thumbnail }] : [],
                                     engagement: { likes: video.statistics?.likeCount || 0, retweets: 0, replies: video.statistics?.commentCount || 0, views: video.statistics?.viewCount || 0, quotes: 0 }
                                 };
-                                const created = await createGrievanceFromPost(post, 'youtube', rawKeyword);
+                                const created = await createGrievanceFromPost(post, 'youtube', rawKeyword, null, kwOptions);
                                 if (created) count++;
                             }
                         } catch (err) {
@@ -2196,6 +2300,7 @@ const fetchKeywordGrievances = async (platformFilter = null) => {
 };
 
 module.exports = {
+    resolveKeywordLocation,
     fetchUserProfile,
     searchMentions,
     fetchAllGrievances,

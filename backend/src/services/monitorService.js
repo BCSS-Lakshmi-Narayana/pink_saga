@@ -260,8 +260,8 @@ const extractAndFetchUrlContent = async (text) => {
 
 const monitorYoutubeSource = async (source) => {
   try {
-    if (!blugateClient.hasCredentials()) {
-      console.warn('[YouTube Monitor] ⚠️ BluGate credentials not configured. Skipping scan.');
+    if (!blugateClient.hasCredentials('youtube')) {
+      console.warn('[YouTube Monitor] ⚠️ No YouTube credentials (BluGate or YOUTUBE_API_KEY). Skipping scan.');
       await Source.findOneAndUpdate({ id: source.id }, { last_checked: new Date() });
       return [];
     }
@@ -403,7 +403,7 @@ const { scrapeProfile, getHealthyAccount } = require('./scraperService');
 const monitorXSource = async (source, options = {}) => {
   try {
     let tweets = [];
-    const useRapidApi = blugateClient.hasCredentials();
+    const useRapidApi = blugateClient.hasCredentials('twitter');
     const useOfficialApi = !!process.env.X_BEARER_TOKEN;
 
     let userData = null;
@@ -660,8 +660,8 @@ const monitorXSource = async (source, options = {}) => {
 
 const monitorInstagramSource = async (source, accessToken) => {
   try {
-    if (!blugateClient.hasCredentials()) {
-      console.warn('[Instagram Monitor] ⚠️ BluGate credentials not configured. Skipping scan.');
+    if (!blugateClient.hasCredentials('instagram')) {
+      console.warn('[Instagram Monitor] ⚠️ No Instagram credentials (BluGate or RAPIDAPI_INSTAGRAM_KEY/RAPIDAPI_KEY). Skipping scan.');
       await Source.findOneAndUpdate({ id: source.id }, { last_checked: new Date() });
       return [];
     }
@@ -1841,6 +1841,8 @@ const performFullAnalysis = async (content, settings, keywords, options = {}) =>
       media_urls: content.media ? content.media.map(m => m.url) : [],
       content: content,
       analysisId: analysisId,
+      // When it was published: settles which government a bare "the government" means.
+      postDate: content.published_at || content.created_at || null,
       /**
        * The author handle was previously NOT passed on this path, so EVERY
        * alert reached the political gate with an empty author — losing a signal

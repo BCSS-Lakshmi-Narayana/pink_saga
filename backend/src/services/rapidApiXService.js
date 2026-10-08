@@ -2,7 +2,7 @@ const axios = require('axios');
 const { responseLooksDoubleEncoded } = require('../utils/textEncoding');
 const blugateClient = require('./blugateClient');
 
-const TWITTER_BASE = `${blugateClient.GATEWAY_BASE}/twitter`;
+const TWITTER_BASE = blugateClient.platformBase('twitter');
 
 // Every twitter241 route BluGate exposes, with its required query params
 // (from BluGate_Provider_Endpoints.xlsx). Anything not listed here does not
@@ -102,7 +102,7 @@ const rapidRequestX = async (config, retryCount = 0) => {
             params,
             headers: {
                 ...config.headers,
-                ...blugateClient.getHeaders()
+                ...blugateClient.getHeaders('twitter')
             },
             timeout: 30000, // 30s timeout
             ...blugateClient.responseOptions(),

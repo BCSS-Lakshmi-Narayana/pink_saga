@@ -60,6 +60,7 @@ const {
     resolveEntityKey,
     LEGACY_ENTITY_KEYS,
 } = require('../config/politicalEntities');
+const { grievanceGate, applyGate } = require('../config/displayGate');
 
 const CACHE_TTL = 60;
 const LISTING_FLOOR_DEFAULT = Number(process.env.LEADER_POPULARITY_LISTING_FLOOR || 3);
@@ -172,12 +173,12 @@ const rawCounts = async (range) => {
     const dc = (field) => (range ? { [field]: range } : {});
 
     const pipeline = [
-        { $match: {
+        { $match: applyGate({
             is_active: true,
             'detected_location.constituency': { $nin: [null, ''] },
             'analysis.target_sentiment': { $in: ['positive', 'negative', 'neutral', 'moderate'] },
             ...dc('post_date'),
-        } },
+        }, grievanceGate()) },
         { $project: {
             constituency: '$detected_location.constituency',
             entity_raw: { $ifNull: ['$analysis.target_entity_canonical', '$analysis.target_entity'] },
@@ -411,6 +412,7 @@ const getLeaderPopularityPosts = async (req, res) => {
         // whose canonical resolved to someone else but whose separate
         // target_entity fallback text happened to also contain a CM alias.
         const gMatch = {
+            ...(grievanceGate() ? { $and: [grievanceGate()] } : {}),
             is_active: true,
             'detected_location.constituency': constituencyRe,
             $or: [

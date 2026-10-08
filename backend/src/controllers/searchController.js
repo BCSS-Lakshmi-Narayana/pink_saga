@@ -1065,7 +1065,7 @@ async function fetchPostByUrl(req, res) {
                 }
             }
             // If still not found, try scraping
-            if (!tweet && (!blugateClient.hasCredentials() && !process.env.X_BEARER_TOKEN)) {
+            if (!tweet && (!blugateClient.hasCredentials('twitter') && !process.env.X_BEARER_TOKEN)) {
                 try {
                     const { scrapeProfile, getHealthyAccount } = require('../services/scraperService');
                     if (authorHandle) {

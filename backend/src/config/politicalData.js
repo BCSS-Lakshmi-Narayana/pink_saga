@@ -215,7 +215,7 @@ const _OUR_FRONTBENCH_RAW = [
         aliases: [
             'KCR', 'K Chandrashekar Rao', 'Kalvakuntla Chandrashekar Rao', 'Chandrashekar Rao',
             'Chandrasekhar Rao', 'K Chandrasekhar Rao', 'KCR garu', 'Former CM KCR', 'Ex-CM KCR',
-            'BRS chief', 'BRS president', 'Leader of Opposition',
+            'BRS chief', 'BRS president', 'Telangana Leader of Opposition', 'LoP KCR',
             'కేసీఆర్', 'చంద్రశేఖర్ రావు', 'కల్వకుంట్ల చంద్రశేఖర్ రావు',
         ],
         role: 'President, Bharat Rashtra Samithi (since 27 Apr 2001); Leader of the Opposition, Telangana Legislative Assembly (since 16 Dec 2023); Chief Minister of Telangana 2014-2023',
@@ -228,7 +228,7 @@ const _OUR_FRONTBENCH_RAW = [
     {
         id: 'ktr', name: 'K. T. Rama Rao', shortName: 'KTR',
         aliases: [
-            'KTR', 'K T Rama Rao', 'Kalvakuntla Taraka Rama Rao', 'Taraka Rama Rao', 'Rama Rao',
+            'KTR', 'K T Rama Rao', 'Kalvakuntla Taraka Rama Rao', 'Taraka Rama Rao',
             'BRS working president', 'Working President KTR', 'Former IT Minister KTR',
             'కేటీఆర్', 'తారక రామారావు', 'కల్వకుంట్ల తారక రామారావు',
         ],
@@ -317,13 +317,15 @@ const _RULING_CABINET_RAW = [
         id: 'revanth-reddy', name: 'A. Revanth Reddy', shortName: 'Revanth Reddy',
         aliases: [
             'Revanth Reddy', 'Anumula Revanth Reddy', 'A Revanth Reddy', 'CM Revanth', 'CM Revanth Reddy',
-            'Telangana CM', 'Chief Minister Revanth Reddy', 'Revanth sarkar', 'Revanth government',
+            'Telangana CM', 'Chief Minister Revanth Reddy',
             'రేవంత్ రెడ్డి', 'అనుముల రేవంత్ రెడ్డి', 'ముఖ్యమంత్రి రేవంత్ రెడ్డి',
         ],
         role: 'Chief Minister of Telangana (since 7 Dec 2023)',
         portfolios: ['General Administration', 'Home', 'Law & Order', 'Municipal Administration & Urban Development', 'all unallocated departments'],
         constituency: 'Kodangal', party: 'INC',
-        handles: ['@revanth_anumula', '@TelanganaCMO'],
+        // @TelanganaCMO is the Chief Minister's OFFICE, i.e. the state government: it is
+        // claimed by the `state_government` entity in politicalEntities.js, not by the man or the party.
+        handles: ['@revanth_anumula'],
     },
     {
         id: 'bhatti-vikramarka', name: 'Mallu Bhatti Vikramarka', shortName: 'Bhatti Vikramarka',
@@ -778,7 +780,7 @@ const OPPOSITION_PARTIES = [
         alliance: 'INDIA',
         /** ⚠ The party of government in this state — our principal adversary. */
         role: 'ruling',
-        handles: ['@INCTelangana', '@TelanganaCMO'],
+        handles: ['@INCTelangana'],
         leaders: [...RULING_MINISTERS, ...PRESIDING_OFFICERS, ...INC_LEADERS,
             ...OPPOSITION_MLAS.filter(byParty('INC')), ...OPPOSITION_MPS.filter(byParty('INC')),
             ...NATIONAL_OPPOSITION_LEADERS.filter(byParty('INC')),],
@@ -859,6 +861,11 @@ const OPPOSITION_PARTIES = [
 /** Independents have no party entity; they still need a camp. */
 const OTHER_OPPOSITION_LEADERS = [
     ...IND_LEADERS,
+    // Elected on a BRS ticket, now functioning with INC. They carry party 'BRS' in the
+    // roster (that is what they were elected as), so no party's `leaders` list claims
+    // them; without this line they were in no entity at all and a post naming one of
+    // them resolved to nothing (or, via "BRS ticket", to BRS itself).
+    ...DEFECTED_MLAS,
     ...OPPOSITION_MLAS.filter(byParty('IND')).filter((m) => !IND_LEADERS.some((c) => acKey(c.constituency) === acKey(m.constituency))),
 ];
 

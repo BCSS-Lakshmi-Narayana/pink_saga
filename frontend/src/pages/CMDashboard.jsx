@@ -657,7 +657,9 @@ export default function CMDashboard() {
       <div className="h-full flex items-center justify-center bg-[#f6f7fb]">
         <div className="text-center">
           <RefreshCw className="h-6 w-6 text-indigo-500 animate-spin mx-auto mb-3" />
-          <div className="text-[13px] text-slate-500">Loading your brief…</div>
+          <div className="text-[14px] font-medium text-slate-800">Building the brief</div>
+          <div className="text-[13px] text-slate-600 mt-1">across all leaders over the last {days} days</div>
+          <div className="text-[12px] text-slate-400 mt-3">Reading mentions, articles and alerts, then scoring them by issue.</div>
         </div>
       </div>
     );

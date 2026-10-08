@@ -22,6 +22,8 @@
 
 const NewsArticle = require('../models/NewsArticle');
 const { analyzeContent, isAnalysisComplete } = require('./analysisService');
+const { normalizeStance } = require('./stanceVocabulary');
+const { deriveClientImpact } = require('./clientImpact');
 
 /**
  * Prefer the English rendering when the engine produced one — the pipeline
@@ -39,14 +41,18 @@ const textForArticle = (article) => [
     .trim()
     .slice(0, 4000);
 
-/** Which camp the tone landed on, derived from the stance. */
-const targetAlignmentFromStance = (stance) => {
-    if (stance === 'pro_target' || stance === 'anti_target') return 'ally';
+/** Which camp the tone landed on, derived from the stance (any vocabulary). */
+const targetAlignmentFromStance = (rawStance) => {
+    const stance = normalizeStance(rawStance);
+    if (stance === 'pro_target' || stance === 'anti_target' || stance === 'mixed') return 'ally';
     if (stance === 'pro_target_indirect' || stance === 'anti_target_indirect') return 'opposition';
     return 'neutral';
 };
 
-/** Risk follows the raw tone — the same bands analysisService uses. */
+/**
+ * TONE bands — the same ones analysisService uses. `risk_level` on a news article is a measure of
+ * how the article READS, not of risk to the client: use `hostile_to_client` / `client_impact`.
+ */
 const RISK_FOR_SENTIMENT = {
     positive: ['low', 15],
     neutral: ['low', 20],
@@ -69,6 +75,7 @@ const updateFromAnalysis = (analysisData) => {
     const rawSentiment = analysisData.generic_sentiment || analysisData.sentiment || 'neutral';
     const targetSentiment = analysisData.target_sentiment || 'neutral';
     const [riskLevel, riskScore] = RISK_FOR_SENTIMENT[rawSentiment] || RISK_FOR_SENTIMENT.neutral;
+    const impact = deriveClientImpact({ tone: rawSentiment, stance, hate_speech: analysisData.hate_speech });
 
     return {
         sentiment: rawSentiment,
@@ -76,6 +83,9 @@ const updateFromAnalysis = (analysisData) => {
         generic_sentiment: rawSentiment,
         risk_level: riskLevel,
         risk_score: riskScore,
+        // What the article means for the CLIENT, apart from its tone (services/clientImpact.js).
+        client_impact: impact.client_impact,
+        hostile_to_client: impact.hostile_to_client,
         target_tone: analysisData.target_tone || analysisData.generic_sentiment || 'neutral',
         political_stance: stance === 'unrelated' ? 'unrelated' : stance,
         sentiment_target: analysisData.target_entity_canonical || analysisData.target_entity || '',
@@ -124,6 +134,8 @@ const analyzeArticle = async (article, { write = true, force = false } = {}) => 
         platform: 'news',
         skipForensics: true,
         taggedKeyword: (article.keywords_matched || []).join(' '),
+        // The article's own date: settles which government a bare "the government" means.
+        postDate: article.published_date || article.created_at || null,
         // News has no social author. The publication is the closest analogue,
         // and it will not resolve to the roster, so `author_alignment` stays
         // null — which the stance engine treats as "unknown" and ignores.

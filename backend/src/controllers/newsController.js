@@ -139,6 +139,11 @@ exports.getArticles = async (req, res) => {
     const EXCLUDED_DOMAINS = ['indianexpress.com', 'news.google.com'];
     const filter = { source_domain: { $nin: EXCLUDED_DOMAINS }, $nor: NOT_MOJIBAKE_NOR };
 
+    // Articles the Node pipeline judged NOT relevant to the client (sport, markets, out-of-state crime that
+    // a whole-site feed let in) are kept in the database but never listed. `$ne` also keeps articles that
+    // have no verdict yet; those are held back by the display gate below until they are scored.
+    filter.client_relevance = { $ne: 'not_relevant' };
+
     // RBAC: scoped MLAs / MPs only see news that mentions their seat name
     // anywhere in the article (title, summary, matched keywords, detected
     // location). Super admin / party leadership pass through.

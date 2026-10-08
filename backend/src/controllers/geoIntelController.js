@@ -27,6 +27,13 @@ const NewsArticle = require('../models/NewsArticle');
 const cacheService = require('../services/cacheService');
 const { hasFeatureAccess } = require('../middleware/rbacMiddleware');
 const { isKnownStateLocation, DISTRICT_KEY_ALIASES, DISTRICT_DISPLAY } = require('../config/stateLocations');
+const { grievanceGate } = require('../config/displayGate');
+
+/** `is_active: true` plus the display gate: a post still waiting for analysis is not shown in Mentions, so it is not counted here. */
+const gatedActive = () => {
+  const gate = grievanceGate();
+  return gate ? { is_active: true, $and: [gate] } : { is_active: true };
+};
 
 const GEO_PAGE_PATH = '/geographic-intelligence';
 const VALID_PLATFORMS = new Set(['x', 'facebook', 'whatsapp', 'instagram', 'youtube']);
@@ -227,7 +234,7 @@ const reconcilePercentages = (counts, total) => {
  */
 const computeLeaderboard = async ({ path, from, to, prevFrom, prevTo, platform, sentiment, topic, extraMatch = {} }) => {
   const baseMatch = {
-    is_active: true,
+    ...gatedActive(),
     [path]: { $exists: true, $nin: [null, ''] },
     ...extraMatch,
     ...buildTopicMatch(topic),
@@ -275,6 +282,7 @@ const computeLeaderboard = async ({ path, from, to, prevFrom, prevTo, platform, 
           // curMatch may carry the topic filter's own $or: combine, don't overwrite.
           ...(({ $or, ...rest }) => rest)(curMatch),
           $and: [
+            ...(curMatch.$and || []),
             ...(curMatch.$or ? [{ $or: curMatch.$or }] : []),
             { $or: [
               { 'analysis.grievance_type': { $exists: true, $nin: [null, ''] } },
@@ -408,7 +416,7 @@ const attachNewsCounts = async (rows, path, extraMatch, from, to) => {
  */
 const computeTopicAnalytics = async ({ extraMatch, from, to, prevFrom, prevTo, limit = 10 }) => {
   const baseFilter = {
-    is_active: true,
+    ...gatedActive(),
     $or: [
       { 'analysis.grievance_type': { $exists: true, $nin: [null, ''] } },
       { 'analysis.category': { $exists: true, $nin: [null, ''] } },
@@ -472,7 +480,7 @@ const computeTopicAnalytics = async ({ extraMatch, from, to, prevFrom, prevTo, l
 /** Top accounts by follower count / reach within a geo scope — same pattern as constituencyIntelligenceController.analyzeSeat. */
 const computeTopInfluencers = async ({ extraMatch, from, to, limit = 6 }) => {
   const rows = await Grievance.aggregate([
-    { $match: { is_active: true, ...extraMatch, post_date: { $gte: from, $lte: to }, 'posted_by.handle': { $nin: [null, ''] } } },
+    { $match: { ...gatedActive(), ...extraMatch, post_date: { $gte: from, $lte: to }, 'posted_by.handle': { $nin: [null, ''] } } },
     {
       $group: {
         _id: '$posted_by.handle',
@@ -499,7 +507,7 @@ const computeTopInfluencers = async ({ extraMatch, from, to, limit = 6 }) => {
 /** Posts ranked by total engagement (likes+retweets+replies+views) within a geo scope. */
 const computeTopPosts = async ({ extraMatch, from, to, limit = 12 }) => {
   const rows = await Grievance.aggregate([
-    { $match: { is_active: true, ...extraMatch, post_date: { $gte: from, $lte: to } } },
+    { $match: { ...gatedActive(), ...extraMatch, post_date: { $gte: from, $lte: to } } },
     {
       $addFields: {
         total_engagement: {
@@ -721,7 +729,7 @@ const getDistrictDetail = async (req, res) => {
       }),
       computeTopicAnalytics({ extraMatch: filterMatch, from, to, prevFrom, prevTo, limit: 8 }),
       Grievance.aggregate([
-        { $match: { is_active: true, ...filterMatch, post_date: { $gte: from, $lte: to } } },
+        { $match: { ...gatedActive(), ...filterMatch, post_date: { $gte: from, $lte: to } } },
         {
           $group: {
             _id: { $dateToString: { format: '%Y-%m-%d', date: '$post_date' } },
@@ -733,7 +741,7 @@ const getDistrictDetail = async (req, res) => {
         },
         { $sort: { _id: 1 } },
       ]),
-      Grievance.find({ is_active: true, ...filterMatch, post_date: { $gte: from, $lte: to } })
+      Grievance.find({ ...gatedActive(), ...filterMatch, post_date: { $gte: from, $lte: to } })
         .select('content.text analysis.sentiment analysis.risk_level platform post_date tweet_id posted_by.handle posted_by.display_name detected_location.city')
         .sort({ post_date: -1 })
         .limit(12)
@@ -935,7 +943,7 @@ const getSummary = async (req, res) => {
     // scoped user's trend chart / top-issues panel / platform mix silently
     // shows state-wide data they aren't authorized to see.
     const scope = geoScopeMatch(req.geoScope);
-    const dateMatch = { is_active: true, post_date: { $gte: from, $lte: to }, ...scope, ...buildTopicMatch(topic) };
+    const dateMatch = { ...gatedActive(), post_date: { $gte: from, $lte: to }, ...scope, ...buildTopicMatch(topic) };
     if (platform && platform !== 'all') dateMatch.platform = platform;
     if (sentiment && sentiment !== 'all') dateMatch['analysis.sentiment'] = sentimentValue(sentiment);
     const prevDateMatch = { ...dateMatch, post_date: { $gte: prevFrom, $lt: from } };
@@ -1084,7 +1092,7 @@ const getPlayback = async (req, res) => {
     // restriction, which it was previously missing entirely.
     const scope = geoScopeMatch(req.geoScope);
     const match = {
-      is_active: true,
+      ...gatedActive(),
       'detected_location.district': { $exists: true, $nin: [null, ''] },
       post_date: { $gte: from, $lte: to },
       ...scope,
@@ -1092,7 +1100,7 @@ const getPlayback = async (req, res) => {
     };
     if (platform && platform !== 'all') match.platform = platform;
     if (sentiment && sentiment !== 'all') match['analysis.sentiment'] = sentimentValue(sentiment);
-    const platformMatch = { is_active: true, post_date: { $gte: from, $lte: to }, ...scope, ...buildTopicMatch(topic) };
+    const platformMatch = { ...gatedActive(), post_date: { $gte: from, $lte: to }, ...scope, ...buildTopicMatch(topic) };
     if (platform && platform !== 'all') platformMatch.platform = platform;
     if (sentiment && sentiment !== 'all') platformMatch['analysis.sentiment'] = sentimentValue(sentiment);
 

@@ -44,6 +44,8 @@ const {
     LEGACY_ENTITY_KEYS,
     resolveEntityKey,
 } = require('../config/politicalEntities');
+const { stanceFromOperator, clientStance } = require('../services/stanceVocabulary');
+const { deriveClientImpact } = require('../services/clientImpact');
 
 /**
  * Short names the Mentions UI sends for the leadership filter, mapped onto
@@ -454,12 +456,9 @@ const buildListQuery = (params = {}, options = {}) => {
     );
     const bskOnly = String(params.bsk_only ?? (hasLocationOrTopic ? 'false' : 'true')).toLowerCase() !== 'false';
     if (bskOnly) {
-        const { HARD_BSK_TOKENS } = require('../services/bskRelevanceFilterService');
-        // Build one combined case-insensitive regex from the hard tokens.
-        const bskRegex = new RegExp(
-            HARD_BSK_TOKENS.map((t) => escapeRegex(t)).join('|'),
-            'i'
-        );
+        const { HARD_BSK_REGEX_SOURCE } = require('../services/bskRelevanceFilterService');
+        // One combined case-insensitive regex from the hard tokens (collision guards included).
+        const bskRegex = new RegExp(HARD_BSK_REGEX_SOURCE, 'i');
         const bskOr = [
             { 'content.text':            { $regex: bskRegex } },
             { 'content.full_text':       { $regex: bskRegex } },
@@ -498,11 +497,8 @@ const buildListQuery = (params = {}, options = {}) => {
 const buildBskRelevanceMatch = (params = {}) => {
     const bskOnly = String(params.bsk_only ?? 'true').toLowerCase() !== 'false';
     if (!bskOnly) return {};
-    const { HARD_BSK_TOKENS } = require('../services/bskRelevanceFilterService');
-    const bskRegex = new RegExp(
-        HARD_BSK_TOKENS.map((t) => escapeRegex(t)).join('|'),
-        'i'
-    );
+    const { HARD_BSK_REGEX_SOURCE } = require('../services/bskRelevanceFilterService');
+    const bskRegex = new RegExp(HARD_BSK_REGEX_SOURCE, 'i');
     return {
         $or: [
             { 'content.text':            { $regex: bskRegex } },
@@ -2560,11 +2556,12 @@ const updateGrievanceRiskLevel = async (req, res) => {
         const { id } = req.params;
         const hasLevel = req.body?.risk_level !== undefined && req.body?.risk_level !== null && String(req.body.risk_level).trim() !== '';
         const hasSentiment = req.body?.sentiment !== undefined && req.body?.sentiment !== null && String(req.body.sentiment).trim() !== '';
+        const hasStance = req.body?.stance !== undefined && req.body?.stance !== null && String(req.body.stance).trim() !== '';
         const rawLevel = hasLevel ? String(req.body.risk_level).trim().toLowerCase() : null;
         const rawSentiment = hasSentiment ? String(req.body.sentiment).trim().toLowerCase() : null;
 
-        if (!hasLevel && !hasSentiment) {
-            return res.status(400).json({ message: 'Provide risk_level and/or sentiment to update.' });
+        if (!hasLevel && !hasSentiment && !hasStance) {
+            return res.status(400).json({ message: 'Provide risk_level, sentiment (tone) and/or stance (effect on the client) to update.' });
         }
         if (rawLevel && !RISK_LEVEL_SCORE_MAP.hasOwnProperty(rawLevel)) {
             return res.status(400).json({
@@ -2582,33 +2579,50 @@ const updateGrievanceRiskLevel = async (req, res) => {
             return res.status(404).json({ message: 'Grievance not found' });
         }
 
+        // The stance a person enters is "does this help or hurt the CLIENT" and is validated
+        // against the verdict's target: a rival target makes it an INDIRECT stance.
+        const targetAlignmentOf = (name) => {
+            const k = resolveEntityKey(name) || Object.keys(POLITICAL_ENTITIES).find((key) => POLITICAL_ENTITIES[key].canonical === name);
+            return k ? (POLITICAL_ENTITIES[k].alignment || null) : null;
+        };
+        const stanceToSave = hasStance
+            ? stanceFromOperator(req.body.stance, {
+                targetAlignment: targetAlignmentOf(grievance.analysis?.target_entity_canonical || grievance.analysis?.target_entity),
+            })
+            : null;
+        if (hasStance && !stanceToSave) {
+            return res.status(400).json({ message: 'Invalid stance. Use pro, anti, neutral, mixed or unrelated (relative to the client), or a canonical stance name.' });
+        }
+
         const previousLevel = grievance.analysis?.risk_level || null;
         const previousScore = grievance.analysis?.risk_score ?? null;
         const previousSentiment = grievance.analysis?.sentiment || null;
+        const previousStance = grievance.analysis?.political_stance || grievance.analysis?.stance || null;
 
         const updateDoc = {
             'analysis.analyzed_at': grievance.analysis?.analyzed_at || new Date()
         };
 
         /**
-         * CASCADE — a sentiment correction must reach every field that
-         * represents it, or the operator's change is invisible.
+         * THREE DIFFERENT CORRECTIONS, THREE DIFFERENT SETS OF FIELDS.
          *
-         * Previously this patched only `analysis.sentiment` (+ the nested
-         * llm_analysis copy). But `politicalImpactService` and
-         * `intelligenceController` read `analysis.bsk_sentiment` FIRST, the
-         * reason modal explains `analysis.political_reasoning` from the old
-         * verdict, and `analysis.stance`/`risk_level` kept contradicting the
-         * corrected badge. The pipeline's own invariant
-         * (target_sentiment ⇄ risk_level, see analysisService.js) was broken by
-         * hand on every override.
+         *   sentiment   = the post's TONE. Changes `sentiment`, `generic_sentiment` and the
+         *                 tone band (`risk_level`). It says nothing about who the post helps,
+         *                 so it NEVER touches stance, target_sentiment or beneficiary.
+         *   stance      = the effect on the CLIENT (pro / anti / neutral / mixed). Changes
+         *                 stance, political_stance, target_sentiment, beneficiary and the
+         *                 client-impact fields. It leaves the tone alone.
+         *   risk_level  = the tone band, as before.
+         *
+         * This used to be one cascade: marking a post "negative" because it attacked the
+         * Congress government also wrote anti_target / beneficiary:'opposition', i.e. it
+         * recorded an attack on the client. The Alert and News overrides already separate
+         * tone from stance; this brings Mentions in line with them.
          */
-        // Neutral content carries no risk: neutral → low, like positive.
+        // Tone band: neutral content carries no risk (neutral → low, like positive).
         const SENTIMENT_TO_RISK = { negative: 'high', neutral: 'low', positive: 'low' };
-        const SENTIMENT_TO_STANCE = { negative: 'anti_target', positive: 'pro_target', neutral: 'neutral' };
-        const SENTIMENT_TO_BENEFICIARY = { negative: 'opposition', positive: 'ours', neutral: 'none' };
-        // Risk → sentiment when only the risk is edited: medium/high/critical
-        // are negative; low keeps a positive or neutral tone, else neutral.
+        // Risk → tone when only the risk is edited: medium/high/critical read negative; low keeps a
+        // positive or neutral tone, else neutral.
         const currentTone = String(grievance.analysis?.generic_sentiment || grievance.analysis?.sentiment || '').toLowerCase().replace('moderate', 'neutral');
         const riskToSentiment = (level) => ((level === 'medium' || level === 'high' || level === 'critical') ? 'negative'
             : (currentTone === 'positive' || currentTone === 'neutral' ? currentTone : 'neutral'));
@@ -2619,7 +2633,7 @@ const updateGrievanceRiskLevel = async (req, res) => {
         const currentLevel = grievance.analysis?.risk_level;
         const keepGrade = sentimentToSave === 'negative' && ['medium', 'high', 'critical'].includes(currentLevel);
         const levelToSave = rawLevel || (sentimentToSave ? (keepGrade ? currentLevel : SENTIMENT_TO_RISK[sentimentToSave]) : null);
-        const effectiveSentiment = sentimentToSave || (rawLevel ? riskToSentiment(rawLevel) : null);
+        const effectiveTone = sentimentToSave || (rawLevel ? riskToSentiment(rawLevel) : null);
 
         if (levelToSave) {
             const newScore = RISK_LEVEL_SCORE_MAP[levelToSave];
@@ -2631,29 +2645,59 @@ const updateGrievanceRiskLevel = async (req, res) => {
             }
         }
 
-        if (effectiveSentiment) {
-            updateDoc['analysis.sentiment'] = effectiveSentiment;
-            updateDoc['analysis.target_sentiment'] = effectiveSentiment;
-            updateDoc['analysis.bsk_sentiment'] = effectiveSentiment; // deprecated mirror
-            updateDoc['analysis.stance'] = SENTIMENT_TO_STANCE[effectiveSentiment];
-            updateDoc['analysis.political_stance'] = SENTIMENT_TO_STANCE[effectiveSentiment];
-            updateDoc['analysis.beneficiary'] = SENTIMENT_TO_BENEFICIARY[effectiveSentiment];
-            // A human verdict supersedes the model's review flag.
+        // Review reasons that are about the CLIENT-RELATIVE verdict: a tone edit does not resolve them.
+        const STANCE_REVIEW_REASONS = /client_sentiment_conflict|uncertain_client_relevance|stage3_low_confidence|ambiguous|llm_fallback|low_confidence/;
+        const stanceReviewOpen = grievance.analysis?.needs_review === true
+            && STANCE_REVIEW_REASONS.test(String(grievance.analysis?.review_reason || ''));
+
+        if (effectiveTone) {
+            updateDoc['analysis.sentiment'] = effectiveTone;
+            updateDoc['analysis.generic_sentiment'] = effectiveTone;
+            updateDoc['analysis.manual_override'] = true;
+            if (grievance.analysis?.llm_analysis) {
+                updateDoc['analysis.llm_analysis.sentiment'] = effectiveTone;
+                updateDoc['analysis.llm_analysis.generic_sentiment'] = effectiveTone;
+                updateDoc['analysis.llm_analysis.manual_override'] = true;
+            }
+            // A human looked at it. That settles the review flag unless the flag was about
+            // the client-relative verdict, which only a stance edit can settle.
+            if (!stanceReviewOpen && !stanceToSave) {
+                updateDoc['analysis.needs_review'] = false;
+                updateDoc['analysis.validation_status'] = 'passed';
+                updateDoc['analysis.review_reason'] = '';
+            }
+        }
+
+        if (stanceToSave) {
+            const side = clientStance(stanceToSave);
+            const targetSentiment = side === 'pro_client' ? 'positive' : side === 'anti_client' ? 'negative' : 'neutral';
+            const beneficiary = side === 'pro_client' ? 'ours' : side === 'anti_client' ? 'opposition' : 'none';
+            const impact = deriveClientImpact({
+                tone: effectiveTone || grievance.analysis?.generic_sentiment || grievance.analysis?.sentiment,
+                stance: stanceToSave,
+                moderation_level: grievance.analysis?.moderation_risk,
+                hate_speech: grievance.analysis?.hate_speech,
+            });
+            updateDoc['analysis.stance'] = stanceToSave;
+            updateDoc['analysis.political_stance'] = stanceToSave;
+            updateDoc['analysis.target_sentiment'] = targetSentiment;
+            updateDoc['analysis.bsk_sentiment'] = targetSentiment; // deprecated mirror
+            updateDoc['analysis.beneficiary'] = beneficiary;
+            updateDoc['analysis.client_impact'] = impact.client_impact;
+            updateDoc['analysis.hostile_to_client'] = impact.hostile_to_client;
             updateDoc['analysis.needs_review'] = false;
             updateDoc['analysis.validation_status'] = 'passed';
             updateDoc['analysis.review_reason'] = '';
             updateDoc['analysis.manual_override'] = true;
             if (grievance.analysis?.llm_analysis) {
-                updateDoc['analysis.llm_analysis.sentiment'] = effectiveSentiment;
-                updateDoc['analysis.llm_analysis.target_sentiment'] = effectiveSentiment;
-                updateDoc['analysis.llm_analysis.bsk_sentiment'] = effectiveSentiment;
-                updateDoc['analysis.llm_analysis.political_stance'] = SENTIMENT_TO_STANCE[effectiveSentiment];
-                updateDoc['analysis.llm_analysis.stance'] = SENTIMENT_TO_STANCE[effectiveSentiment];
+                updateDoc['analysis.llm_analysis.political_stance'] = stanceToSave;
+                updateDoc['analysis.llm_analysis.stance'] = stanceToSave;
+                updateDoc['analysis.llm_analysis.target_sentiment'] = targetSentiment;
+                updateDoc['analysis.llm_analysis.bsk_sentiment'] = targetSentiment;
+                updateDoc['analysis.llm_analysis.client_impact'] = impact.client_impact;
+                updateDoc['analysis.llm_analysis.hostile_to_client'] = impact.hostile_to_client;
                 updateDoc['analysis.llm_analysis.manual_override'] = true;
             }
-            // NOTE: `analysis.generic_sentiment` is deliberately NOT touched. It
-            // records the raw tone of the text, which an operator correcting the
-            // CLIENT-RELATIVE verdict is not asserting anything about.
         }
 
         const updated = await Grievance.findOneAndUpdate(
@@ -2670,11 +2714,12 @@ const updateGrievanceRiskLevel = async (req, res) => {
             'grievance',
             id,
             {
-                from: { risk_level: previousLevel, risk_score: previousScore, sentiment: previousSentiment },
+                from: { risk_level: previousLevel, risk_score: previousScore, sentiment: previousSentiment, stance: previousStance },
                 to: {
                     risk_level: rawLevel || previousLevel,
                     risk_score: rawLevel ? RISK_LEVEL_SCORE_MAP[rawLevel] : previousScore,
-                    sentiment: rawSentiment || previousSentiment
+                    sentiment: rawSentiment || previousSentiment,
+                    stance: stanceToSave || previousStance
                 }
             }
         );

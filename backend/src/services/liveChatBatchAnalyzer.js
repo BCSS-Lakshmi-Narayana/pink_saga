@@ -11,15 +11,20 @@
  * answer. Scoring 25-30 comments in a single call is ~10x the throughput and
  * lets the model — not a word list — decide every one of them.
  *
- * SCOPE: used ONLY by youtubeLiveService. It does not touch, wrap or alter
- * politicalSentimentService / analysisService, so the mentions, alerts and
- * news sentiment flows are completely unaffected.
+ * SCOPE: today it is called only by scripts/rescore_live_chat.js (live ingestion goes through
+ * the canonical analyzeContent pipeline). It does not touch politicalSentimentService /
+ * analysisService, so the mentions, alerts and news sentiment flows are unaffected.
+ *
+ * POLARITY: BRS (the client) is in OPPOSITION. The state government is its adversary, a
+ * different subject from "ours" - see ALLOWED_ABOUT. Do not merge them.
  */
 
 const { chatJson } = require('./llmProvider');
 const {
     STATE_NAME,
     LANGUAGES_DESCRIPTION,
+    CLIENT_DESCRIPTION,
+    RULING_GOVERNMENT_DESCRIPTION,
     OUR_CAMP_SUMMARY,
     OUR_CAMP_LEADERS,
     OPPOSITION_SUMMARY,
@@ -32,7 +37,14 @@ const {
 const BATCH_TIMEOUT_MS = Number(process.env.YT_LIVE_BATCH_TIMEOUT_MS || 180000);
 const MAX_TEXT_CHARS = 220;
 
-/* stance -> the positive/neutral/negative scheme used across the app */
+/*
+ * Stance values written to LiveChatMessage.stance: `pro_client` / `anti_client` / `neutral` /
+ * `unrelated`. They are BRS-RELATIVE and mean exactly what `pro_target` / `anti_target` mean
+ * everywhere else (services/stanceVocabulary.js maps them). They are kept — rather than
+ * switched to the canonical names — because stored rows and the live-chat UI already read
+ * them; nothing here may change what they MEAN: pro_client = good for BRS, anti_client = bad
+ * for BRS.
+ */
 const STANCE_TO_SENTIMENT = {
     pro_client: 'positive',
     anti_client: 'negative',
@@ -40,13 +52,28 @@ const STANCE_TO_SENTIMENT = {
     unrelated: 'neutral',
 };
 
-const ALLOWED_ABOUT = ['ours', 'opposition', 'both', 'none'];
+/**
+ * Three subjects, not two. The state GOVERNMENT is not "our camp": BRS is in opposition and
+ * the government is its adversary. Folding it into "ours" (as this file once did, because
+ * the product it was cloned from served the ruling party) scored every attack on the
+ * government as an attack on the client.
+ *   ours       - BRS and its leaders
+ *   government - the Congress government, its Chief Minister and ministers (the adversary)
+ *   rival      - any other party or leader (BJP, AIMIM, Kavitha's party, ...)
+ *   both       - compares or addresses our camp together with the government or a rival
+ *   none       - no politician or party involved
+ */
+const ALLOWED_ABOUT = ['ours', 'government', 'rival', 'both', 'none'];
 const ALLOWED_TONES = ['praise', 'attack', 'neutral'];
+/** Older prompts asked for "opposition"; it meant a rival-camp subject. */
+const ABOUT_ALIASES = { opposition: 'rival' };
 
+// `ctx.channelAlignment` is the channel's side relative to the CLIENT, from the roster:
+// 'ally' = BRS-aligned, 'opposition' = the government's / a rival's side.
 const ALIGNMENT_NOTE = {
-    ally: 'This channel is aligned with the ruling camp, so its audience skews pro-government. Judge each comment on its own words regardless.',
+    ally: 'This channel is aligned with our client (BRS), so its audience skews pro-BRS and critical of the government. Judge each comment on its own words regardless.',
     opposition:
-        'This channel is opposition-aligned, so many commenters will be praising the opposition or attacking the government. Judge each comment on its own words regardless.',
+        'This channel is aligned with the government or a rival party, so many commenters will be praising the government or attacking our client. Judge each comment on its own words regardless.',
     neutral: 'This channel is broadly neutral.',
     unknown: '',
 };
@@ -72,42 +99,46 @@ const buildPrompt = (items, ctx = {}) => {
     const alignment = ALIGNMENT_NOTE[ctx.channelAlignment] || '';
     const numbered = items.map((it, i) => `${i + 1}. ${sanitize(it.text)}`).join('\n');
 
-    return `You are reading live YouTube chat comments about ${STATE_NAME} politics (India).
+    return `You are reading live YouTube chat comments about ${STATE_NAME} politics (India), for this client: ${CLIENT_DESCRIPTION}.
 Comments are in ${LANGUAGES_DESCRIPTION}, and are often abusive or sarcastic.
 
-THE TWO CAMPS
-- Camp "ours": the ruling camp — ${OUR_CAMP_SUMMARY}; leaders ${OUR_CAMP_LEADERS.join(', ')}; the ${STATE_NAME} government.
-- Camp "opposition": ${OPPOSITION_SUMMARY}.
+THE SUBJECTS
+- "ours": our client — ${OUR_CAMP_SUMMARY}; leaders ${OUR_CAMP_LEADERS.join(', ')}. NOT the government.
+- "government": ${RULING_GOVERNMENT_DESCRIPTION}, its Chief Minister and ministers. "Sarkar", "govt", "Praja Palana" mean this. It is the client's ADVERSARY.
+- "rival": any other party or leader — ${OPPOSITION_SUMMARY}.
 
 For EACH comment report only two observations. Do not judge who it helps — just describe what you see.
 
-"about"  = which camp the comment is directed at:
-           "ours"       - it is about the ruling camp, its leaders or the government
-           "opposition" - it is about an opposition party or leader
-           "both"       - it compares or addresses both camps
+"about"  = which subject the comment is directed at:
+           "ours"       - about our client or its leaders
+           "government" - about the state government, the Chief Minister or a minister
+           "rival"      - about another party or leader
+           "both"       - compares or addresses our client together with the government or a rival
            "none"       - no politician or party involved
 
-"tone"   = how the comment treats that camp:
-           "praise"  - supports, celebrates, cheers ("jai", "great leader", "viva", "zindabad")
-           "attack"  - criticises, abuses, mocks, accuses ("cheater", "chor", "चोर", "fottkiro", "failed")
+"tone"   = how the comment treats that subject:
+           "praise"  - supports, celebrates, cheers ("jai", "great leader", "zindabad")
+           "attack"  - criticises, abuses, mocks, accuses ("cheater", "chor", "failed")
            "neutral" - a question, a plain statement, a name alone, or no clear feeling
 
-Read the ACTUAL MEANING, not individual words. Slang and profanity aimed at a leader is "attack".
-Cheering a leader by name is "praise" even if the wording is plain.
+Read the ACTUAL MEANING, not individual words. Slang and profanity aimed at a leader is "attack". Cheering a leader by name is "praise".
+Sarcasm and rhetorical questions reverse their literal meaning ("Praja palana ante idena? 🙏" is an attack on the government). "garu" and "anna" are honorifics, not praise.
 ${alignment ? `\nCHANNEL CONTEXT: ${alignment}` : ''}${ctx.videoTitle ? `\nSTREAM TITLE: ${sanitize(ctx.videoTitle)}` : ''}
 
 COMMENTS:
 ${numbered}
 
 Return ONLY JSON, no prose:
-{"results":[{"i":1,"about":"ours|opposition|both|none","tone":"praise|attack|neutral","why":"max 6 words"}]}
+{"results":[{"i":1,"about":"ours|government|rival|both|none","tone":"praise|attack|neutral","why":"max 6 words"}]}
 Return exactly ${items.length} entries, "i" matching the comment number.`;
 };
 
 /**
- * The inversion, done in code so it cannot be got backwards:
- *   attack the opposition  -> good for the client
- *   praise the opposition  -> bad for the client
+ * The inversion, done in code so it cannot be got backwards. The client is BRS:
+ *   praise ours            -> good for the client      attack ours            -> bad
+ *   attack the government  -> good for the client      praise the government  -> bad
+ *   attack a rival         -> good for the client      praise a rival         -> bad
+ * (The government and the rivals are one side of the matrix: everyone who is not us.)
  */
 const deriveStance = (about, tone) => {
     if (about === 'none' || tone === 'neutral') {
@@ -115,14 +146,15 @@ const deriveStance = (about, tone) => {
     }
     if (about === 'both') return 'neutral';          // needs a side to be meaningful
 
-    if (about === 'opposition') return tone === 'attack' ? 'pro_client' : 'anti_client';
+    if (about === 'government' || about === 'rival') return tone === 'attack' ? 'pro_client' : 'anti_client';
     if (about === 'ours') return tone === 'praise' ? 'pro_client' : 'anti_client';
     return 'unrelated';
 };
 
 const coerce = (row, fallbackIndex) => {
     const i = Number.isFinite(Number(row?.i)) ? Number(row.i) : fallbackIndex + 1;
-    const about = ALLOWED_ABOUT.includes(row?.about) ? row.about : 'none';
+    const aboutRaw = ABOUT_ALIASES[row?.about] || row?.about;
+    const about = ALLOWED_ABOUT.includes(aboutRaw) ? aboutRaw : 'none';
     const tone = ALLOWED_TONES.includes(row?.tone) ? row.tone : 'neutral';
     const stance = deriveStance(about, tone);
 
@@ -178,5 +210,7 @@ module.exports = {
     // exported for tests
     buildPrompt,
     deriveStance,
+    coerce,
+    ALLOWED_ABOUT,
     STANCE_TO_SENTIMENT,
 };

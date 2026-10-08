@@ -38,13 +38,21 @@ const {
     POLITICAL_ENTITIES,
     ALIAS_INDEX,
     TARGET_ALIASES,
+    ALIAS_CANDIDATES,
+    pickByCue,
+    resolveTrsMention,
+    resolveGovernmentEra,
+    ERA_SENSITIVE_GOVERNMENT_ALIASES,
     aliasOccursIn,
     resolveAliasCandidates,
     isAlly,
     isOpposition,
     isPrimaryTarget,
+    BARE_FIRST_NAME_ALIASES,
 } = require('../config/politicalEntities');
 const { tokenOccurs } = require('../utils/lexiconMatch');
+const { OUR_PARTY } = require('../config/politicalData');
+const OUR_PARTY_KEY = OUR_PARTY.id;
 // Compound-hashtag segmentation + the curated direction-bearing tags.
 const { segmentHashtags, findStanceHashtags } = require('../config/hashtagSignals');
 
@@ -86,6 +94,12 @@ const TELUGU_ROMAN_MARKERS = new Set([
     'bagundi', 'manchi', 'chedu', 'nijam', 'abaddam', 'garu',
     'cheyyali', 'chesaru', 'cheppadu', 'cheppindi', 'vachindi', 'ayyindi',
     'ivvali', 'teliyadu', 'telusu', 'anna', 'akka', 'thammudu',
+    // Added after live validation: short Telglish complaints ("Revanth sarkar lo rythulaku bharosa ledu, antha
+    // mosam.") carried only ONE marker, were filed as English, got no pre-translation, and the model inverted
+    // them. These are everyday Telugu words with no common English homograph.
+    'mosam', 'antha', 'raavu', 'ravadu', 'kashtalu', 'kastalu', 'unte', 'ippudu', 'cheyaledu', 'cheyaledhu',
+    'chesindi', 'chesindhi', 'matladaru', 'matladutunnaru', 'pathellu', 'padella', 'rythulaku', 'prajalaku',
+    'ammalaku', 'yuvathaku', 'nirudyogulaku', 'emi', 'ledani', 'kakapothe', 'chestunnaru',
 ]);
 
 /** Hindi in Roman script — modest here, mostly BJP national messaging. */
@@ -214,7 +228,7 @@ const resolveAuthorEntity = (handle) => {
     };
 };
 
-const findMentionedEntities = (text) => {
+const findMentionedEntities = (text, { era = null, trustedAuthor = false } = {}) => {
     const raw = String(text || '');
     const lower = ` ${raw.toLowerCase()} `; // pad for boundary detection
     const seen = new Map();
@@ -226,11 +240,34 @@ const findMentionedEntities = (text) => {
         // "Lalit Modi", "Rajdeep Sardesai").
         if (!aliasOccursIn(lower, alias, raw)) continue;
 
-        const ent = POLITICAL_ENTITIES[entityKey];
-        if (!ent) continue;
+        // An alias several entities claim ("owaisi", "komatireddy"): it is a bare
+        // surname. If a LONGER alias of one claimant already matched (the index is
+        // longest-first: "akbaruddin owaisi" before "owaisi") the surname is that
+        // person's, not a second mention; otherwise an unambiguous cue picks the
+        // person; otherwise the primary claimant is kept, as before.
+        let resolvedKey = entityKey;
+        const claimants = ALIAS_CANDIDATES[alias] || [entityKey];
+        if (claimants.length > 1) {
+            if (claimants.some((k) => seen.has(k))) continue;
+            resolvedKey = pickByCue(alias, claimants, lower) || entityKey;
+            if (seen.has(resolvedKey)) continue;
+        }
 
-        seen.set(entityKey, {
-            key: entityKey,
+        // A generic "Telangana govt" is the CURRENT government only in the current era. In the BRS era it
+        // is BRS's own government (an ally); when the era cannot be settled it is not guessed at all.
+        let eraKey = resolvedKey;
+        if (resolvedKey === 'state_government' && ERA_SENSITIVE_GOVERNMENT_ALIASES.has(alias) && era) {
+            if (era.era === 'brs') eraKey = OUR_PARTY_KEY;
+            else if (era.era === 'ambiguous') continue;
+        }
+
+        const ent = POLITICAL_ENTITIES[eraKey];
+        if (!ent) continue;
+        if (eraKey !== resolvedKey && seen.has(eraKey)) continue;
+        resolvedKey = eraKey;
+
+        seen.set(resolvedKey, {
+            key: resolvedKey,
             canonical: ent.canonical,
             alignment: ent.alignment,
             party: ent.party,
@@ -238,6 +275,47 @@ const findMentionedEntities = (text) => {
             role: ent.role || null,
             priority: ent.priority,
             matched_alias: alias,
+            ...(claimants.length > 1 ? { ambiguous_alias: true } : {}),
+            ...(ent.defected ? { defected: true, elected_party: ent.elected_party, current_party: ent.current_party } : {}),
+        });
+    }
+
+    // A bare first name ("Revanth", "రేవంత్") that is not an alias on its own: recognised only with a Telangana
+    // political cue in the post, or when the post comes from an account that is itself in the roster.
+    for (const { key, rx, cue } of BARE_FIRST_NAME_ALIASES) {
+        if (seen.has(key) || !rx.test(raw)) continue;
+        if (!(trustedAuthor || cue.test(raw))) continue;
+        const ent = POLITICAL_ENTITIES[key];
+        if (!ent) continue;
+        seen.set(key, {
+            key,
+            canonical: ent.canonical,
+            alignment: ent.alignment,
+            party: ent.party,
+            type: ent.type,
+            role: ent.role || null,
+            priority: ent.priority,
+            matched_alias: 'bare first name (resolved from context)',
+            context_resolved: trustedAuthor ? 'bare_name_author' : 'bare_name_cue',
+        });
+    }
+
+    // "TRS" is no entity's alias (it was BRS's name until 2022 and is now also
+    // Kavitha's party's). Settle it from the surrounding text, or leave it
+    // ambiguous so the verdict is routed to review rather than guessed.
+    const trs = resolveTrsMention(raw);
+    if (trs.present && trs.key && POLITICAL_ENTITIES[trs.key] && !seen.has(trs.key)) {
+        const ent = POLITICAL_ENTITIES[trs.key];
+        seen.set(trs.key, {
+            key: trs.key,
+            canonical: ent.canonical,
+            alignment: ent.alignment,
+            party: ent.party,
+            type: ent.type,
+            role: ent.role || null,
+            priority: ent.priority,
+            matched_alias: 'trs (resolved from context)',
+            context_resolved: 'trs',
         });
     }
 
@@ -296,7 +374,7 @@ const pickPrimaryTarget = (mentions) => {
 
 /* ─── public API ───────────────────────────────────────────────────── */
 
-const buildPoliticalContext = (text, { taggedKeyword = '', authorHandle = '', platform = '' } = {}) => {
+const buildPoliticalContext = (text, { taggedKeyword = '', authorHandle = '', platform = '', postDate = null } = {}) => {
     const raw = String(text || '');
     const lower = raw.toLowerCase();
 
@@ -315,7 +393,9 @@ const buildPoliticalContext = (text, { taggedKeyword = '', authorHandle = '', pl
      * change or displace what the body text already resolved, which is what
      * keeps hashtags weaker evidence than the sentence.
      */
-    const mentions = findMentionedEntities(raw);
+    // Which government does the text mean? Settled from cues, then the post date; never guessed.
+    const governmentEra = resolveGovernmentEra(raw, { postDate });
+    const mentions = findMentionedEntities(raw, { era: governmentEra, trustedAuthor: !!resolveAuthorEntity(authorHandle) });
     const segmented = segmentHashtags(raw);
     if (segmented) {
         const known = new Set(mentions.map((m) => m.key));
@@ -370,9 +450,9 @@ const buildPoliticalContext = (text, { taggedKeyword = '', authorHandle = '', pl
     const hasOpposition = mentions.some((m) => isOpposition(m.key));
 
     const summaryParts = [];
-    if (hasTarget) summaryParts.push('mentions the CM / party state president directly');
-    if (hasAlly && !hasTarget) summaryParts.push('mentions a ruling-camp leader, party or scheme');
-    if (hasOpposition) summaryParts.push('mentions opposition');
+    if (hasTarget) summaryParts.push('mentions the BRS president / working president directly');
+    if (hasAlly && !hasTarget) summaryParts.push('mentions a BRS-camp leader, party or scheme');
+    if (hasOpposition) summaryParts.push('mentions a rival-camp party, leader or the government');
     if (hasCivic) summaryParts.push('contains civic grievance signal');
     if (summaryParts.length === 0) summaryParts.push('no clear political target detected');
 
@@ -381,6 +461,15 @@ const buildPoliticalContext = (text, { taggedKeyword = '', authorHandle = '', pl
         primary_target: primary?.key || null,
         primary_target_canonical: primary?.canonical || null,
         primary_target_alignment: primary?.alignment || null,
+
+        // 'current' | 'brs' | 'ambiguous' | 'none'. 'ambiguous' + `referenced` => a generic "the government"
+        // that cannot be assigned to either administration: the verdict must go to review.
+        government_era: governmentEra.era,
+        government_era_reason: governmentEra.reason,
+        government_era_ambiguous: governmentEra.referenced === true && governmentEra.era === 'ambiguous',
+        // 'brs' | 'trs-k' | null; `trs_ambiguous` => the post says TRS and nothing settles which party.
+        trs_resolution: resolveTrsMention(raw).key,
+        trs_ambiguous: (() => { const t = resolveTrsMention(raw); return t.present && !t.key; })(),
 
         has_target_mention: hasTarget,
         has_ally_mention: hasAlly,

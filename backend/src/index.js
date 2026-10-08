@@ -233,7 +233,7 @@ const createDefaultSettings = async () => {
 const seedSources = async () => {
   try {
     const sourcesList = require('./data/sources_list.json');
-    const canResolveYoutube = blugateClient.hasCredentials();
+    const canResolveYoutube = blugateClient.hasCredentials('youtube');
 
     //console.log(`Seeding ${sourcesList.length} sources...`);
 

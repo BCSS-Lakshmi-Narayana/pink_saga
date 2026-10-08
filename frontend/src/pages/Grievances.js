@@ -2567,7 +2567,7 @@ const Grievances = () => {
                     )}
                     {targetEntityFilter && (
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 font-semibold text-[11px]">
-                            {targetEntityFilter === 'bsk' ? 'K. Chandrashekar Rao' : targetEntityFilter === 'bsk_son' ? 'K. T. Rama Rao' : targetEntityFilter}
+                            {targetEntityFilter === 'kcr' ? 'K. Chandrashekar Rao' : targetEntityFilter === 'ktr' ? 'K. T. Rama Rao' : targetEntityFilter}
                             <button type="button" onClick={() => updateURLParams({ target_entity: null })} className="ml-0.5 hover:opacity-70">&times;</button>
                         </span>
                     )}

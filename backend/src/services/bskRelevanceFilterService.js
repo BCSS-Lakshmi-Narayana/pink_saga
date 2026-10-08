@@ -16,11 +16,19 @@
  * deployment too — a Union Minister and one of the loudest anti-BRS voices —
  * which makes the legacy prefix doubly confusing. It does not refer to him.)
  *
- * The `target` enum values ('bsk' | 'bsk_son' | 'bjp_telangana' | 'unrelated')
- * are legacy identifiers kept unchanged. Their meaning in this deployment:
+ * ⚠ NAMESPACES. The `target` values this file emits ('bsk' | 'bsk_son' | 'bjp_telangana' |
+ * 'unrelated') belong to THIS FILE'S OWN vocabulary and mean:
  *   bsk           → primary client leader (KCR, party president)
  *   bsk_son       → secondary client leader (KTR, working president)
  *   bjp_telangana → the BRS organisation, or the state government it opposes
+ * That is NOT the entity layer's reading of the same strings: politicalEntities.js
+ * LEGACY_ENTITY_KEYS resolves a stored `bsk` to Bandi Sanjay (a BJP rival) because that is
+ * what the key meant in the data of the earlier deployment. So a value from this file must
+ * never be passed to resolveEntityKey(). Every result therefore ALSO carries explicit
+ * identifiers that mean one thing only:
+ *   target_key        'primary_leader' | 'secondary_leader' | 'party_or_government' | 'unrelated'
+ *   target_entity_key the roster entity key ('kcr' | 'ktr') or null
+ * Use those. `target` is kept unchanged for compatibility.
  *
  * Input  : raw tweet text (string)
  * Output : {
@@ -39,7 +47,7 @@
  * so the pipeline keeps producing data even if the LLM is down.
  */
 const { chatJson } = require('./llmProvider');
-const { POLITICAL_ENTITIES, PRIMARY_TARGET_KEY, SECONDARY_TARGET_KEY } = require('../config/politicalEntities');
+const { POLITICAL_ENTITIES, PRIMARY_TARGET_KEY, SECONDARY_TARGET_KEY, aliasOccursIn } = require('../config/politicalEntities');
 const {
   STATE_NAME, CLIENT_DESCRIPTION, RULING_GOVERNMENT_DESCRIPTION,
   OUR_CAMP_SUMMARY, OPPOSITION_SUMMARY, LANGUAGES_DESCRIPTION,
@@ -55,8 +63,10 @@ const SECONDARY_NAME = POLITICAL_ENTITIES[SECONDARY_TARGET_KEY]?.canonical || 't
 // by millions and would pull unrelated posts into the Mentions feed,
 // which also filters on this list.
 const PRIMARY_TOKENS = [
-  'kcr', 'k chandrashekar rao', 'kalvakuntla chandrashekar rao', 'chandrashekar rao',
-  'chandrasekhar rao', '@kcrbrspresident', '#kcr',
+  // Bare "chandrashekar rao" / "chandrasekhar rao" are not listed: they name thousands of other
+  // people. The full forms below and "kcr" carry the real KCR.
+  'kcr', 'k chandrashekar rao', 'kalvakuntla chandrashekar rao', 'k chandrasekhar rao',
+  '@kcrbrspresident', '#kcr',
   'కేసీఆర్', 'కల్వకుంట్ల చంద్రశేఖర్ రావు', 'చంద్రశేఖర్ రావు',
 ];
 
@@ -102,16 +112,42 @@ const SOFT_BSK_TOKENS = [
   'dharani', 'ధరణి', 'formula e', 'phone tapping', 'ఫోన్ ట్యాపింగ్',
 ];
 
+/**
+ * Tokens are looked for through the entity layer's own matcher (aliasOccursIn), so the same
+ * rules apply here as everywhere else: a short alias needs word boundaries ("ktr" is not
+ * inside "factory"), "Nandamuri Taraka Rama Rao" is not KTR, and a bare "Chandrashekar Rao"
+ * counts only with a Telangana/BRS cue.
+ */
 function heuristicMatch(text) {
-  const lower = String(text || '').toLowerCase();
+  const raw = String(text || '');
+  const lower = raw.toLowerCase();
   for (const t of HARD_BSK_TOKENS) {
-    if (lower.includes(t)) return { matched: true, strength: 'hard', token: t };
+    if (aliasOccursIn(lower, t, raw)) return { matched: true, strength: 'hard', token: t };
   }
   for (const t of SOFT_BSK_TOKENS) {
-    if (lower.includes(t)) return { matched: true, strength: 'soft', token: t };
+    if (aliasOccursIn(lower, t, raw)) return { matched: true, strength: 'soft', token: t };
   }
   return { matched: false };
 }
+
+/**
+ * The same hard-token list as ONE regex source for a MongoDB $regex (the Mentions feed gate,
+ * which cannot call JS). Collision-prone names carry a lookbehind so the namesake is not
+ * admitted ("nandamuri taraka rama rao" is NTR, not KTR); bare "Chandrashekar Rao" is not in
+ * the list at all (the full forms are). Keep in step with ALIAS_BLOCKED_CONTEXTS.
+ */
+const escapeRx = (x) => String(x).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const GATE_GUARDS = { 'taraka rama rao': '(?<!nandamuri )', 'తారక రామారావు': '(?<!నందమూరి )' };
+const HARD_BSK_REGEX_SOURCE = HARD_BSK_TOKENS.map((t) => `${GATE_GUARDS[t] || ''}${escapeRx(t)}`).join('|');
+
+/* legacy `target` (this file's vocabulary) → explicit identifiers that cannot be misread */
+const TARGET_KEYS = {
+  bsk: { target_key: 'primary_leader', target_entity_key: PRIMARY_TARGET_KEY },
+  bsk_son: { target_key: 'secondary_leader', target_entity_key: SECONDARY_TARGET_KEY },
+  bjp_telangana: { target_key: 'party_or_government', target_entity_key: null },
+  unrelated: { target_key: 'unrelated', target_entity_key: null },
+};
+const withTargetKey = (result) => ({ ...result, ...(TARGET_KEYS[result.target] || TARGET_KEYS.unrelated) });
 
 /* ─── LLM call (RapidAPI ChatGPT-42) ──────────────────────────── */
 async function askLLM(tweetText) {
@@ -135,7 +171,7 @@ organisation, or ${RULING_GOVERNMENT_DESCRIPTION}. A tweet that merely mentions 
 politics generically is NOT relevant. A tweet that targets, defends, mocks, praises, or reports on
 that leadership or that government IS relevant.
 
-The JSON keys below are fixed legacy identifiers — map: "bsk" = ${PRIMARY_NAME},
+The JSON keys below are fixed identifiers local to this prompt — map: "bsk" = ${PRIMARY_NAME},
 "bsk_son" = ${SECONDARY_NAME}, "bjp_telangana" = the party organisation OR the state government.
 
 Reply with EXACTLY one JSON object on a single line, no prose, no markdown:
@@ -157,13 +193,13 @@ Reply with EXACTLY one JSON object on a single line, no prose, no markdown:
 async function checkRelevance(tweetText, { allowLLM = true } = {}) {
   const text = String(tweetText || '').trim();
   if (!text) {
-    return { is_bsk: false, confidence: 0, stance: 'unknown', target: 'unrelated', topic: '', reason: 'empty text' };
+    return withTargetKey({ is_bsk: false, confidence: 0, stance: 'unknown', target: 'unrelated', topic: '', reason: 'empty text' });
   }
 
   // 1. Heuristic fast-path
   const heur = heuristicMatch(text);
   if (heur.matched && heur.strength === 'hard') {
-    return {
+    return withTargetKey({
       is_bsk: true,
       confidence: 0.95,
       stance: 'unknown',
@@ -173,26 +209,26 @@ async function checkRelevance(tweetText, { allowLLM = true } = {}) {
       topic: 'name match',
       reason: `Matched token "${heur.token}"`,
       heuristic: true,
-    };
+    });
   }
 
   // 2. LLM gate (skip on demand for speed-only runs)
   if (!allowLLM) {
-    return heur.matched
+    return withTargetKey(heur.matched
       ? { is_bsk: true, confidence: 0.55, stance: 'unknown', target: 'bjp_telangana', topic: 'soft match', reason: `Soft token "${heur.token}"`, heuristic: true }
-      : { is_bsk: false, confidence: 0.05, stance: 'unknown', target: 'unrelated', topic: '', reason: 'no token, llm skipped', heuristic: true };
+      : { is_bsk: false, confidence: 0.05, stance: 'unknown', target: 'unrelated', topic: '', reason: 'no token, llm skipped', heuristic: true });
   }
 
   const llm = await askLLM(text);
   if (!llm || llm.__error) {
     // Fall back to heuristic if RapidAPI broken
-    return heur.matched
+    return withTargetKey(heur.matched
       ? { is_bsk: true, confidence: 0.5, stance: 'unknown', target: 'bjp_telangana', topic: 'soft match (llm down)', reason: `RapidAPI unreachable; soft heuristic on "${heur.token}"`, heuristic: true, llm_error: llm?.__error }
-      : { is_bsk: false, confidence: 0.1, stance: 'unknown', target: 'unrelated', topic: '', reason: 'no match + llm unreachable', heuristic: true, llm_error: llm?.__error };
+      : { is_bsk: false, confidence: 0.1, stance: 'unknown', target: 'unrelated', topic: '', reason: 'no match + llm unreachable', heuristic: true, llm_error: llm?.__error });
   }
 
   // Sanitise LLM output
-  return {
+  return withTargetKey({
     is_bsk:     !!llm.is_bsk,
     confidence: Math.max(0, Math.min(1, Number(llm.confidence) || 0)),
     stance:     ['positive', 'negative', 'neutral', 'unknown'].includes(llm.stance) ? llm.stance : 'unknown',
@@ -200,12 +236,14 @@ async function checkRelevance(tweetText, { allowLLM = true } = {}) {
     topic:      String(llm.topic || '').slice(0, 80),
     reason:     String(llm.reason || '').slice(0, 200),
     heuristic:  false,
-  };
+  });
 }
 
 module.exports = {
   checkRelevance,
   heuristicMatch,
   HARD_BSK_TOKENS,
+  HARD_BSK_REGEX_SOURCE,
   SOFT_BSK_TOKENS,
+  TARGET_KEYS,
 };

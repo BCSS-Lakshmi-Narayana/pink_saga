@@ -20,16 +20,18 @@
 
 const fs = require('fs');
 const path = require('path');
-const { POLITICAL_ENTITIES, findAliasMatches, resolveEntityKey } = require('../config/politicalEntities');
+const { POLITICAL_ENTITIES, findAliasMatches, resolveEntityKey, pickByCue, ERA_SENSITIVE_GOVERNMENT_ALIASES } = require('../config/politicalEntities');
 const { OUR_PARTY } = require('../config/politicalData');
 const { STATE_NAME, STATE_NAME_NATIVE } = require('../config/deployment');
 
 /** The whole candidate is a generic "the (state) government", optionally naming this state. */
 const GENERIC_STATE_GOVERNMENT_RX = new RegExp(
-    '^\\s*(?:(?:the|this|our|current|present|ruling|state|a)\\s+)*(?:state\\s+)?(?:government|govt\\.?|sarkar|sarkaar|administration)'
+    '^\\s*(?:(?:the|this|our|current|present|ruling|state|a|previous|former|earlier|erstwhile|prior|old|past)\\s+)*(?:state\\s+)?(?:government|govt\\.?|sarkar|sarkaar|administration)'
     + `(?:\\s+of\\s+${STATE_NAME})?\\s*$`
     + `|^\\s*(?:${STATE_NAME}\\s+)(?:government|govt\\.?|sarkar)\\s*$`
-    + `|^\\s*(?:यह\\s+|इस\\s+|ये\\s+|हे\\s+|राज्य\\s+|प्रदेश\\s+|${STATE_NAME_NATIVE}\\s+)?सरकार\\s*$`,
+    + `|^\\s*(?:यह\\s+|इस\\s+|ये\\s+|हे\\s+|राज्य\\s+|प्रदेश\\s+|${STATE_NAME_NATIVE}\\s+)?सरकार\\s*$`
+    // Telugu: "ప్రభుత్వం" / "సర్కార్", optionally with "ఈ" (this), "రాష్ట్ర" (state) or the state's name.
+    + `|^\\s*(?:(?:ఈ|రాష్ట్ర|${STATE_NAME_NATIVE})\\s+)?(?:ప్రభుత్వం|సర్కార్|సర్కారు)\\s*$`,
     'i',
 );
 
@@ -101,7 +103,8 @@ const matchRosterEntity = (rawText) => {
     if (!matches.length) return null;
 
     const best = matches[0];
-    const entityKey = best.entityKeys[0];
+    const cued = best.ambiguous ? pickByCue(best.alias, best.entityKeys, rawText) : null;
+    const entityKey = cued || best.entityKeys[0];
     const ent = POLITICAL_ENTITIES[entityKey];
     if (!ent) return null;
 
@@ -109,7 +112,8 @@ const matchRosterEntity = (rawText) => {
         key: entityKey,
         canonical: ent.canonical,
         affiliation: ent.alignment || null,
-        confidence: best.ambiguous ? 0.65 : 0.85,
+        confidence: best.ambiguous && !cued ? 0.65 : 0.85,
+        alias: best.alias,
     };
 };
 
@@ -130,6 +134,8 @@ const resolve = (candidates = [], ctx = {}) => {
         let canonical = null;
         let affiliation = null;
         let confidence = 0.5;
+        let viaGenericGovernment = false;
+        let eraAmbiguous = false;
 
         // 1. Stage 2 pre-scan — matched against the original text.
         const mentioned = Array.isArray(ctx.mentioned_entities) ? ctx.mentioned_entities : [];
@@ -153,7 +159,20 @@ const resolve = (candidates = [], ctx = {}) => {
                 canonical = rosterHit.canonical;
                 affiliation = rosterHit.affiliation;
                 confidence = rosterHit.confidence;
+                // "Telangana govt" and friends name the government without saying WHOSE: era-sensitive.
+                viaGenericGovernment = rosterHit.key === 'state_government' && ERA_SENSITIVE_GOVERNMENT_ALIASES.has(rosterHit.alias);
             }
+        }
+
+        // 2b. "TRS" is nobody's alias (BRS's old name; Kavitha's new party's
+        //     abbreviation). The context scan settled it from the WHOLE post; use
+        //     that. Unsettled => it stays unresolved and the verdict goes to review.
+        if (!canonical && /(?:^|[^a-z0-9_])trs(?:[^a-z0-9_]|$)|టీఆర్ఎస్/i.test(rawText) && ctx.trs_resolution && POLITICAL_ENTITIES[ctx.trs_resolution]) {
+            const ent = POLITICAL_ENTITIES[ctx.trs_resolution];
+            entityKey = ctx.trs_resolution;
+            canonical = ent.canonical;
+            affiliation = ent.alignment || null;
+            confidence = 0.75;
         }
 
         // 3. Operator CSV override.
@@ -164,17 +183,43 @@ const resolve = (candidates = [], ctx = {}) => {
         }
 
         // 4. A bare reference to "the government" ("this government", "state
-        //    govt", "सरकार", "प्रदेश सरकार") means the state government, which is
-        //    the client's. Without this, "X exposed the government" leaves the
-        //    target unresolved and the stance falls back to X — inverting it.
-        //    Named governments ("Congress government", "Revanth sarkar") already
-        //    resolved above through their aliases; central/union references
-        //    are deliberately not matched.
+        //    govt", "सरकार", "ప్రభుత్వం") means the state government. Without
+        //    this, "X exposed the government" leaves the target unresolved and the
+        //    stance falls back to X - inverting it. Central/union references are
+        //    deliberately not matched.
+        //
+        //    WHOSE camp that is comes from the roster, never from an assumption:
+        //    this deployment's client (BRS) is in OPPOSITION and the state
+        //    government is Congress, so it is the RIVAL camp. This branch used to
+        //    hard-code 'ally' (a ruling-party deployment's truth), which scored
+        //    every attack on "the government" as an attack on the client.
         if (!canonical && GENERIC_STATE_GOVERNMENT_RX.test(rawText)) {
-            entityKey = POLITICAL_ENTITIES.state_government ? 'state_government' : OUR_PARTY.id;
-            canonical = `Government of ${STATE_NAME}`;
-            affiliation = 'ally';
+            const gov = POLITICAL_ENTITIES.state_government;
+            entityKey = gov ? 'state_government' : null;
+            canonical = gov ? gov.canonical : `Government of ${STATE_NAME}`;
+            affiliation = gov ? gov.alignment : null;
             confidence = 0.7;
+            viaGenericGovernment = true;
+        }
+
+        // 5. WHICH government? A generic reference ("the government", "Telangana govt") is the CURRENT
+        //    (Congress) government only in the current era. The era is settled from the whole post (text
+        //    cues, then its date) in politicalContextService. In the BRS era it is BRS's own government
+        //    (an ally); when it cannot be settled it is NOT resolved at all, so the verdict goes to review
+        //    instead of guessing a camp. Named forms ("Congress government", "KCR government") never reach here.
+        if (viaGenericGovernment && entityKey === 'state_government' && ctx.government_era) {
+            if (ctx.government_era === 'brs') {
+                const ours = POLITICAL_ENTITIES[OUR_PARTY.id];
+                entityKey = OUR_PARTY.id;
+                canonical = ours.canonical;
+                affiliation = ours.alignment || null;
+                confidence = 0.7;
+            } else if (ctx.government_era === 'ambiguous') {
+                entityKey = null;
+                canonical = null;
+                affiliation = null;
+                eraAmbiguous = true;
+            }
         }
 
         // Unresolved candidates are still returned — with a null affiliation and
@@ -187,6 +232,7 @@ const resolve = (candidates = [], ctx = {}) => {
             canonical,
             affiliation,
             confidence: canonical ? confidence : 0.25,
+            ...(eraAmbiguous ? { era_ambiguous: true } : {}),
         });
     }
 

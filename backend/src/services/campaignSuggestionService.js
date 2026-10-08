@@ -7,6 +7,8 @@ const CampaignSuggestion = require('../models/CampaignSuggestion');
 const axios = require('axios');
 const { normalizePlatforms, sanitizeHashtags } = require('../utils/viralCreative');
 const topicSvc = require('./campaignTopicService');
+const { CLIENT_CONTEXT } = require('../config/politicalPromptContext');
+const { normalizeStance } = require('./stanceVocabulary');
 const retrieval = require('./rag/hybridRetrievalService');
 
 // Posts retrieved per significant topic. Small on purpose: the model needs enough to
@@ -505,8 +507,14 @@ async function generateSuggestions({
     url: a.content_url || '',
     author: a.author_handle || a.author || '',
     sentiment: '',
-    // Alerts have no stance of their own — the adapter pins them, and so does this.
-    stance: 'anti_target',
+    // The alert's own stance (every analysed alert carries llm_analysis.political_stance).
+    // This used to pin every alert to 'anti_target' on the belief that alerts have none, so a
+    // post attacking the Congress government (favourable to BRS) was fed to the campaign as
+    // criticism of BRS and triggered a "counter" suggestion. Unscored / unrelated => neutral.
+    stance: (() => {
+      const st = normalizeStance(a.llm_analysis?.political_stance || a.llm_analysis?.stance);
+      return ['pro_target', 'pro_target_indirect', 'anti_target', 'anti_target_indirect'].includes(st) ? st : 'neutral';
+    })(),
     topic,
     at: a.published_at || a.created_at,
   });
@@ -799,12 +807,13 @@ async function generateSuggestions({
    */
   const SYSTEM_ONE =
 `You are a political campaign strategist. Output ONE JSON object, nothing else.
+${CLIENT_CONTEXT} The party campaigns as the OPPOSITION: it does not govern and cannot claim government delivery; "counter" answers criticism of the party with its record and evidence, "amplify" boosts what favours the party, including the government's own failures against its promises.
 
 SHAPE:
 {"title":"","summary":"","brief":"","sentiment":"positive|negative|neutral|mixed","intent":"amplify|counter","suggested_message":"","suggested_message_short":"","suggested_news":[""],"suggested_hashtags":[""],"source_refs":[1,2],"target_platforms":["X","Facebook"],"recommended_niche":"","rationale":""}
 
 RULES:
-- title: a CAMPAIGN NAME, 3-8 words, that a person would recognise on a poster. It must NOT be the bare issue name you were given, and must NOT describe sentiment. Good: "Four More Seats, One Clear Mandate", "Pension Arrears Cleared in Quepem". Bad: "Elections & Politics", "Corruption", "Counter Negative Sentiment".
+- title: a CAMPAIGN NAME, 3-8 words, that a person would recognise on a poster. It must NOT be the bare issue name you were given, and must NOT describe sentiment. Good: "Promised Fifteen Thousand, Paid Twelve", "Ten Years of Water for Every Village". Bad: "Elections & Politics", "Corruption", "Counter Negative Sentiment".
 - summary: one or two sentences on what the posts actually say. INTERNAL — the client reads this, not the creator.
 - brief: 4-6 sentences addressed to the CONTENT CREATOR who will post this. Cover, in plain language: what the campaign is about, the angle to take, the tone to use, and one thing to avoid. Write it as instructions to a person. Do NOT mention post counts, sentiment splits, "amplify", "counter", or any internal analysis — the creator is external and must not be shown our monitoring data.
 - suggested_message: a 2-3 sentence draft of what to publish, naming a concrete detail from the posts (a place, scheme, number, person, claim). This is only a seed - the finished post is written separately - so keep it short and factual. NEVER generic lines like "committed to transparency", "serving with integrity", "promoting positive change".
@@ -966,7 +975,7 @@ Do not use "committed to", "with integrity", "dedicated to serving" or "positive
     const user =
 `Campaign: ${one.title}
 Issue: ${u.topic}
-Angle: ${u.intent === 'counter' ? 'answer the criticism by stating what was actually done' : 'amplify what is already going well'}${u.angle ? `\nThis post's own angle: ${u.angle}` : ''}
+Angle: ${u.intent === 'counter' ? 'answer the criticism with the record and evidence of the party' : 'amplify what favours the party, including failures of the government against its own promises'}${u.angle ? `\nThis post's own angle: ${u.angle}` : ''}
 ${facts.length ? `\nFacts you may use:\n${facts.map((f) => `- ${f}`).join('\n')}\n` : ''}
 Posts these must come from:
 ${u.refs.map((r) => `[${r.ref}] (${evidenceLabel(r)}) ${r.text}`).join('\n')}

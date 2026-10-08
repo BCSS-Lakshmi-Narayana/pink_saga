@@ -84,7 +84,7 @@ const geoMapping = async (req, res) => {
                 'detected_location.lat': 1, 'detected_location.lng': 1,
                 'detected_location.constituency': 1, 'detected_location.district': 1,
                 'analysis.severity': 1, 'analysis.risk_level': 1, 'analysis.category': 1,
-                'analysis.concerned_department': 1, 'analysis.bsk_sentiment': 1,
+                'analysis.concerned_department': 1, 'analysis.target_sentiment': 1, 'analysis.bsk_sentiment': 1,
                 engagement: 1,
             })
             .limit(Math.min(parseInt(req.query.limit || '2000', 10), 10000))
@@ -107,7 +107,8 @@ const geoMapping = async (req, res) => {
                 workflow_status: d.workflow_status,
                 category:    d.analysis?.category || null,
                 department:  d.analysis?.concerned_department || null,
-                sentiment:   d.analysis?.bsk_sentiment || null,
+                // Client-relative (effect on BRS), not the post's tone.
+                sentiment:   d.analysis?.target_sentiment || d.analysis?.bsk_sentiment || null,
                 engagement_total: (d.engagement?.likes || 0) + (d.engagement?.retweets || 0) + (d.engagement?.replies || 0),
                 post_date: d.post_date,
             };
