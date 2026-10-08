@@ -12,6 +12,7 @@ const Source = require('../models/Source');
 const cacheService = require('../services/cacheService');
 const { isKnownStateLocation, canonicalDistrict } = require('../config/stateLocations');
 const { APP_NAME, STATE_NAME, CLIENT_DESCRIPTION } = require('../config/deployment');
+const { grievanceGate } = require('../config/displayGate');
 
 /**
  * The Negative/Neutral/Positive pills use these labels; stored records use
@@ -117,6 +118,10 @@ const buildExtraFilters = (query) => {
   if (query.platform && query.platform !== 'all') {
     extra.platform = query.platform;
   }
+  // Display gate: a post still waiting for analysis is hidden from the Mentions list, so it must not be
+  // counted by any dashboard / map aggregation built from these filters either.
+  const gate = grievanceGate();
+  if (gate) extra.$and = [gate];
   return extra;
 };
 
@@ -473,7 +478,7 @@ const getAPTopTopics = async (req, res) => {
         { $match: {
           ...withoutOr(extra),
           ...dateMatch(from, to),
-          $and: [...orClause(extra), { $or: TOPIC_EXISTS_OR }]
+          $and: [...(extra.$and || []), ...orClause(extra), { $or: TOPIC_EXISTS_OR }]
         }},
         { $project: {
           topic: { $ifNull: ['$analysis.grievance_type', '$analysis.category'] },
@@ -493,7 +498,7 @@ const getAPTopTopics = async (req, res) => {
         { $match: {
           ...withoutOr(extra),
           ...dateMatch(prevFrom, prevTo),
-          $and: [...orClause(extra), { $or: TOPIC_EXISTS_OR }]
+          $and: [...(extra.$and || []), ...orClause(extra), { $or: TOPIC_EXISTS_OR }]
         }},
         { $project: { topic: { $ifNull: ['$analysis.grievance_type', '$analysis.category'] } } },
         { $match: { topic: { $nin: [null, ''] } } },
@@ -723,7 +728,7 @@ const getAPMapData = async (req, res) => {
   try {
     const from = parseFrom(req.query.from) || new Date(Date.now() - 30 * 86400000);
     const to   = parseTo(req.query.to)   || endOfDay(new Date());
-    const ck = cacheKey('ap:map-data:v3', from.toISOString(), to.toISOString(), filterSuffix(req.query));
+    const ck = cacheKey('ap:map-data:v4', from.toISOString(), to.toISOString(), filterSuffix(req.query));
     const cached = await cacheService.get(ck);
     if (cached) return res.json(cached);
 

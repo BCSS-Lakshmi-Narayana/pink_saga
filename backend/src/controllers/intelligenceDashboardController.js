@@ -10,6 +10,13 @@ const SuggestionReport = require('../models/SuggestionReport');
 const CriticismReport = require('../models/CriticismReport');
 const POI = require('../models/POI');
 const cacheService = require('../services/cacheService');
+const { grievanceGate } = require('../config/displayGate');
+
+/** `is_active: true` plus the display gate: a post still waiting for analysis is not shown in Mentions, so it is not counted here. */
+const gatedActive = () => {
+  const gate = grievanceGate();
+  return gate ? { is_active: true, $and: [gate] } : { is_active: true };
+};
 
 const sendShortCacheHeaders = (res, browserSeconds = 15) => {
   res.set('Cache-Control', `private, max-age=${browserSeconds}`);
@@ -324,31 +331,31 @@ const getGrievancesIntelligence = async (req, res) => {
 
     // ── Total Grievances ──
     const [totalGrievances, grievancesInRange] = await Promise.all([
-      Grievance.countDocuments({ is_active: true }),
-      Grievance.countDocuments({ is_active: true, ...dateMatch })
+      Grievance.countDocuments({ ...gatedActive() }),
+      Grievance.countDocuments({ ...gatedActive(), ...dateMatch })
     ]);
 
     // ── Platform Distribution ──
     const byPlatform = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       { $group: { _id: '$platform', count: { $sum: 1 } } }
     ]);
 
     // ── Workflow Status Distribution ──
     const workflowStatusDist = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       { $group: { _id: '$workflow_status', count: { $sum: 1 } } }
     ]);
 
     // ── Classification Distribution ──
     const classificationDist = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       { $group: { _id: '$classification', count: { $sum: 1 } } }
     ]);
 
     // ── Priority Distribution (complaints) ──
     const priorityDist = await Grievance.aggregate([
-      { $match: { is_active: true, classification: 'complaint', ...dateMatch } },
+      { $match: { ...gatedActive(), classification: 'complaint', ...dateMatch } },
       { $group: { _id: '$complaint.priority', count: { $sum: 1 } } }
     ]);
 
@@ -378,7 +385,7 @@ const getGrievancesIntelligence = async (req, res) => {
 
     // ── Daily trend ──
     const dailyTrend = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       {
         $group: {
           _id: { $dateToString: { format: '%Y-%m-%d', date: '$post_date' } },
@@ -390,20 +397,20 @@ const getGrievancesIntelligence = async (req, res) => {
 
     // ── Platform + workflow status cross-tab ──
     const platformWorkflowCross = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       { $group: { _id: { platform: '$platform', status: '$workflow_status' }, count: { $sum: 1 } } }
     ]);
 
     // ── Escalation count distribution ──
     const escalationCountDist = await Grievance.aggregate([
-      { $match: { is_active: true, escalation_count: { $gt: 0 }, ...dateMatch } },
+      { $match: { ...gatedActive(), escalation_count: { $gt: 0 }, ...dateMatch } },
       { $group: { _id: '$escalation_count', count: { $sum: 1 } } },
       { $sort: { _id: 1 } }
     ]);
 
     // ── Tagged account distribution (top) ──
     const taggedAccountDist = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       { $group: { _id: '$tagged_account_normalized', count: { $sum: 1 } } },
       { $sort: { count: -1 } },
       { $limit: 15 }
@@ -411,7 +418,7 @@ const getGrievancesIntelligence = async (req, res) => {
 
     // ── Engagement metrics aggregation ──
     const engagementAgg = await Grievance.aggregate([
-      { $match: { is_active: true, ...dateMatch } },
+      { $match: { ...gatedActive(), ...dateMatch } },
       {
         $group: {
           _id: null,
@@ -427,13 +434,13 @@ const getGrievancesIntelligence = async (req, res) => {
 
     // ── Sentiment distribution (from analysis) ──
     const sentimentDist = await Grievance.aggregate([
-      { $match: { is_active: true, 'analysis.sentiment': { $exists: true }, ...dateMatch } },
+      { $match: { ...gatedActive(), 'analysis.sentiment': { $exists: true }, ...dateMatch } },
       { $group: { _id: '$analysis.sentiment', count: { $sum: 1 } } }
     ]);
 
     // ── Urgency distribution ──
     const urgencyDist = await Grievance.aggregate([
-      { $match: { is_active: true, 'analysis.urgency': { $exists: true }, ...dateMatch } },
+      { $match: { ...gatedActive(), 'analysis.urgency': { $exists: true }, ...dateMatch } },
       { $group: { _id: '$analysis.urgency', count: { $sum: 1 } } }
     ]);
 
@@ -458,8 +465,8 @@ const getGrievancesIntelligence = async (req, res) => {
     const prevFrom = addDays(from, -periodLength);
     const prevTo = endOfDay(addDays(from, -1));
     const [currentCount, prevCount] = await Promise.all([
-      Grievance.countDocuments({ is_active: true, ...dateMatch }),
-      Grievance.countDocuments({ is_active: true, post_date: { $gte: prevFrom, $lte: prevTo } })
+      Grievance.countDocuments({ ...gatedActive(), ...dateMatch }),
+      Grievance.countDocuments({ ...gatedActive(), post_date: { $gte: prevFrom, $lte: prevTo } })
     ]);
 
     const grievancesIntelPayload = {
