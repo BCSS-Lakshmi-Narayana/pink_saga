@@ -267,15 +267,22 @@ const AccessManagement = () => {
         }
     };
 
-    const handleEditUserClick = () => {
-        if (!selectedUser) return;
+    // Opens the edit dialog for `target` (defaults to the selected officer). Works for superadmins too:
+    // their name, email and password are editable, their role and seat scope are not.
+    const handleEditUserClick = (target = selectedUser) => {
+        if (!target || !target.id) return;
+        if (target.id !== selectedUserId) {
+            setSelectedUserId(target.id);
+            setSelectedUser(target);
+            fetchUserPermissions(target.id);
+        }
         setEditUserForm({
-            full_name: selectedUser.full_name,
-            email: selectedUser.email,
+            full_name: target.full_name,
+            email: target.email,
             password: '', // Blank password means don't change it
-            role: selectedUser.role,
-            is_scoped: Boolean(selectedUser.is_scoped),
-            constituencies: userConstituencies(selectedUser)
+            role: target.role,
+            is_scoped: Boolean(target.is_scoped),
+            constituencies: userConstituencies(target)
         });
         setShowEditModal(true);
     };
@@ -284,7 +291,11 @@ const AccessManagement = () => {
         e.preventDefault();
         if (!selectedUser) return;
 
-        const { payload, error: scopeError } = prepareScopePayload(editUserForm);
+        const editingSuperAdmin = normalizeRole(selectedUser.role) === 'superadmin';
+        const { payload, error: scopeError } = editingSuperAdmin
+            // A superadmin keeps their role and full access: only the credentials are sent.
+            ? { payload: { full_name: editUserForm.full_name, email: editUserForm.email, password: editUserForm.password } }
+            : prepareScopePayload(editUserForm);
         if (scopeError) {
             toast.error(scopeError);
             return;
@@ -461,15 +472,15 @@ const AccessManagement = () => {
                                 )}
 
                                 {/* Edit/Delete Actions */}
-                                {selectedUser.role !== 'superadmin' && (
-                                    <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200/60">
+                                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200/60">
                                         <button
-                                            onClick={handleEditUserClick}
+                                            onClick={() => handleEditUserClick()}
                                             className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 text-gray-700 rounded-md text-xs font-medium hover:bg-gray-50 transition-colors"
                                         >
                                             <Edit2 size={14} />
                                             Edit Details
                                         </button>
+                                        {selectedUser.role !== 'superadmin' && (
                                         <button
                                             onClick={handleDeleteUser}
                                             disabled={deletingUser}
@@ -478,8 +489,8 @@ const AccessManagement = () => {
                                             <Trash2 size={14} />
                                             {deletingUser ? 'Deleting...' : 'Delete Officer'}
                                         </button>
+                                        )}
                                     </div>
-                                )}
                             </div>
                         )}
 
@@ -492,10 +503,10 @@ const AccessManagement = () => {
                             ) : (
                                 <div className="space-y-1">
                                     {users.map(u => (
+                                        <div key={u.id} className="relative group">
                                         <button
-                                            key={u.id}
                                             onClick={() => handleUserChange({ target: { value: u.id } })}
-                                            className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${selectedUserId === u.id
+                                            className={`w-full flex items-center gap-3 p-3 pr-10 rounded-lg transition-all ${selectedUserId === u.id
                                                 ? 'bg-indigo-50 border-indigo-200 shadow-sm'
                                                 : 'hover:bg-gray-50 border-transparent'
                                                 } border`}
@@ -511,6 +522,16 @@ const AccessManagement = () => {
                                                 <p className="text-xs text-gray-500 truncate">{u.email}</p>
                                             </div>
                                         </button>
+                                        <button
+                                            type="button"
+                                            title="Edit credentials"
+                                            aria-label={`Edit ${u.full_name}`}
+                                            onClick={() => handleEditUserClick(u)}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md text-gray-400 hover:text-indigo-600 hover:bg-white opacity-70 group-hover:opacity-100 transition"
+                                        >
+                                            <Edit2 size={14} />
+                                        </button>
+                                        </div>
                                     ))}
                                 </div>
                             )}
@@ -822,6 +843,8 @@ const AccessManagement = () => {
                                             onChange={(e) => setEditUserForm({ ...editUserForm, password: e.target.value })}
                                         />
                                     </div>
+                                    {editUserForm.role !== 'superadmin' && (
+                                    <>
                                     <div>
                                         <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
                                         <select
@@ -841,6 +864,8 @@ const AccessManagement = () => {
                                         value={editUserForm}
                                         onChange={(next) => setEditUserForm({ ...editUserForm, ...next })}
                                     />
+                                    </>
+                                    )}
                                     <div className="flex gap-3 pt-4">
                                         <button
                                             type="button"

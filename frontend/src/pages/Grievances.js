@@ -567,6 +567,8 @@ const Grievances = () => {
     const [activeReportSubTab, setActiveReportSubTab] = useState('grievance'); // grievance, suggestion, criticism
     const [pagination, setPagination] = useState({ hasMore: false, nextCursor: null, total: 0 });
     const fetchAbortRef = useRef(null); // AbortController for cancelling stale requests
+    const loadMoreAbortRef = useRef(null); // the in-flight "Load More" request, aborted when the filters change
+    const fetchEpochRef = useRef(0); // bumped by every fresh (non-cursor) fetch; a response from an older epoch is discarded
     const locationEnrichmentInFlightRef = useRef(new Set());
     const locationEnrichmentCacheRef = useRef(new Map());
 
@@ -791,6 +793,10 @@ const Grievances = () => {
     const [rssLoadingMore, setRssLoadingMore] = useState(false);
     const [rssPagination, setRssPagination] = useState({ page: 1, pages: 1, total: 0, limit: 20 });
     const [rssSearch, setRssSearch] = useState('');
+    // What is typed in the box; committed to `rssSearch` (the API term) after a short pause instead of per keystroke.
+    const [rssSearchInput, setRssSearchInput] = useState('');
+    const [rssError, setRssError] = useState('');
+    const rssRequestRef = useRef(0);
     const [rssDistrict, setRssDistrict] = useState('all');
     const [rssCategory, setRssCategory] = useState('all');
     const [rssSourceType, setRssSourceType] = useState('all');
@@ -916,7 +922,9 @@ const Grievances = () => {
 
     // Debounce search
     const searchTimerRef = useRef(null);
-    const [debouncedSearch, setDebouncedSearch] = useState('');
+    // Seeded from the URL so the very first request already carries a deep-linked search term (it used to start
+    // empty and issue an unfiltered request first).
+    const [debouncedSearch, setDebouncedSearch] = useState(() => searchParams.get('search') || '');
 
     const splitPaneRef = useRef(null);
 
@@ -1029,10 +1037,12 @@ const Grievances = () => {
         setLeaderFilter(urlLeader);
         setNavbarPlatform(urlPlatform);
         setPlatformFilter(urlPlatform);
-        setDateRange({
-            from: parseDateParam(urlFrom),
-            to: parseDateParam(urlTo)
-        });
+        // Keep the previous object when the dates are unchanged: dateRange is a fetch-effect dependency, so a fresh
+        // object on every URL change (a pill click, a search keystroke) re-ran the list and stats requests each time.
+        const nextFrom = parseDateParam(urlFrom);
+        const nextTo = parseDateParam(urlTo);
+        const sameDay = (a, b) => (a ? a.getTime() : null) === (b ? b.getTime() : null);
+        setDateRange((prev) => (sameDay(prev.from, nextFrom) && sameDay(prev.to, nextTo) ? prev : { from: nextFrom, to: nextTo }));
     }, [searchParams, normalizeTopicFilterLabel]);
 
     useEffect(() => {
@@ -1217,8 +1227,12 @@ const Grievances = () => {
 
     // ── RSS fetch ─────────────────────────────────────────────────
     const fetchNewsArticles = useCallback(async (page = 1, append = false) => {
+        // Only the most recent request may update the screen (a slow response for an older filter, or a Load More that
+        // resolves after the filters changed, must not overwrite or extend the new list).
+        const requestId = ++rssRequestRef.current;
         if (page === 1) setRssLoading(true);
         else setRssLoadingMore(true);
+        setRssError('');
         try {
             const res = await api.get('/news', {
                 params: {
@@ -1231,14 +1245,19 @@ const Grievances = () => {
                     sentiment:   rssSentiment  !== 'all' ? rssSentiment  : undefined,
                 },
             });
+            if (requestId !== rssRequestRef.current) return;
             const { articles = [], pagination } = res.data;
             setRssArticles(prev => append ? [...prev, ...articles] : articles);
             setRssPagination(pagination || { page: 1, pages: 1, total: 0, limit: 20 });
         } catch (err) {
+            if (requestId !== rssRequestRef.current) return;
             console.error('[RSS] fetchNewsArticles error:', err);
+            setRssError('Could not load news articles. Check your connection and try again.');
         } finally {
-            setRssLoading(false);
-            setRssLoadingMore(false);
+            if (requestId === rssRequestRef.current) {
+                setRssLoading(false);
+                setRssLoadingMore(false);
+            }
         }
     }, [rssSearch, rssDistrict, rssCategory, rssSourceType, rssSentiment]);
 
@@ -1477,22 +1496,27 @@ const Grievances = () => {
             return;
         }
 
-        // YouTube LIVE is a standalone feed backed by its own collection. It must
-        // never be passed as a grievance platform filter, and its chat messages
-        // never appear in "All".
-        if (navbarPlatform === 'ytlive') {
+        // A fresh fetch (filters / tab changed) invalidates everything still in flight, INCLUDING a "Load More": its
+        // response would otherwise be appended under the new filter and overwrite the new cursor.
+        const epoch = cursor ? fetchEpochRef.current : ++fetchEpochRef.current;
+        if (!cursor) {
+            if (fetchAbortRef.current) fetchAbortRef.current.abort();
+            if (loadMoreAbortRef.current) loadMoreAbortRef.current.abort();
+            setLoadingMore(false);
+        }
+
+        // YouTube LIVE and Web Articles are standalone feeds with their own data source. Neither is a grievance
+        // platform filter ("rss" / "ytlive" match no grievance), so there is nothing to fetch here.
+        if (navbarPlatform === 'ytlive' || navbarPlatform === 'rss') {
             setGrievances([]);
             setPagination({ hasMore: false, nextCursor: null, total: 0 });
             setLoading(false);
             return;
         }
 
-        // Cancel any in-flight request when filters change (not for "load more")
-        if (!cursor && fetchAbortRef.current) {
-            fetchAbortRef.current.abort();
-        }
         const abortController = new AbortController();
         if (!cursor) fetchAbortRef.current = abortController;
+        else loadMoreAbortRef.current = abortController;
 
         if (cursor) {
             setLoadingMore(true);
@@ -1538,6 +1562,7 @@ const Grievances = () => {
             if (cursor) params.cursor = cursor;
 
             const res = await api.get('/grievances', { params, signal: abortController.signal });
+            if (epoch !== fetchEpochRef.current) return; // the filters changed while this was in flight
             const data = res.data;
             const rows = Array.isArray(data.grievances) ? data.grievances : [];
             const rowsWithCachedLocations = applyCachedLocations(rows);
@@ -1570,7 +1595,7 @@ const Grievances = () => {
             // "Load More" calls never touch fetchAbortRef, so they always clear
             // loadingMore unconditionally, same as before.
             if (cursor) {
-                setLoadingMore(false);
+                if (epoch === fetchEpochRef.current) setLoadingMore(false);
             } else if (fetchAbortRef.current === abortController) {
                 setLoading(false);
             }
@@ -2080,7 +2105,106 @@ const Grievances = () => {
         // target and three of the four location params.
         clearAllFilters();
         setNavbarStatus('total');
+        // A status change moves the page to the 'pending' / 'closed' / 'fir' workflow bucket and there is no tab strip
+        // to come back from; without this reset every later list stayed limited to that bucket.
+        setActiveTab('all');
     };
+
+    // The sentiment pills + view toggle row. A function (not inline JSX) so the empty state can show it too.
+    const renderSentimentBar = () => {
+                                            const serverCounts = pagination.sentiment_counts;
+                                            let counts;
+                                            if (serverCounts) {
+                                                // sentiment_counts is the breakdown ignoring the active
+                                                // sentiment filter, so "All" is their sum — this keeps every
+                                                // pill's count stable no matter which sentiment is selected.
+                                                const positive = serverCounts.positive || 0;
+                                                const negative = serverCounts.negative || 0;
+                                                const neutral  = serverCounts.neutral  || 0;
+                                                counts = { all: positive + negative + neutral, positive, negative, neutral };
+                                            } else {
+                                                counts = { all: displayedGrievances.length, positive: 0, neutral: 0, negative: 0 };
+                                                displayedGrievances.forEach((g) => {
+                                                    const s = String(g?.analysis?.sentiment || '').toLowerCase();
+                                                    if (s === 'positive') counts.positive += 1;
+                                                    else if (s === 'negative') counts.negative += 1;
+                                                    else counts.neutral += 1;
+                                                });
+                                            }
+                                            const pills = [
+                                                { id: null,        label: 'All',       n: counts.all,      active: 'bg-slate-900 text-white border-slate-900',  idle: 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50',       dot: 'bg-slate-400' },
+                                                { id: 'positive',  label: 'Positive',  n: counts.positive, active: 'bg-emerald-600 text-white border-emerald-600', idle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100', dot: 'bg-emerald-500' },
+                                                { id: 'neutral',   label: 'Neutral',   n: counts.neutral,  active: 'bg-slate-500 text-white border-slate-500',     idle: 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100',         dot: 'bg-slate-500' },
+                                                { id: 'negative',  label: 'Negative',  n: counts.negative, active: 'bg-rose-600 text-white border-rose-600',       idle: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100',             dot: 'bg-rose-500' },
+                                            ];
+                                            return (
+                                                <div className="flex items-center justify-between gap-3 flex-wrap px-1">
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        {pills.map((p) => {
+                                                            const isActive = (sentimentFilter || null) === p.id;
+                                                            return (
+                                                                <button
+                                                                    key={String(p.id)}
+                                                                    type="button"
+                                                                    onClick={() => updateURLParams({ sentiment: p.id || null })}
+                                                                    className={cn(
+                                                                        'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.97]',
+                                                                        isActive ? p.active : p.idle
+                                                                    )}
+                                                                >
+                                                                    <span className={cn('h-2 w-2 rounded-full', p.dot)} />
+                                                                    {p.label}
+                                                                    <span className={cn(
+                                                                        'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold',
+                                                                        isActive ? 'bg-white/20 text-white' : 'bg-slate-900/5 text-slate-700'
+                                                                    )}>
+                                                                        {p.n}
+                                                                    </span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                    <div className="flex items-center gap-3">
+                                                        {/* View-mode toggle (grid / list) */}
+                                                        <div className="inline-flex items-center rounded-md border border-slate-200 bg-white overflow-hidden">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setViewMode('list')}
+                                                                title="List view"
+                                                                className={cn(
+                                                                    'px-2.5 py-1.5 text-xs font-semibold transition-colors',
+                                                                    viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'
+                                                                )}
+                                                            >
+                                                                <LayoutList className="h-3.5 w-3.5" />
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setViewMode('grid')}
+                                                                title="Grid view"
+                                                                className={cn(
+                                                                    'px-2.5 py-1.5 text-xs font-semibold transition-colors border-l border-slate-200',
+                                                                    viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'
+                                                                )}
+                                                            >
+                                                                <LayoutGrid className="h-3.5 w-3.5" />
+                                                            </button>
+                                                        </div>
+                                                        <span className="text-xs text-muted-foreground">
+                                                            Showing {displayedGrievances.length}{pagination.total ? ` of ${pagination.total.toLocaleString()}` : ''} mentions
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            );
+    };
+
+    // The dropdown value must be one of its options. The raw URL value is what the dropdown itself writes, so it wins when
+    // it matches; a hand-typed deep link in another case falls back to the normalised label; otherwise "All Topics".
+    const topicOptionValues = [...topicGroups.subjects, ...topicGroups.intents];
+    const rawTopicParam = searchParams.get('grievance_type') || searchParams.get('topic') || '';
+    const topicSelectValue = topicOptionValues.includes(rawTopicParam)
+        ? rawTopicParam
+        : (topicFilter && topicOptionValues.includes(topicFilter) ? topicFilter : '');
 
     const leaderRows = useMemo(() => {
         const rows = sentimentLeaders[sentimentLeadersTab] || [];
@@ -2114,7 +2238,7 @@ const Grievances = () => {
     // Every filter that can hide rows, so the Clear affordance appears whenever
     // one is applied. Sentiment, topic, category and target were missing, so a
     // feed narrowed by any of them looked unfiltered.
-    const hasActiveFilters = navbarPlatform !== 'all' || dateRange.from || dateRange.to
+    const hasActiveFilters = activeTab !== 'all' || navbarPlatform !== 'all' || dateRange.from || dateRange.to
         || debouncedSearch || navbarStatus !== 'total' || selectedHandle || locationFilter
         || sentimentFilter || stanceFilter || topicFilter || analysisCategoryFilter || targetEntityFilter || leaderFilter;
     const isReportsTab = navbarStatus === 'reports';
@@ -2159,7 +2283,7 @@ const Grievances = () => {
                         )}
                     </div>
                     <div className="relative shrink-0">
-                        <select value={topicFilter || ''} onChange={(e) => updateURLParams({ grievance_type: e.target.value || null, topic: null })} className="appearance-none bg-white border border-slate-200 rounded-md pl-6 pr-6 py-1 h-7 text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 cursor-pointer">
+                        <select value={topicSelectValue} onChange={(e) => updateURLParams({ grievance_type: e.target.value || null, topic: null })} className="appearance-none bg-white border border-slate-200 rounded-md pl-6 pr-6 py-1 h-7 text-xs text-slate-700 hover:border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-400 cursor-pointer">
                             <option value="">All Topics</option>
                             {topicGroups.subjects.length > 0 && (
                                 <optgroup label="Subject">
@@ -2770,12 +2894,12 @@ const Grievances = () => {
                             <input
                                 type="text"
                                 placeholder="Search articles..."
-                                value={rssSearch}
+                                value={rssSearchInput}
                                 onChange={(e) => {
                                     const v = e.target.value;
-                                    setRssSearch(v);
+                                    setRssSearchInput(v);
                                     clearTimeout(rssSearchTimer.current);
-                                    rssSearchTimer.current = setTimeout(() => {}, 0);
+                                    rssSearchTimer.current = setTimeout(() => setRssSearch(v), 300);
                                 }}
                                 className="w-full pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-400/30 focus:border-violet-400"
                             />
@@ -2867,7 +2991,7 @@ const Grievances = () => {
                                         setRssCategory('all');
                                         setRssSourceType('all');
                                         setRssSentiment('all');
-                                        setRssSearch('');
+                                        setRssSearch(''); setRssSearchInput('');
                                     }}
                                     className="h-7 gap-1 text-xs font-semibold text-slate-500 hover:text-red-600 hover:bg-red-50 border border-slate-200 rounded-lg px-2 transition-colors"
                                 >
@@ -2901,13 +3025,15 @@ const Grievances = () => {
                             <Rss className="h-12 w-12 mx-auto text-slate-200 mb-3" />
                             <h3 className="text-sm font-semibold text-slate-700">No news articles found</h3>
                             <p className="text-xs text-slate-400 mt-1">
-                                {rssHasFilters
+                                {rssError
+                                    ? rssError
+                                    : rssHasFilters
                                     ? 'Try clearing some filters.'
                                     : 'Start the Blura Engine to populate news. See Blura-Engine/political_main.py (entry script for the Telangana RSS feeds).'}
                             </p>
                             {rssHasFilters && (
                                 <Button variant="outline" size="sm" className="mt-3 text-xs"
-                                    onClick={() => { setRssSearch(''); setRssDistrict('all'); setRssCategory('all'); setRssSourceType('all'); setRssSentiment('all'); }}>
+                                    onClick={() => { setRssSearch(''); setRssSearchInput(''); setRssDistrict('all'); setRssCategory('all'); setRssSourceType('all'); setRssSentiment('all'); }}>
                                     Clear Filters
                                 </Button>
                             )}
@@ -2934,7 +3060,6 @@ const Grievances = () => {
                                         variant="outline"
                                         onClick={() => {
                                             const nextPage = rssPagination.page + 1;
-                                            setRssPagination(p => ({ ...p, page: nextPage }));
                                             fetchNewsArticles(nextPage, true);
                                         }}
                                         disabled={rssLoadingMore}
@@ -3076,6 +3201,9 @@ const Grievances = () => {
                                         <p className="text-sm text-muted-foreground">Loading grievances...</p>
                                     </div>
                                 ) : grievances.length === 0 ? (
+                                    <div className="space-y-4">
+                                    {/* With a sentiment selected, an empty result must not hide the pills: they are the way out. */}
+                                    {sentimentFilter ? renderSentimentBar() : null}
                                     <div className="text-center p-12 bg-white rounded-lg border-2 border-dashed border-slate-200">
                                         <FileText className="h-12 w-12 mx-auto text-slate-300 mb-3" />
                                         <h3 className="text-sm font-semibold text-slate-900">No grievances found</h3>
@@ -3090,6 +3218,7 @@ const Grievances = () => {
                                             </Button>
                                         )}
                                     </div>
+                                    </div>
                                 ) : (
                                     <div className="space-y-4">
                                         {/* Sentiment filter pills + counts
@@ -3100,92 +3229,7 @@ const Grievances = () => {
                                           * only while the first page is still in flight so the pills
                                           * never render as 0/0/0.
                                           */}
-                                        {(() => {
-                                            const serverCounts = pagination.sentiment_counts;
-                                            let counts;
-                                            if (serverCounts) {
-                                                // sentiment_counts is the breakdown ignoring the active
-                                                // sentiment filter, so "All" is their sum — this keeps every
-                                                // pill's count stable no matter which sentiment is selected.
-                                                const positive = serverCounts.positive || 0;
-                                                const negative = serverCounts.negative || 0;
-                                                const neutral  = serverCounts.neutral  || 0;
-                                                counts = { all: positive + negative + neutral, positive, negative, neutral };
-                                            } else {
-                                                counts = { all: displayedGrievances.length, positive: 0, neutral: 0, negative: 0 };
-                                                displayedGrievances.forEach((g) => {
-                                                    const s = String(g?.analysis?.sentiment || '').toLowerCase();
-                                                    if (s === 'positive') counts.positive += 1;
-                                                    else if (s === 'negative') counts.negative += 1;
-                                                    else counts.neutral += 1;
-                                                });
-                                            }
-                                            const pills = [
-                                                { id: null,        label: 'All',       n: counts.all,      active: 'bg-slate-900 text-white border-slate-900',  idle: 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50',       dot: 'bg-slate-400' },
-                                                { id: 'positive',  label: 'Positive',  n: counts.positive, active: 'bg-emerald-600 text-white border-emerald-600', idle: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100', dot: 'bg-emerald-500' },
-                                                { id: 'neutral',   label: 'Neutral',   n: counts.neutral,  active: 'bg-slate-500 text-white border-slate-500',     idle: 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100',         dot: 'bg-slate-500' },
-                                                { id: 'negative',  label: 'Negative',  n: counts.negative, active: 'bg-rose-600 text-white border-rose-600',       idle: 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100',             dot: 'bg-rose-500' },
-                                            ];
-                                            return (
-                                                <div className="flex items-center justify-between gap-3 flex-wrap px-1">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        {pills.map((p) => {
-                                                            const isActive = (sentimentFilter || null) === p.id;
-                                                            return (
-                                                                <button
-                                                                    key={String(p.id)}
-                                                                    type="button"
-                                                                    onClick={() => updateURLParams({ sentiment: p.id || null })}
-                                                                    className={cn(
-                                                                        'inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-xs font-bold uppercase tracking-wider transition-all duration-150 active:scale-[0.97]',
-                                                                        isActive ? p.active : p.idle
-                                                                    )}
-                                                                >
-                                                                    <span className={cn('h-2 w-2 rounded-full', p.dot)} />
-                                                                    {p.label}
-                                                                    <span className={cn(
-                                                                        'inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-bold',
-                                                                        isActive ? 'bg-white/20 text-white' : 'bg-slate-900/5 text-slate-700'
-                                                                    )}>
-                                                                        {p.n}
-                                                                    </span>
-                                                                </button>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                    <div className="flex items-center gap-3">
-                                                        {/* View-mode toggle (grid / list) */}
-                                                        <div className="inline-flex items-center rounded-md border border-slate-200 bg-white overflow-hidden">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setViewMode('list')}
-                                                                title="List view"
-                                                                className={cn(
-                                                                    'px-2.5 py-1.5 text-xs font-semibold transition-colors',
-                                                                    viewMode === 'list' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'
-                                                                )}
-                                                            >
-                                                                <LayoutList className="h-3.5 w-3.5" />
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setViewMode('grid')}
-                                                                title="Grid view"
-                                                                className={cn(
-                                                                    'px-2.5 py-1.5 text-xs font-semibold transition-colors border-l border-slate-200',
-                                                                    viewMode === 'grid' ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-50'
-                                                                )}
-                                                            >
-                                                                <LayoutGrid className="h-3.5 w-3.5" />
-                                                            </button>
-                                                        </div>
-                                                        <span className="text-xs text-muted-foreground">
-                                                            Showing {displayedGrievances.length}{pagination.total ? ` of ${pagination.total.toLocaleString()}` : ''} mentions
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })()}
+                                        {renderSentimentBar()}
 
                                         {/* ─── Single mixed feed; cards self-colour by sentiment ───
                                           *

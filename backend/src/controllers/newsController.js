@@ -98,6 +98,16 @@ const NOT_MOJIBAKE_NOR = [
   { title_english: MOJIBAKE_RX },
 ];
 
+// Articles that may be shown anywhere in the UI. The list, its total and the stats/facet counts all start from this
+// one filter, so a count can never include something the list is not allowed to return.
+const EXCLUDED_DOMAINS = ['indianexpress.com', 'news.google.com'];
+const visibleBaseFilter = () => ({
+  source_domain: { $nin: EXCLUDED_DOMAINS },
+  $nor: NOT_MOJIBAKE_NOR,
+  // Judged not relevant to the client by the pipeline: kept in the database, never listed.
+  client_relevance: { $ne: 'not_relevant' },
+});
+
 // Build the constituency $or fragment for a scoped MLA/MP. Returns null when the
 // caller can see everything (super admin / party leadership / legacy roles) and
 // an impossible match when a scoped user has no seats assigned.
@@ -135,14 +145,9 @@ exports.getArticles = async (req, res) => {
       endDate,
     } = req.query;
 
-    // Never show articles from these domains in the UI
-    const EXCLUDED_DOMAINS = ['indianexpress.com', 'news.google.com'];
-    const filter = { source_domain: { $nin: EXCLUDED_DOMAINS }, $nor: NOT_MOJIBAKE_NOR };
-
-    // Articles the Node pipeline judged NOT relevant to the client (sport, markets, out-of-state crime that
-    // a whole-site feed let in) are kept in the database but never listed. `$ne` also keeps articles that
-    // have no verdict yet; those are held back by the display gate below until they are scored.
-    filter.client_relevance = { $ne: 'not_relevant' };
+    // Excluded domains, mojibake and `not_relevant` (kept in the database, never listed). `$ne` also keeps articles
+    // that have no verdict yet; those are held back by the display gate below until they are scored.
+    const filter = visibleBaseFilter();
 
     // RBAC: scoped MLAs / MPs only see news that mentions their seat name
     // anywhere in the article (title, summary, matched keywords, detected
@@ -155,8 +160,10 @@ exports.getArticles = async (req, res) => {
       filter.$and = [{ $or: scopeOr }];
     }
 
-    if (search) {
-      const rx = new RegExp(search, 'i');
+    // Typed text, not a pattern: "c++", "(" or "[" must search literally, not throw (and cannot become a ReDoS).
+    const searchText = typeof search === 'string' ? search.trim().slice(0, 200) : '';
+    if (searchText) {
+      const rx = new RegExp(escapeRx(searchText), 'i');
       const searchOr = [
         { title: rx },
         { title_english: rx },
@@ -207,18 +214,18 @@ exports.getArticles = async (req, res) => {
       if (clause) filter.$and = (filter.$and || []).concat([clause]);
     }
 
-    if (startDate || endDate) {
+    // Only a bound that parses is applied; an unparsable one is ignored rather than becoming `{ $gte: undefined }`.
+    const fromBound = startDate ? parseArticleDateBound(startDate) : undefined;
+    const toBound = endDate ? parseArticleDateBound(endDate, { end: true }) : undefined;
+    if (fromBound || toBound) {
       filter.published_date = {};
-      if (startDate) {
-        filter.published_date.$gte = parseArticleDateBound(startDate);
-      }
-      if (endDate) {
-        filter.published_date.$lte = parseArticleDateBound(endDate, { end: true });
-      }
+      if (fromBound) filter.published_date.$gte = fromBound;
+      if (toBound) filter.published_date.$lte = toBound;
     }
 
-    const pageNum  = Math.max(1, parseInt(page, 10));
-    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10)));
+    // Non-numeric page / limit fall back to the defaults instead of producing a NaN skip (a 500).
+    const pageNum  = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(50, Math.max(1, parseInt(limit, 10) || 20));
     const skip     = (pageNum - 1) * limitNum;
 
     // Withhold articles the Node pipeline has not scored yet, so a card never
@@ -433,8 +440,14 @@ exports.getStats = async (req, res) => {
     if (scopeOr === false) {
       return res.json({ total: 0, byCategory: [], byLanguage: [], bySourceType: [] });
     }
-    const matchStage = scopeOr ? [{ $match: { $or: scopeOr } }] : [];
-    const countFilter = scopeOr ? { $or: scopeOr } : {};
+    // Same visibility rules as the list (domains, mojibake, not_relevant, display gate, RBAC scope), so these
+    // totals and facets describe exactly what /news can return.
+    const statsFilter = applyGate(
+      { ...visibleBaseFilter(), ...(scopeOr ? { $and: [{ $or: scopeOr }] } : {}) },
+      newsGate(),
+    );
+    const matchStage = [{ $match: statsFilter }];
+    const countFilter = statsFilter;
 
     const [total, byCategory, byLanguage, bySourceType, byDistrict] = await Promise.all([
       NewsArticle.countDocuments(countFilter),

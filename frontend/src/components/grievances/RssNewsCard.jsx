@@ -265,10 +265,10 @@ export const RssNewsCard = ({ article, canManage = false, onDelete, onSentimentC
                 <span className="text-slate-600 dark:text-slate-400">{timeAgo(pubDate)}</span>
               </div>
             )}
-            {article.district && article.district !== 'all' && (
+            {(article.detected_location?.district || article.district) && (article.detected_location?.district || article.district) !== 'all' && (
               <div className="flex items-center gap-1.5">
                 <span className="shrink-0 text-slate-400">📍 District:</span>
-                <span className="font-medium text-slate-700 dark:text-slate-300">{article.district}</span>
+                <span className="font-medium text-slate-700 dark:text-slate-300">{article.detected_location?.district || article.district}</span>
               </div>
             )}
           </div>

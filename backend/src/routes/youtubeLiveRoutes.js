@@ -2,6 +2,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+// Turns typed text into a literal regex source (every regex metacharacter escaped).
+const escapeLiteralForRegex = (text) => String(text).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
 const LiveStream = require('../models/LiveStream');
 const LiveChatMessage = require('../models/LiveChatMessage');
 const YouTubeLiveSettings = require('../models/YouTubeLiveSettings');
@@ -355,9 +358,14 @@ router.get('/messages', async (req, res) => {
         const filter = {};
         if (stream_id) filter.stream_id = stream_id;
         if (video_id) filter.video_id = video_id;
-        if (sentiment && sentiment !== 'all') filter.sentiment = sentiment;
+        // Only the three real buckets are accepted; 'neutral' also selects the retired 'moderate' label.
+        if (typeof sentiment === 'string' && ['positive', 'negative', 'neutral'].includes(sentiment)) {
+            filter.sentiment = sentiment === 'neutral' ? { $in: ['neutral', 'moderate'] } : sentiment;
+        }
         if (political === 'true') filter.is_political = true;
-        if (search) filter.text = { $regex: String(search).trim(), $options: 'i' };
+        // Typed text, not a pattern: "(" or "[" must search literally instead of throwing a 500 (and cannot become a ReDoS).
+        const liveSearch = typeof search === 'string' ? search.trim().slice(0, 200) : '';
+        if (liveSearch) filter.text = { $regex: escapeLiteralForRegex(liveSearch), $options: 'i' };
         if (after) {
             const d = new Date(after);
             if (!Number.isNaN(d.getTime())) filter.created_at = { $gt: d };
@@ -416,7 +424,9 @@ router.get('/stats', async (req, res) => {
 
         const sentiment = { positive: 0, neutral: 0, negative: 0 };
         for (const row of bySentiment) {
-            if (row._id in sentiment) sentiment[row._id] = row.count;
+            // The retired 'moderate' label is the neutral bucket; it used to be dropped from the breakdown.
+            const bucket = row._id === 'moderate' ? 'neutral' : row._id;
+            if (bucket in sentiment) sentiment[bucket] += row.count;
         }
 
         res.json({ total, political, sentiment, live_streams: liveCount, runtime: liveService.getRuntimeStats() });
