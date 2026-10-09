@@ -544,20 +544,26 @@ export const YouTubeLiveTab = () => {
      * every broadcast it has ever run — so filtering on it alone returns the
      * same merged history no matter which stream is selected.
      */
+    // Latest request wins: a slow response for a previous broadcast / filter must not overwrite newer data.
+    const statsRequestRef = useRef(0);
+    const messagesRequestRef = useRef(0);
     const loadStats = useCallback(async (streamId, videoId) => {
+        const requestId = ++statsRequestRef.current;
         try {
             const scope = { stream_id: streamId || undefined, video_id: videoId || undefined };
             const [s, a] = await Promise.all([
                 api.get('/youtube-live/stats', { params: scope }),
                 api.get('/youtube-live/top-authors', { params: { ...scope, limit: 8 } }),
             ]);
+            if (requestId !== statsRequestRef.current) return;
             setStats(s.data || {});
             setTopAuthors(a.data?.authors || []);
         } catch (_) { /* non-fatal */ }
     }, []);
 
     const loadMessages = useCallback(async (streamId, videoId) => {
-        if (!streamId) { setMessages([]); return; }
+        const requestId = ++messagesRequestRef.current;
+        if (!streamId) { setMessages([]); setMessagesLoading(false); return; }
         setMessagesLoading(true);
         try {
             const res = await api.get('/youtube-live/messages', {
@@ -570,13 +576,19 @@ export const YouTubeLiveTab = () => {
                     limit: 150,
                 },
             });
+            if (requestId !== messagesRequestRef.current) return;
             setMessages(res.data?.messages || []);
         } catch (err) {
+            if (requestId !== messagesRequestRef.current) return;
             toast.error(err.response?.data?.message || 'Failed to load chat messages');
         } finally {
-            setMessagesLoading(false);
+            if (requestId === messagesRequestRef.current) setMessagesLoading(false);
         }
     }, [sentimentFilter, politicalOnly, debouncedSearch]);
+    // The SSE (re)connect handler is created once per stream, so it must call the CURRENT loader (with the current
+    // filters) rather than the one captured when the connection was opened.
+    const loadMessagesRef = useRef(loadMessages);
+    loadMessagesRef.current = loadMessages;
 
     /*
      * Which broadcast is on screen. Derived rather than stored so it follows
@@ -632,7 +644,8 @@ export const YouTubeLiveTab = () => {
         // broadcast of that channel can arrive mid-switch. Keep the feed to the
         // broadcast actually on screen.
         if (videoId && m.video_id && m.video_id !== videoId) return false;
-        if (s !== 'all' && m.sentiment !== s) return false;
+        // 'moderate' is the retired name of 'neutral', so a legacy value still matches the Neutral filter.
+        if (s !== 'all' && (m.sentiment === 'moderate' ? 'neutral' : m.sentiment) !== s) return false;
         if (p && !m.is_political) return false;
         if (q.trim() && !String(m.text || '').toLowerCase().includes(q.trim().toLowerCase())) return false;
         return true;
@@ -656,7 +669,7 @@ export const YouTubeLiveTab = () => {
             // (re)connect, including the first one, so a row can never be left
             // showing a stale Analyzing/pending state after the real result
             // already landed.
-            loadMessages(selectedStreamId, filtersRef.current.videoId);
+            loadMessagesRef.current(selectedStreamId, filtersRef.current.videoId);
             loadStats(selectedStreamId, filtersRef.current.videoId);
         };
         es.onerror = () => setConnected(false);

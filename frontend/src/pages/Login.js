@@ -5,7 +5,7 @@ import { Shield, Lock, Mail, ArrowRight, Sparkles, Eye, EyeOff } from 'lucide-re
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
-import { PARTY_HERO, LOCAL_FALLBACK, BRAND } from '../config/partyMedia';
+import { LOCAL_LOGO, BRAND } from '../config/partyMedia';
 
 /* ──────────────────────────────────────────────────────────────────────────
    Party decorative ribbon — BRS pink ("gulabi"), the colour the party is known
@@ -131,8 +131,8 @@ const Login = () => {
                 <div className="relative w-56 h-56 xl:w-64 xl:h-64 mb-6">
                   <div className="absolute inset-0 rounded-full overflow-hidden brand-glow border-[4px] border-white/95 shadow-2xl">
                     <img
-                      src={PARTY_HERO.src}
-                      alt={PARTY_HERO.alt}
+                      src={LOCAL_LOGO}
+                      alt={`${BRAND.partyName} logo`}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -141,7 +141,7 @@ const Login = () => {
                           return;
                         }
                         e.currentTarget.dataset.fallbackUsed = '1';
-                        e.currentTarget.src = LOCAL_FALLBACK;
+                        e.currentTarget.src = '/favicon.png';
                       }}
                     />
                   </div>
@@ -183,8 +183,8 @@ const Login = () => {
                 <div className="relative mx-auto mb-4 w-24 h-24">
                   <div className="absolute inset-0 rounded-full overflow-hidden brand-glow border-[3px] border-white/95">
                     <img
-                      src={PARTY_HERO.src}
-                      alt={PARTY_HERO.alt}
+                      src={LOCAL_LOGO}
+                      alt={`${BRAND.partyName} logo`}
                       referrerPolicy="no-referrer"
                       className="w-full h-full object-cover"
                       onError={(e) => {
@@ -193,7 +193,7 @@ const Login = () => {
                           return;
                         }
                         e.currentTarget.dataset.fallbackUsed = '1';
-                        e.currentTarget.src = LOCAL_FALLBACK;
+                        e.currentTarget.src = '/favicon.png';
                       }}
                     />
                   </div>

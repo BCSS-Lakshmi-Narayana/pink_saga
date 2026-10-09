@@ -331,14 +331,10 @@ const Alerts = () => {
     }
 
     if (fromParam || toParam) {
-      try {
-        setDateRange({
-          start: fromParam ? new Date(fromParam).toISOString() : '',
-          end: toParam ? new Date(toParam).toISOString() : ''
-        });
-      } catch (err) {
-        console.error('Failed to parse date range params:', err);
-      }
+      // Stored as a local calendar day (what the picker and the initial state use). `new Date('2026-08-12').toISOString()`
+      // is UTC midnight, which is the previous local day west of UTC, and a fresh object every time re-fired every fetch.
+      const next = { start: toDayParam(parseDayParam(fromParam)), end: toDayParam(parseDayParam(toParam)) };
+      setDateRange((prev) => (prev.start === next.start && prev.end === next.end ? prev : next));
     }
   }, [searchParams]);
 
@@ -470,7 +466,10 @@ const Alerts = () => {
   }, [instagramContentFilter]);
 
   // Fetch topic classification counts from server
+  const topicCountsSeqRef = useRef(0);
+  const keywordCountsSeqRef = useRef(0);
   const fetchTopicCounts = useCallback(async () => {
+    const seq = ++topicCountsSeqRef.current;
     try {
       // Every filter the feed sends, so each chip's count is the number of
       // rows clicking it returns. Search, category and keyword used to be
@@ -501,12 +500,14 @@ const Alerts = () => {
       }
 
       const response = await api.get('/alerts/topic-counts', { params });
+      if (seq !== topicCountsSeqRef.current) return;
       const data = response.data;
       // Tolerates the old bare-array shape as well as { topics, total, ... }.
       setTopicCounts(Array.isArray(data) ? data : (data?.topics || []));
       setTopicTotal(Array.isArray(data) ? null : (data?.total ?? null));
       setTopicUnclassified(Array.isArray(data) ? 0 : (data?.unclassified ?? 0));
     } catch (error) {
+      if (seq !== topicCountsSeqRef.current) return;
       console.error('Failed to fetch topic classification counts:', error);
       setTopicCounts([]);
       setTopicTotal(null);
@@ -533,6 +534,7 @@ const Alerts = () => {
   // keyword filter removed, so re-running on your own selection would refetch
   // an identical list.
   const fetchKeywordCounts = useCallback(async () => {
+    const seq = ++keywordCountsSeqRef.current;
     try {
       const params = {
         status: 'all',
@@ -545,14 +547,27 @@ const Alerts = () => {
         topic_classification: topicClassificationFilter !== 'all' ? topicClassificationFilter : undefined,
         ...dateRangeParams({ start: dateRange.start, end: dateRange.end }),
       };
+      // The sentiment tab / Viral are filters too: without them the options offered "X (50)" for a different set than
+      // the list shows once Negative or Viral is selected.
+      if (alertCategory === 'viral') {
+        params.alert_type = 'velocity';
+      } else if (alertCategory === 'risk') {
+        params.alert_type = 'risk';
+      } else if (['high', 'medium', 'low'].includes(alertCategory)) {
+        params.sentiment = SENTIMENT_BY_CATEGORY[alertCategory];
+      } else if (alertCategory === 'critical') {
+        params.risk_level = alertCategory;
+      }
       const response = await api.get('/alerts/keyword-counts', { params });
+      if (seq !== keywordCountsSeqRef.current) return;
       setAvailableKeywords(Array.isArray(response.data) ? response.data : []);
     } catch (error) {
+      if (seq !== keywordCountsSeqRef.current) return;
       console.error('Failed to fetch keyword counts:', error);
       setAvailableKeywords([]);
     }
   }, [debouncedSearchQuery, platformFilter, sourceCategoryFilter, stanceFilter, leaderSeat, riskParam,
-      topicClassificationFilter, dateRange.start, dateRange.end]);
+      topicClassificationFilter, alertCategory, dateRange.start, dateRange.end]);
 
   useEffect(() => { fetchKeywordCounts(); }, [fetchKeywordCounts]);
 
@@ -576,7 +591,14 @@ const Alerts = () => {
   // Removed fetchContentFeed as we now use /api/alerts for everything
 
   const fetchAlerts = useCallback(async (isLoadMore = false) => {
-    if (isFetchingRef.current) return;
+    // Load-more never overlaps another request. A filter change / refresh is different: it must not be dropped (the old
+    // guard returned here, so a filter picked while a fetch was running left the list on the PREVIOUS filter). It aborts
+    // whatever is in flight and takes over; the superseded response is ignored by the sequence check below.
+    if (isLoadMore && isFetchingRef.current) return;
+    const requestSeq = ++fetchRequestSeqRef.current;
+    if (!isLoadMore && fetchAbortRef.current) fetchAbortRef.current.abort();
+    const abortController = new AbortController();
+    fetchAbortRef.current = abortController;
     isFetchingRef.current = true;
     setError(null);
 
@@ -589,8 +611,6 @@ const Alerts = () => {
     }
 
     try {
-      const requestSeq = ++fetchRequestSeqRef.current;
-
       const params = {
         page: isLoadMore ? pageRef.current + 1 : 1,
         limit: ALERTS_PAGE_SIZE,
@@ -618,7 +638,7 @@ const Alerts = () => {
       }
 
       const promises = [
-        api.get('/alerts', { params, timeout: 60000 })
+        api.get('/alerts', { params, timeout: 60000, signal: abortController.signal })
       ];
 
       if (targetAlertId && !isLoadMore) {
@@ -677,16 +697,19 @@ const Alerts = () => {
       }
 
     } catch (error) {
-      if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED') return;
+      // Aborted or superseded: a newer request owns the screen now.
+      if (error.name === 'CanceledError' || error.code === 'ERR_CANCELED' || requestSeq !== fetchRequestSeqRef.current) return;
       console.error(error);
       setError('Failed to load alerts');
       toast.error('Failed to load alerts');
     } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-      setIsFetchingMore(false);
-      isFirstLoadRef.current = false;
-      isFetchingRef.current = false;
+      if (requestSeq === fetchRequestSeqRef.current) {
+        setLoading(false);
+        setIsRefreshing(false);
+        setIsFetchingMore(false);
+        isFirstLoadRef.current = false;
+        isFetchingRef.current = false;
+      }
     }
   }, [debouncedSearchQuery, targetAlertId, platformFilter, keywordFilter, alertCategory, dateRange, sourceCategoryFilter, stanceFilter, leaderSeat, riskParam, topicClassificationFilter, buildCacheKey, writeCache]);
 
@@ -798,6 +821,8 @@ const Alerts = () => {
     setPage(1);
     setNextCursor(null);
     setHasMore(true);
+    setPendingNewAlerts([]);
+    setNewAlertCount(0);
     fetchAlerts(false);
   }, [activeTab, alertCategory, debouncedSearchQuery, platformFilter, keywordFilter, dateRange, sourceCategoryFilter, stanceFilter, leaderSeat, riskParam, topicClassificationFilter]);
 
@@ -853,6 +878,7 @@ const Alerts = () => {
         risk_level: riskParam || undefined,
         topic_classification: topicClassificationFilter !== 'all' ? topicClassificationFilter : undefined,
         search: debouncedSearchQuery || undefined,
+        ...dateRangeParams({ start: dateRange.start, end: dateRange.end }),
         keyword: keywordFilter !== 'all' ? keywordFilter : undefined
       };
 
@@ -897,7 +923,7 @@ const Alerts = () => {
     } finally {
       isPollingRef.current = false;
     }
-  }, [platformFilter, debouncedSearchQuery, alertCategory, keywordFilter, sourceCategoryFilter, stanceFilter, leaderSeat, riskParam, topicClassificationFilter, hasAnyAlertFeature, page, isCapturedStoriesView]);
+  }, [dateRange.start, dateRange.end, platformFilter, debouncedSearchQuery, alertCategory, keywordFilter, sourceCategoryFilter, stanceFilter, leaderSeat, riskParam, topicClassificationFilter, hasAnyAlertFeature, page, isCapturedStoriesView]);
 
   // Resolve the <main> scroll container from Layout
   useEffect(() => {
@@ -1836,7 +1862,7 @@ const Alerts = () => {
           </div>
 
           {/* Topic Classification Filters */}
-          {topicCounts.length > 0 && (
+          {(topicCounts.length > 0 || topicUnclassified > 0 || topicClassificationFilter !== 'all') && (
             <>
               <div className="border-t border-border/50" />
               <div className="space-y-1.5">
@@ -2085,8 +2111,13 @@ const Alerts = () => {
                         setKeywordFilter('all');
                         setAlertCategory('all');
                         setSourceCategoryFilter('all');
-                    setStanceFilter('all');
+                        setStanceFilter('all');
                         setTopicClassificationFilter('all');
+                        applyDateRange(null, null);
+                        setRiskParam('');
+                        setLeaderSeat('');
+                        setTargetAlertId(null);
+                        setInstagramContentFilter('all_posts_reels');
                       }}
                     >
                       Clear All Filters

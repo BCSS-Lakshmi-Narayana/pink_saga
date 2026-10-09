@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MessageCircle, Repeat, Heart, BarChart2, MoreHorizontal, Share, CheckCircle2, ThumbsUp, Eye, ExternalLink, MessageSquare, Zap, Info, X, AlertTriangle, Shield, ShieldCheck, Download, Loader2, FileText, Share2, Check, XCircle, AlertCircle, FilePlus, ChevronDown, Image, Video, Plus, Twitter, Instagram, Facebook, Users, Trash2, Clock, Globe, Network, UserPlus, Search, ChevronRight } from 'lucide-react';
+import { Play as PlayIcon, VideoOff as VideoOffIcon, ExternalLink as OpenLinkIcon, Youtube as YoutubeIcon } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { Badge } from './ui/badge';
 import { Button } from './ui/button';
@@ -1741,6 +1742,144 @@ export const TwitterAlertCard = ({ alert, content, source, onResolve, onAddSourc
 };
 TwitterAlertCard.displayName = 'TwitterAlertCard';
 
+/* ─── YouTube media ──────────────────────────────────────────────────────────
+ * Stored YouTube items carry a valid video id and watch URL but no thumbnail or duration, so the card derives
+ * the thumbnail from the id and shows a duration only when one is actually stored. The player is loaded on
+ * click (never one iframe per card in a long feed). */
+const YT_ID = /^[A-Za-z0-9_-]{11}$/;
+
+export const getYouTubeVideoId = (...candidates) => {
+    for (const c of candidates) {
+        const v = String(c || '').trim();
+        if (!v) continue;
+        if (YT_ID.test(v)) return v;
+        try {
+            const u = new URL(v);
+            const host = u.hostname.replace(/^www\.|^m\./, '');
+            if (host === 'youtu.be') { const id = u.pathname.split('/').filter(Boolean)[0]; if (YT_ID.test(id || '')) return id; }
+            if (host.endsWith('youtube.com') || host.endsWith('youtube-nocookie.com')) {
+                const q = u.searchParams.get('v');
+                if (YT_ID.test(q || '')) return q;
+                const m = u.pathname.match(/^\/(?:shorts|embed|live|v)\/([A-Za-z0-9_-]{11})/);
+                if (m) return m[1];
+            }
+        } catch { /* not a URL */ }
+    }
+    return null;
+};
+
+// Accepts seconds, "m:ss"/"h:mm:ss" or an ISO-8601 duration ("PT4M13S"); anything else is "unknown" (null), never "0:00".
+export const formatVideoDuration = (value) => {
+    if (value === null || value === undefined || value === '') return null;
+    let total = null;
+    if (typeof value === 'number' && Number.isFinite(value)) total = Math.round(value);
+    else {
+        const str = String(value).trim();
+        const iso = str.match(/^PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?$/i);
+        if (iso && (iso[1] || iso[2] || iso[3])) total = (+iso[1] || 0) * 3600 + (+iso[2] || 0) * 60 + (+iso[3] || 0);
+        else if (/^\d+(:\d{2}){1,2}$/.test(str)) return str;
+        else if (/^\d+$/.test(str)) total = parseInt(str, 10);
+    }
+    if (!total || total < 1) return null;
+    const h = Math.floor(total / 3600); const m = Math.floor((total % 3600) / 60); const sec = total % 60;
+    return h ? `${h}:${String(m).padStart(2, '0')}:${String(sec).padStart(2, '0')}` : `${m}:${String(sec).padStart(2, '0')}`;
+};
+
+export const YouTubeMediaPreview = ({ videoId, watchUrl, title, duration, unavailable = false, className = '', style, children }) => {
+    const [playing, setPlaying] = useState(false);
+    const [thumbStage, setThumbStage] = useState(0); // 0 = mqdefault, 1 = hqdefault, 2 = none
+    const [frameLoaded, setFrameLoaded] = useState(false);
+    useEffect(() => { setPlaying(false); setThumbStage(0); setFrameLoaded(false); }, [videoId]);
+
+    // Only a real http(s) URL is ever offered as a link: a malformed stored URL must not become a dead "Open on YouTube" button.
+    const isHttpUrl = (u) => { try { const x = new URL(String(u)); return x.protocol === 'https:' || x.protocol === 'http:'; } catch { return false; } };
+    const openUrl = [watchUrl, videoId ? `https://www.youtube.com/watch?v=${videoId}` : null].find((u) => u && isHttpUrl(u)) || null;
+    const shell = `relative w-full aspect-video overflow-hidden rounded-md bg-muted ${className}`;
+    const openLink = openUrl && (
+        <a
+            href={openUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="inline-flex items-center gap-1 rounded bg-black/70 px-2 py-1 text-[11px] font-medium text-white hover:bg-black/85"
+        >
+            <OpenLinkIcon className="h-3 w-3" /> Open on YouTube
+        </a>
+    );
+
+    // Deleted / no usable id: a clear state, not a grey box. The link is offered whenever the original URL is valid.
+    if (unavailable || !videoId) {
+        return (
+            <div className={`${shell} flex flex-col items-center justify-center gap-2 text-center text-muted-foreground`} style={style}>
+                <VideoOffIcon className="h-7 w-7" />
+                <span className="text-xs font-medium">{unavailable ? 'This video is no longer available' : 'Video preview unavailable'}</span>
+                {openLink}
+                {children}
+            </div>
+        );
+    }
+
+    if (playing) {
+        return (
+            <div className={`${shell} bg-black`} style={style}>
+                {!frameLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center text-white/80"><Loader2 className="h-6 w-6 animate-spin" /></div>
+                )}
+                <iframe
+                    className="absolute inset-0 h-full w-full border-0"
+                    src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&playsinline=1`}
+                    title={title || 'YouTube video'}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    onLoad={() => setFrameLoaded(true)}
+                />
+                {/* Embedding can be disabled by the owner and the browser gives no error for that, so the way out is always visible. */}
+                <div className="absolute right-2 top-2 z-10">{openLink}</div>
+                {children}
+            </div>
+        );
+    }
+
+    const thumb = thumbStage < 2 ? `https://i.ytimg.com/vi/${videoId}/${thumbStage === 0 ? 'mqdefault' : 'hqdefault'}.jpg` : null;
+    const durationLabel = formatVideoDuration(duration);
+    return (
+        <div className={shell} style={style}>
+            <button
+                type="button"
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setPlaying(true); }}
+                className="group/play absolute inset-0 block h-full w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                aria-label={`Play video${title ? `: ${title}` : ''}`}
+            >
+                {thumb ? (
+                    <img
+                        key={thumb}
+                        src={thumb}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="h-full w-full object-cover"
+                        // YouTube answers a missing/removed video's thumbnail with a tiny (<=120px) grey image rather than a 404.
+                        onLoad={(e) => { if (e.currentTarget.naturalWidth && e.currentTarget.naturalWidth <= 120) setThumbStage((n) => n + 1); }}
+                        onError={() => setThumbStage((n) => n + 1)}
+                    />
+                ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-700" />
+                )}
+                <span className="absolute inset-0 flex items-center justify-center bg-black/10 transition-colors group-hover/play:bg-black/25">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transition-transform group-hover/play:scale-110">
+                        <PlayIcon className="ml-0.5 h-5 w-5 fill-current" />
+                    </span>
+                </span>
+                {durationLabel && (
+                    <span className="absolute bottom-1.5 right-1.5 rounded bg-black/80 px-1.5 py-0.5 text-xs font-medium text-white">{durationLabel}</span>
+                )}
+            </button>
+            {children}
+        </div>
+    );
+};
+
 export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSource, onRiskLevelChange, onSentimentChange, onDelete, monitoredHandles = [], viewMode = 'list', hideActions = false, report = null, isInvestigatedResult = false, customClass = '' }) => {
     const [showReasonModal, setShowReasonModal] = useState(false);
     const [showFullTextModal, setShowFullTextModal] = useState(false);
@@ -1820,19 +1959,20 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
         setTimeout(() => setDownloadError(null), 3000);
     };
 
-    // Helper to check if a handle is already monitored
-    const isMonitoredHandle = (handle) => {
-        if (!handle || !Array.isArray(monitoredHandles) || monitoredHandles.length === 0) return false;
-        const cleanHandle = String(handle).toLowerCase().trim();
-        return monitoredHandles.some(h => {
-            if (!h) return false;
-            return String(h).toLowerCase().trim() === cleanHandle;
-        });
-    };
-
     const metrics = content?.engagement || {};
-    const date = content?.published_at ? new Date(content.published_at).toLocaleDateString() : '';
-    const thumbnailUrl = content?.thumbnails?.medium?.url || content?.thumbnails?.default?.url || 'https://img.youtube.com/vi/placeholder/mqdefault.jpg';
+    // Only metrics the API actually returned are shown; a missing value is not displayed as 0.
+    const hasNum = (v) => typeof v === 'number' && Number.isFinite(v) && v > 0;
+    const hasViews = hasNum(metrics.views);
+    const hasLikes = hasNum(metrics.likes);
+    const hasComments = hasNum(metrics.comments);
+    const publishedAt = content?.published_at ? new Date(content.published_at) : null;
+    const date = publishedAt && !Number.isNaN(publishedAt.getTime()) ? publishedAt.toLocaleDateString() : '';
+    const videoId = getYouTubeVideoId(content?.content_id, content?.url, alert.content_url, content?.content_url);
+    const timeLabel = publishedAt && !Number.isNaN(publishedAt.getTime()) ? publishedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+    const channelName = source?.name || alert.author || '';
+    // The stored author handle for YouTube is usually the raw channel id (UC…); that is not a handle people recognise, so it is only shown when it is a real @handle.
+    const rawChannelHandle = String(content?.author_handle || source?.handle || '').trim();
+    const channelHandle = /^@[\w.\-]+$/.test(rawChannelHandle) ? rawChannelHandle : '';
     const isGrid = viewMode === 'grid';
     const contentText = content?.text || alert.description || '';
     const shouldShowReadMore = contentText.length > 150 || (contentText.match(/\n/g) || []).length >= 2;
@@ -1939,11 +2079,11 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
                     </div>
                 </DialogContent>
             </Dialog>
-            <div className={`flex flex-col bg-card dark:bg-[#0d1117] border border-border rounded-md hover:shadow-md transition-shadow duration-200 group relative overflow-hidden ${isGrid ? 'w-full h-full' : 'max-w-md w-full self-start shadow-sm'} ${customClass}`}>
+            <div className={`bg-card dark:bg-[#0d1117] border border-border rounded-md hover:shadow-md transition-shadow duration-200 font-sans group relative flex flex-col overflow-hidden shadow-sm ${isGrid ? 'w-full h-full' : 'max-w-md w-full self-start'} ${isInvestigatedResult ? 'ring-1 ring-amber-300/50' : ''} ${customClass}`}>
                 {/* Sentiment accent — same resolver as the badge below. */}
                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${sentimentBorderClass(sentiment)}`} />
 
-                <div className="px-4 pl-5 pt-3 pb-1.5">
+                <div className="p-4 pl-5 flex flex-col flex-grow min-w-0">
                     {/* Sentiment, stance & review badges (same row, absolute positioned) */}
                     <div className="absolute left-0 top-2.5 z-10 flex items-center gap-1.5">
                         <div className={`rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm ${sentimentBadgeClass(sentiment)}`}>
@@ -1962,8 +2102,11 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
                                 <AlertCircle className="h-2.5 w-2.5" />review
                             </span>
                         )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
+                        {alert.alert_type === 'velocity' && (
+                            <div className="rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm bg-white text-blue-900">
+                                Viral
+                            </div>
+                        )}
                         {/* Content availability status */}
                         {content?.is_deleted && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-white bg-red-600 px-2 py-0.5 rounded-full">
@@ -1977,303 +2120,13 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
                                 Expired
                             </span>
                         )}
-                        {isInvestigatedResult && onAddSource && !isMonitored && (
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                className="h-6 text-[10px] gap-1 border-primary/30 text-primary hover:bg-primary/5"
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    const sourceData = {
-                                        platform: 'youtube',
-                                        identifier: content?.author_handle || alert.content_details?.author_handle || alert.author,
-                                        display_name: source?.name || alert.author,
-                                        category: 'unknown'
-                                    };
-                                    onAddSource(sourceData);
-                                }}
-                            >
-                                <FilePlus className="h-3 w-3" />
-                                Monitor
-                            </Button>
-                        )}
-                    </div>
-                    {/* Action Controls - right-aligned, wraps left on smaller screens */}
-                    <div className="flex items-center gap-2 flex-wrap justify-end mt-3">
-                        {(() => {
-                            const targetHandle = content?.channelId || alert.author_handle;
-                            if (onAddSource && targetHandle && !isMonitoredHandle(targetHandle)) {
-                                return (
-                                    <Button
-                                        size="sm"
-                                        variant="outline"
-                                        className="h-7 w-7 p-0 border-primary/30 text-primary hover:bg-primary/5 rounded-md flex-shrink-0"
-                                        title="Monitor Profile"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                            const sourceData = {
-                                                platform: 'youtube',
-                                                identifier: targetHandle,
-                                                display_name: content?.author_name || alert.author,
-                                                category: 'others'
-                                            };
-                                            onAddSource(sourceData);
-                                        }}
-                                    >
-                                        <Plus className="h-4 w-4" />
-                                    </Button>
-                                );
-                            }
-                            return null;
-                        })()}
-                        {mediaUrl && (
-                            <DownloadMenu
-                                mediaItems={[{ type: 'video', url: mediaUrl }]}
-                                mediaUrl={mediaUrl}
-                                contentId={content?.id}
-                                onDownloadStart={handleDownloadStart}
-                                onDownloadComplete={handleDownloadComplete}
-                                onDownloadError={handleDownloadError}
-                                downloading={downloading}
-                                downloadProgress={downloadProgress}
-                                downloadStatus={downloadStatus}
-                                downloadError={downloadError}
-                                showLabel={false}
-                            />
-                        )}
-                        <button
-                            onClick={async (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                const tweetHandle = content?.is_repost
-                                    ? (content.original_author)
-                                    : (content?.author_handle || source?.handle);
-                                const cleanHandle = tweetHandle ? String(tweetHandle).replace(/^@/, '').trim() : null;
-                                if (!cleanHandle || cleanHandle === 'unknown') {
-                                    toast.error('No Twitter handle found for this alert');
-                                    return;
-                                }
-                                try {
-                                    const res = await api.post('/x/engager-analysis', { handle: cleanHandle, period_days: 30 });
-                                    const status = res.data?.status;
-                                    if (status === 'already_processing') {
-                                        toast.warning(`Analysis for @${cleanHandle} is already in progress`);
-                                    } else if (status === 'blocked') {
-                                        toast.warning(`Another analysis is processing. Please wait.`);
-                                    } else {
-                                        toast.success(`Engager analysis started for @${cleanHandle}`);
-                                    }
-                                } catch {
-                                    toast.error('Failed to start engager analysis');
-                                }
-                            }}
-                            className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
-                            title="Analyze Engagers"
-                        >
-                            <Users className="h-4 w-4" />
-                        </button>
-                        {/* Resolve Button */}
-                        {onResolve && alert.status === 'active' && (
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    onResolve(alert);
-                                }}
-                                className="bg-white/90 dark:bg-black/80 px-2 py-0.5 rounded text-xs font-medium text-blue-600 hover:text-blue-700 shadow-sm border border-gray-100 dark:border-gray-700 backdrop-blur-sm"
-                            >
-                                Take Action
-                            </button>
-                        )}
-                        {hasReasons && (
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setShowReasonModal(true);
-                                }}
-                                className="p-1.5 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors"
-                                title="View Details"
-                            >
-                                <Eye className="h-4 w-4" />
-                            </button>
-                        )}
-                    </div>
-                </div>
-
-                {/* Thumbnail */}
-                <a
-                    href={alert.content_url || '#'}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={`relative flex-shrink-0 w-full ${isGrid ? 'aspect-video' : 'md:w-[240px] aspect-video'} overflow-hidden bg-muted block mx-4 ml-5 rounded-md`}
-                    style={{ width: 'calc(100% - 2.25rem)' }}
-                >
-                    <img
-                        src={thumbnailUrl}
-                        alt={alert.title}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                            if (alert.content_url && alert.content_url.includes('v=')) {
-                                const vid = alert.content_url.split('v=')[1]?.split('&')[0];
-                                if (vid) e.target.src = `https://img.youtube.com/vi/${vid}/mqdefault.jpg`;
-                            }
-                        }}
-                    />
-                    {/* Download Progress Overlay */}
-                    {downloading && (
-                        <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 backdrop-blur-sm rounded-md">
-                            <Download className="h-8 w-8 text-white animate-bounce" />
-                            <div className="w-3/4">
-                                <div className="flex justify-between text-xs text-white mb-1">
-                                    <span>{downloadStatus}</span>
-                                    <span>{Math.round(downloadProgress)}%</span>
-                                </div>
-                                <div className="w-full bg-gray-600 rounded-full h-2 overflow-hidden">
-                                    <div
-                                        className="bg-green-500 h-full rounded-full transition-all duration-300 ease-out"
-                                        style={{ width: `${downloadProgress}%` }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    )}
-                    <div className="absolute bottom-1 right-1 bg-black/80 text-white text-xs font-medium px-1.5 py-0.5 rounded">
-                        {content?.duration || '0:00'}
-                    </div>
-                </a>
-
-                {/* Info Section */}
-                <div className="flex flex-col flex-grow min-w-0 px-4 pl-5 pb-4">
-                    <a
-                        href={alert.content_url || '#'}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block mb-1.5"
-                    >
-                        <h3 className="text-sm font-semibold text-foreground line-clamp-2 leading-snug group-hover:text-primary transition-colors">
-                            {alert.title}
-                        </h3>
-                    </a>
-
-                    <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground mb-2">
-                        <span className="font-medium text-foreground/80 hover:underline">{source?.name || alert.author}</span>
-                        <span className="text-border">•</span>
-                        <span>{formatMetric(metrics.views || 0)} views</span>
-                        <span className="text-border">•</span>
-                        <span>{date}</span>
                     </div>
 
-                    <div className={`text-xs text-muted-foreground mb-2 ${!isExpanded ? 'line-clamp-3' : ''} leading-relaxed`}>
-                        {isTranslated ? translatedText : contentText}
-                    </div>
-                    <div className="flex items-center gap-3">
-                        {shouldShowReadMore && (
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    setIsExpanded(!isExpanded);
-                                }}
-                                className="text-[11px] font-medium text-primary hover:text-primary/80"
-                            >
-                                {isExpanded ? 'Read less' : 'Read more'}
-                            </button>
-                        )}
-                        <button
-                            onClick={handleTranslate}
-                            disabled={isTranslating}
-                            className="text-[11px] font-medium text-primary hover:text-primary/80 flex items-center gap-1"
-                        >
-                            {isTranslating ? (
-                                <Loader2 className="h-3 w-3 animate-spin" />
-                            ) : (
-                                <Globe className="h-3 w-3" />
-                            )}
-                            <span>{isTranslated ? 'Show Original' : (isTranslating ? 'Translating...' : 'Translate')}</span>
-                        </button>
-                    </div>
-
-                    {/* Risk Factors */}
-                    {filterRiskFactors(content).length > 0 && (
-                        <div className="mb-3 flex flex-wrap gap-1.5">
-                            {filterRiskFactors(content).map((factor, idx) => (
-                                <div key={idx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 text-[10px] font-medium text-red-700 dark:text-red-400">
-                                    <Zap className="h-2.5 w-2.5 fill-red-700 dark:fill-red-400" />
-                                    <span>
-                                        {factor.keyword ? `Matched: "${factor.keyword}"` : factor.context || 'Risk Detected'}
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-
-                    {/* Threat Summary */}
-                    {hasReasons && (
-                        <div className="mb-3 flex items-center justify-between p-2 rounded-md bg-muted/50 border border-border">
-                            <div className="flex items-center gap-2 flex-wrap">
-                                {intentLabel && (
-                                    <span className={`px-2 py-0.5 rounded-full font-medium text-[10px] ${intentLabel.toLowerCase().includes('violence') ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' :
-                                        intentLabel.toLowerCase().includes('political') ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
-                                            intentLabel.toLowerCase().includes('communal') ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' :
-                                                'bg-muted text-muted-foreground'
-                                        }`}>
-                                        {intentLabel}
-                                    </span>
-                                )}
-                                {highlights.length > 0 && (
-                                    <div className="flex items-center gap-1">
-                                        <span className="text-[10px] text-muted-foreground">Flagged:</span>
-                                        {highlights.slice(0, 2).map((phrase, idx) => (
-                                            <span key={idx} className="bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 px-1.5 py-0.5 rounded-full text-[10px] font-medium">
-                                                {phrase}
-                                            </span>
-                                        ))}
-                                        {highlights.length > 2 && (
-                                            <span className="text-[10px] text-muted-foreground">+{highlights.length - 2}</span>
-                                        )}
-                                    </div>
-                                )}
-                            </div>
-                            <button
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    setShowReasonModal(true);
-                                }}
-                                className="flex items-center gap-1 text-[10px] font-medium text-primary hover:text-primary/80 px-2 py-1 rounded-md hover:bg-accent transition-colors shrink-0"
-                                title="View Details"
-                            >
-                                <Info className="h-3 w-3" />
-                            </button>
-                        </div>
-                    )}
-
-                    <div className="mt-auto flex items-center justify-between text-muted-foreground pt-2 border-t border-border/50">
-                        <div className="flex gap-4">
-                            <div
-                                onClick={(e) => { e.stopPropagation(); setPostEngagersTab('like'); setIsPostEngagersOpen(true); }}
-                                className="flex items-center gap-1 text-[11px] cursor-pointer hover:text-rose-500 transition-colors p-1 -m-1 rounded-sm"
-                            >
-                                <ThumbsUp className="h-3 w-3" />
-                                <span>{formatMetric(metrics.likes || 0)}</span>
-                            </div>
-                            <div
-                                onClick={(e) => { e.stopPropagation(); setPostEngagersTab('comment'); setIsPostEngagersOpen(true); }}
-                                className="flex items-center gap-1 text-[11px] cursor-pointer hover:text-emerald-500 transition-colors p-1 -m-1 rounded-sm"
-                            >
-                                <MessageSquare className="h-3 w-3" />
-                                <span>{formatMetric(metrics.comments || 0)}</span>
-                            </div>
-                        </div>
-                        <div className="flex items-center gap-1 text-[11px] font-medium">
-                            <AlertTriangleIcon level={alert.risk_level} />
-                            <span className={`${alert.risk_level === 'high' || alert.risk_level === 'critical' ? 'text-red-500' : alert.risk_level === 'low' ? 'text-emerald-500' : 'text-amber-500'}`}>Risk: {content?.risk_score || alert.threat_details?.risk_score || 0}%</span>
-                        </div>
-                    </div>
-
-                    {/* Action Bar */}
-                    <div className={`grid gap-2 mt-3 pt-3 border-t border-border/50 ${onDelete ? 'grid-cols-4' : 'grid-cols-3'}`}>
+                    {/* Action row — same order and styling as the X card: status Action, Format & Share, Post Engagers,
+                        download, then delete / details. Only actions that work for YouTube are shown. */}
+                    <div className="flex items-center gap-2 flex-wrap justify-end mt-3 mb-2">
+                        {!hideActions && ['active', 'escalated', 'acknowledged', 'false_positive'].includes(alert.status) && (
+                            <div className={`flex-shrink-0 ${alert.status === 'active' ? '' : 'w-32'}`}>
                         {!hideActions && alert.status === 'active' && (
                             <div className="relative" ref={dropdownRef}>
                                 <button
@@ -2282,10 +2135,10 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
                                         e.stopPropagation();
                                         setShowActionDropdown(!showActionDropdown);
                                     }}
-                                    className="w-full flex items-center justify-center gap-1.5 py-1.5 rounded-md bg-primary/10 hover:bg-primary/15 text-primary font-medium text-xs transition-all"
+                                    className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1 z-20 p-1.5 rounded-md hover:bg-accent transition-colors"
                                 >
                                     <Zap className="h-3.5 w-3.5" />
-                                    <span className="hidden sm:inline">Action</span>
+                                    <span>Action</span>
                                 </button>
 
                                 {showActionDropdown && (
@@ -2515,43 +2368,221 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
                                 )}
                             </div>
                         )}
-
-                        {!(alert.status === 'active' || alert.status === 'escalated' || alert.status === 'acknowledged' || alert.status === 'false_positive') && (
-                            <div className="col-span-1"></div>
+                            </div>
                         )}
 
-                        <button className="col-span-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md bg-muted hover:bg-accent text-muted-foreground font-medium text-xs transition-all"
+                        <button
                             onClick={handleFormatClick}
+                            className="text-xs font-medium text-primary hover:text-primary/80 flex items-center gap-1 z-20 px-2 py-1.5 rounded-md hover:bg-accent transition-colors"
+                            title="Format & Share"
                         >
                             <FileText className="h-3.5 w-3.5" />
-                            {alert.status !== 'escalated' && <span className="hidden sm:inline">Format</span>}
+                            {alert.status !== 'escalated' && <span>Format & Share</span>}
                         </button>
-
                         <button
-                            className="col-span-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:hover:bg-emerald-900/30 dark:text-emerald-400 font-medium text-xs transition-all"
                             onClick={handleQuickShare}
+                            className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors z-20"
+                            title="Share to WhatsApp"
+                            aria-label="Share to WhatsApp"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true">
                                 <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.9 7.9 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z" />
                             </svg>
-                            <span className={`${alert.status === 'escalated' ? 'hidden' : 'hidden sm:inline'}`}>Share</span>
                         </button>
+                        <button
+                            onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setPostEngagersTab('all');
+                                setIsPostEngagersOpen(true);
+                            }}
+                            className="text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 z-20 px-2 py-1.5 rounded-md hover:bg-accent transition-colors"
+                            title="Post Engagers Graph"
+                        >
+                            <Network className="h-3.5 w-3.5" />
+                            <span>Post Engagers</span>
+                        </button>
+
+                        {mediaUrl && (
+                            <DownloadMenu
+                                mediaItems={[{ type: 'video', url: mediaUrl }]}
+                                mediaUrl={mediaUrl}
+                                contentId={content?.id}
+                                onDownloadStart={handleDownloadStart}
+                                onDownloadComplete={handleDownloadComplete}
+                                onDownloadError={handleDownloadError}
+                                downloading={downloading}
+                                downloadProgress={downloadProgress}
+                                downloadStatus={downloadStatus}
+                                downloadError={downloadError}
+                                showLabel={false}
+                            />
+                        )}
 
                         {onDelete && (
                             <button
-                                className="col-span-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-900/20 dark:hover:bg-red-900/30 dark:text-red-400 font-medium text-xs transition-all"
                                 onClick={async (e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
                                     await onDelete(alert);
                                 }}
+                                className="p-2 rounded-md hover:bg-red-50 text-red-600 hover:text-red-700 transition-colors z-20"
+                                title="Delete Alert"
                             >
-                                <Trash2 className="h-3.5 w-3.5" />
-                                <span className="hidden sm:inline">Delete</span>
+                                <Trash2 className="h-4 w-4" />
+                            </button>
+                        )}
+
+                        {hasReasons && (
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setShowReasonModal(true);
+                                }}
+                                className="p-2 rounded-md hover:bg-accent text-muted-foreground hover:text-accent-foreground transition-colors z-20"
+                                title="View Details"
+                            >
+                                <Eye className="h-4 w-4" />
                             </button>
                         )}
                     </div>
-                </div>
+
+                    {/* Header: channel avatar | name (+verified only when the source says so) | platform */}
+                    <div className="flex justify-between items-start mb-3 gap-2">
+                        <div className="flex gap-2.5 min-w-0">
+                            <div className="h-9 w-9 flex-shrink-0 rounded-full bg-muted overflow-hidden ring-1 ring-border flex items-center justify-center text-xs font-semibold text-muted-foreground">
+                                {source?.profile_image_url ? (
+                                    <img
+                                        src={source.profile_image_url}
+                                        alt=""
+                                        loading="lazy"
+                                        className="h-full w-full object-cover"
+                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                    />
+                                ) : (
+                                    <span aria-hidden="true">{String(channelName || '?').trim().charAt(0).toUpperCase()}</span>
+                                )}
+                            </div>
+                            <div className="flex flex-col min-w-0">
+                                <div className="flex items-center gap-1">
+                                    <span className="font-semibold text-sm text-foreground leading-5 truncate">{channelName || 'Unknown channel'}</span>
+                                    {source?.is_verified && <CheckCircle2 className="h-3.5 w-3.5 text-blue-500 fill-blue-500 flex-shrink-0" />}
+                                </div>
+                                <div className="text-xs text-muted-foreground leading-5 truncate">{channelHandle || 'YouTube channel'}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="p-1 rounded-md bg-muted/50" title="YouTube">
+                                <YoutubeIcon className="h-3.5 w-3.5 text-[#FF0000]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Text (stored video title + description), same typography and Read more / Translate as the X card */}
+                    <div className={`text-sm leading-relaxed text-foreground whitespace-pre-wrap break-words mb-2 ${!isExpanded ? 'line-clamp-3' : ''}`}>
+                        {isTranslated ? translatedText : contentText}
+                    </div>
+                    <div className="flex items-center gap-3 mb-3">
+                        {shouldShowReadMore && (
+                            <button
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setIsExpanded(!isExpanded);
+                                }}
+                                className="text-[11px] font-medium text-primary hover:text-primary/80"
+                            >
+                                {isExpanded ? 'Read less' : 'Read more'}
+                            </button>
+                        )}
+                        {contentText && (
+                            <button
+                                onClick={handleTranslate}
+                                disabled={isTranslating}
+                                className="text-[11px] font-medium text-primary hover:text-primary/80 flex items-center gap-1"
+                            >
+                                {isTranslating ? <Loader2 className="h-3 w-3 animate-spin" /> : <Globe className="h-3 w-3" />}
+                                <span>{isTranslated ? 'Show Original' : (isTranslating ? 'Translating...' : 'Translate')}</span>
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Video: thumbnail first, player only on click (never an iframe per card). */}
+                    <YouTubeMediaPreview
+                        videoId={videoId}
+                        watchUrl={alert.content_url || content?.content_url}
+                        title={String(contentText || '').trim().slice(0, 90) || 'YouTube video'}
+                        duration={content?.duration}
+                        unavailable={Boolean(content?.is_deleted)}
+                        className="mb-3 border border-border"
+                    >
+                        {/* Download Progress Overlay */}
+                        {downloading && (
+                            <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-2 backdrop-blur-sm rounded-md">
+                                <Download className="h-8 w-8 text-white animate-bounce" />
+                                <div className="w-3/4">
+                                    <div className="flex justify-between text-xs text-white mb-1">
+                                        <span>{downloadStatus}</span>
+                                        <span>{Math.round(downloadProgress)}%</span>
+                                    </div>
+                                    <div className="w-full bg-gray-600 rounded-full h-2 overflow-hidden">
+                                        <div
+                                            className="bg-green-500 h-full rounded-full transition-all duration-300 ease-out"
+                                            style={{ width: `${downloadProgress}%` }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </YouTubeMediaPreview>
+
+                    {/* Metadata line — only the parts the data actually has */}
+                    <div className="mt-auto flex flex-wrap items-center gap-x-1.5 text-xs text-muted-foreground py-2.5 border-y border-border/50">
+                        {timeLabel && (<><span>{timeLabel}</span><span className="text-border">·</span></>)}
+                        {date && (<span>{date}</span>)}
+                        {hasViews && (
+                            <>
+                                {(timeLabel || date) && <span className="text-border">·</span>}
+                                <span className="font-semibold text-foreground">{formatMetric(metrics.views)}</span>
+                                <span className="ml-0.5">Views</span>
+                            </>
+                        )}
+                        {!timeLabel && !date && !hasViews && <span>No date available</span>}
+                    </div>
+
+                    {/* Engagement. Likes / comments appear only when the API returned them. */}
+                    <div className="flex justify-between items-center py-1.5 px-1">
+                        <div className="flex items-center gap-3">
+                            <div
+                                onClick={(e) => { e.stopPropagation(); setPostEngagersTab('comment'); setIsPostEngagersOpen(true); }}
+                                className="group flex items-center gap-1 cursor-pointer text-muted-foreground hover:text-blue-500 transition-colors p-1.5"
+                                title="Comments"
+                            >
+                                <div className="p-1 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors">
+                                    <MessageCircle className="h-4 w-4" />
+                                </div>
+                                <span className="text-[11px]">{hasComments ? formatMetric(metrics.comments) : ''}</span>
+                            </div>
+                            <div
+                                onClick={(e) => { e.stopPropagation(); setPostEngagersTab('like'); setIsPostEngagersOpen(true); }}
+                                className="group flex items-center gap-1 cursor-pointer text-muted-foreground hover:text-pink-600 transition-colors p-1.5"
+                                title="Likes"
+                            >
+                                <div className="p-1 rounded-full group-hover:bg-pink-50 dark:group-hover:bg-pink-900/20 transition-colors">
+                                    <ThumbsUp className="h-4 w-4" />
+                                </div>
+                                <span className="text-[11px]">{hasLikes ? formatMetric(metrics.likes) : ''}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>{/* End of p-4 pl-5 content wrapper */}
+
+                <WhatsAppShareModal
+                    isOpen={isShareModalOpen}
+                    onClose={() => setIsShareModalOpen(false)}
+                    initialText={shareText}
+                />
 
                 <PostEngagersDialog
                     open={isPostEngagersOpen}

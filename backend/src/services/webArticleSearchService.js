@@ -72,13 +72,18 @@ const searchPublicWebArticles = async ({ query, limit }) => {
     if (seen.has(dedupeKey)) return undefined;
     seen.add(dedupeKey);
 
+    // A malformed pubDate on ONE item must not throw (new Date(...).toISOString() raises RangeError) and sink the
+    // whole search; that item falls back to "now", like an item with no pubDate at all.
+    const parsedDate = new Date(publishedAt);
+    const publishedIso = Number.isNaN(parsedDate.getTime()) ? new Date().toISOString() : parsedDate.toISOString();
+
     const article = {
       id: `pub-live-${index + 1}`,
       title,
       source,
       url: link,
       summary: summary || 'No summary available for this result.',
-      publishedAt: new Date(publishedAt).toISOString(),
+      publishedAt: publishedIso,
       tags: queryWords.slice(0, 5),
       relevanceScore: 0
     };

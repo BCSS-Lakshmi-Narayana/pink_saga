@@ -276,8 +276,8 @@ const buildListQuery = (params = {}, options = {}) => {
         const normalized = normalizeTaggedAccount(effectiveTaggedAccount);
         
         // Match @mention, #hashtag, or the term as a keyword
-        const mentionRegex = new RegExp(`@${escapeRegex(normalized)}`, 'i');
-        const hashtagRegex = new RegExp(`#${escapeRegex(normalized)}`, 'i');
+        const mentionRegex = new RegExp(`@${escapeRegex(normalized)}(?![A-Za-z0-9_])`, 'i');
+        const hashtagRegex = new RegExp(`#${escapeRegex(normalized)}(?![A-Za-z0-9_])`, 'i');
         const keywordRegex = new RegExp(`\\b${escapeRegex(normalized)}\\b`, 'i');
             
         const handleOr = [
@@ -295,11 +295,13 @@ const buildListQuery = (params = {}, options = {}) => {
     if (posted_by_handle) {
         query['posted_by.handle'] = { $regex: new RegExp(`^@?${escapeRegex(String(posted_by_handle).replace(/^@/, '').trim())}$`, 'i') };
     }
-    if (sentiment && ['positive', 'negative', 'neutral', 'moderate'].includes(sentiment.toLowerCase())) {
+    if (typeof sentiment === 'string' && ['positive', 'negative', 'neutral', 'moderate'].includes(sentiment.toLowerCase())) {
         const s = sentiment.toLowerCase();
-        // 'neutral' is canonical; older rows may still carry the retired 'moderate'.
+        // 'neutral' is canonical; older rows may still carry the retired 'moderate'. The pill counts anything that is
+        // not explicitly positive / negative as neutral (including a missing value), so the filter must select the
+        // same set or the pill and the list disagree. `null` in $in also matches a missing field.
         query['analysis.sentiment'] = (s === 'moderate' || s === 'neutral')
-            ? { $in: ['moderate', 'neutral'] }
+            ? { $in: ['moderate', 'neutral', null] }
             : s;
     }
     // Supportive / Opposing / Neutral — the stance badge the card shows.
@@ -336,7 +338,7 @@ const buildListQuery = (params = {}, options = {}) => {
         addOrClause(query, topicOr);
     }
 
-    if (risk_level && ['low', 'medium', 'high', 'critical'].includes(risk_level.toLowerCase())) {
+    if (typeof risk_level === 'string' && ['low', 'medium', 'high', 'critical'].includes(risk_level.toLowerCase())) {
         query['analysis.risk_level'] = risk_level.toLowerCase();
     }
 
@@ -868,8 +870,13 @@ const getGrievances = async (req, res) => {
         // when the user actively scrolls and are unique per session.
         const isFirstPage = !cursor;
         const listCacheVersion = await cacheService.getVersion('grievances:list');
+        // The key carries the caller's row scope: an admin's unscoped payload must never be served to a scoped user
+        // (or the reverse) that happens to send the same query string.
+        const listScopeKey = req.scope?.canSeeAll
+            ? 'all'
+            : [...(req.scope?.constituencyKeys || [])].sort().join(',');
         const cacheKey = isFirstPage
-            ? `grievances:list:v1:${listCacheVersion}:${JSON.stringify(req.query || {})}`
+            ? `grievances:list:v2:${listCacheVersion}:scope=${listScopeKey}:${JSON.stringify(req.query || {})}`
             : null;
         if (cacheKey) {
             const cached = await cacheService.get(cacheKey);
@@ -919,15 +926,20 @@ const getGrievances = async (req, res) => {
         }
 
         const limitNum = Math.min(parseInt(limit, 10) || 50, 200); // cap at 200
-        const pageNum = parseInt(page, 10);
+        // A non-numeric / non-positive page falls back to 1 (NaN here became a NaN skip and a 500).
+        const pageNum = Math.max(1, parseInt(page, 10) || 1);
         const skip = (pageNum - 1) * limitNum;
         const findQuery = { ...query };
+        // The total and the sentiment pill counts are built from this copy, so they describe exactly the rows the
+        // caller is allowed to see (they used the unscoped query, so a scoped user saw statewide numbers).
+        const countBase = { ...query };
 
         // RBAC row-level scope: clamp results to constituencies the caller is
         // allowed to see. Super-admins / legacy roles pass through untouched.
         if (req.scope && !req.scope.canSeeAll) {
             const { constituencyFilter, mergeFilter } = require('../middleware/scopeMiddleware');
             mergeFilter(findQuery, constituencyFilter(req.scope, { extraFields: ['routing_targets.constituencies'] }));
+            mergeFilter(countBase, constituencyFilter(req.scope, { extraFields: ['routing_targets.constituencies'] }));
         }
 
         // Cursor format: "<post_date_iso>|<id>"
@@ -1027,7 +1039,7 @@ const getGrievances = async (req, res) => {
         // selecting one sentiment still shows the true totals for the other two
         // (otherwise the unselected pills read 0). All other active filters
         // (search, date, platform, location…) are kept.
-        const sentimentCountMatch = { ...query };
+        const sentimentCountMatch = { ...countBase };
         delete sentimentCountMatch['analysis.sentiment'];
 
         const [grievancesRaw, total, sentimentRows] = await Promise.all([
@@ -1038,7 +1050,7 @@ const getGrievances = async (req, res) => {
                 .limit(limitNum + 1)
                 .lean(),
             // Run count in parallel (skip for cursor-based loads — frontend already has total)
-            cursor ? Promise.resolve(undefined) : Grievance.countDocuments(query),
+            cursor ? Promise.resolve(undefined) : Grievance.countDocuments(countBase),
             // Sentiment breakdown across the current filters minus the sentiment
             // filter, so the pill counts reflect the real per-sentiment totals.
             // Skip on cursor loads since the frontend caches first-page counts.

@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback } from 'react';
+import React, { useMemo, useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { CalendarDays, Check, ChevronDown, ExternalLink, Globe, Newspaper, Search, RefreshCw, Loader2, Filter, AlertTriangle, X } from 'lucide-react';
 import api from '../lib/api';
@@ -10,6 +10,7 @@ import { Calendar as CalendarComponent } from '../components/ui/calendar';
 import { format } from 'date-fns';
 import { RssNewsCard } from '../components/grievances/RssNewsCard';
 import { STATE_DISTRICTS } from '../data/stateMLAs';
+import { fromDateOnly, rangeToDateStrings, isWithinDays } from '../lib/dateRange';
 
 const SUGGESTED_QUERIES = [
   'KCR BRS Telangana',
@@ -79,17 +80,24 @@ const PublicWebArticles = () => {
   /**
    * Filters can arrive in the URL so a figure elsewhere in the app can link to
    * the rows behind it:
-   *   ?stance=opposing&from=2026-09-01&to=2026-09-29&district=Bilaspur
+   *   ?stance=opposing&from=2026-09-01&to=2026-09-29&district=Hyderabad
    * `stance` is the client-relative verdict (political_stance), NOT the raw
    * `sentiment` tone, which defaults to 'neutral' on unscored articles.
    */
   const [searchParams] = useSearchParams();
   const [dbSearch, setDbSearch] = useState(() => searchParams.get('search') || '');
+  // What is typed in the box; it is committed to `dbSearch` (and so to the API) after a short pause, not per keystroke.
+  const [dbSearchInput, setDbSearchInput] = useState(() => searchParams.get('search') || '');
+  useEffect(() => {
+    if (dbSearchInput === dbSearch) return undefined;
+    const t = setTimeout(() => setDbSearch(dbSearchInput), 300);
+    return () => clearTimeout(t);
+  }, [dbSearchInput, dbSearch]);
   const [dbStance, setDbStance] = useState(() => searchParams.get('stance') || 'all');
   const [dbSource, setDbSource] = useState(() => searchParams.get('source') || 'all');
   const [dbCategory, setDbCategory] = useState(() => searchParams.get('category') || 'all');
-  const [dbDistrict, setDbDistrict] = useState('all');
-  const [dbLanguage, setDbLanguage] = useState('all');
+  const [dbDistrict, setDbDistrict] = useState(() => searchParams.get('district') || 'all');
+  const [dbLanguage, setDbLanguage] = useState(() => searchParams.get('language') || 'all');
   const [dbDateRange, setDbDateRange] = useState(() => ({
     start: searchParams.get('from') || '',
     end: searchParams.get('to') || '',
@@ -101,6 +109,9 @@ const PublicWebArticles = () => {
 
   const hasDbFilters = Boolean(
     dbSearch.trim() ||
+    dbSearchInput.trim() ||
+    (dbStance && dbStance !== 'all') ||
+    (dbSource && dbSource !== 'all') ||
     (dbCategory && dbCategory !== 'all') ||
     (dbDistrict && dbDistrict !== 'all') ||
     (dbLanguage && dbLanguage !== 'all') ||
@@ -110,6 +121,9 @@ const PublicWebArticles = () => {
 
   const clearDbFilters = () => {
     setDbSearch('');
+    setDbSearchInput('');
+    setDbStance('all');
+    setDbSource('all');
     setDbCategory('all');
     setDbDistrict('all');
     setDbLanguage('all');
@@ -128,8 +142,12 @@ const PublicWebArticles = () => {
   };
 
   // ── Monitored Feed Database Fetch ──
+  // Only the most recent request may update the screen: a slow response for an older filter must not overwrite
+  // newer results (or append page 2 of the previous filter onto the new list).
+  const dbRequestRef = useRef(0);
   const fetchDbArticles = useCallback(async (page = 1, append = false) => {
-    if (page === 1) setIsDbLoading(true);
+    const requestId = ++dbRequestRef.current;
+    if (page === 1) { setIsDbLoading(true); setIsDbLoadingMore(false); }
     else setIsDbLoadingMore(true);
     setDbErrorMessage('');
     try {
@@ -147,19 +165,25 @@ const PublicWebArticles = () => {
           endDate: dbDateRange.end || undefined,
         }
       });
+      if (requestId !== dbRequestRef.current) return;
       const { articles = [], pagination } = response.data;
       setDbArticles(prev => append ? [...prev, ...articles] : articles);
       setDbPagination(pagination || { page: 1, pages: 1, total: 0, limit: 20 });
     } catch (error) {
+      if (requestId !== dbRequestRef.current) return;
       console.error('[RSS DB] Fetch failed:', error);
       setDbErrorMessage('Failed to load database RSS feed articles.');
     } finally {
-      setIsDbLoading(false);
-      setIsDbLoadingMore(false);
+      if (requestId === dbRequestRef.current) {
+        setIsDbLoading(false);
+        setIsDbLoadingMore(false);
+      }
     }
   }, [dbSearch, dbStance, dbSource, dbCategory, dbDistrict, dbLanguage, dbDateRange]);
 
   // ── Live news search API ──
+  const liveRequestRef = useRef(0);
+  const liveAutoRanRef = useRef(false);
   const runLiveSearch = useCallback(async (overrideQuery) => {
     const query = typeof overrideQuery === 'string' ? overrideQuery.trim() : searchText.trim();
     if (!query) {
@@ -168,19 +192,23 @@ const PublicWebArticles = () => {
       return;
     }
 
+    const requestId = ++liveRequestRef.current;
     try {
       setIsLiveLoading(true);
       setLiveErrorMessage('');
+      // A new search has a new set of sources; one picked for the previous results must not linger (even if this search fails).
+      setLiveSourceFilter('All');
       const response = await api.get('/web-articles/search', {
         params: { q: query, limit: 40 }
       });
+      if (requestId !== liveRequestRef.current) return;
       setLiveArticles(Array.isArray(response.data?.articles) ? response.data.articles : []);
-      setLiveSourceFilter('All');
     } catch (error) {
+      if (requestId !== liveRequestRef.current) return;
       setLiveArticles([]);
       setLiveErrorMessage(error?.response?.data?.message || 'Failed to scrape public web articles for this query.');
     } finally {
-      setIsLiveLoading(false);
+      if (requestId === liveRequestRef.current) setIsLiveLoading(false);
     }
   }, [searchText]);
 
@@ -188,9 +216,16 @@ const PublicWebArticles = () => {
   useEffect(() => {
     if (activeTab === 'monitored') {
       fetchDbArticles(1, false);
-    } else if (activeTab === 'live' && liveArticles.length === 0) {
-      setSearchText(SUGGESTED_QUERIES[0]);
-      runLiveSearch(SUGGESTED_QUERIES[0]);
+    } else if (activeTab === 'live' && !liveAutoRanRef.current) {
+      // First visit only: seed a default search. Never again, so returning to the tab after an empty or failed
+      // search does not replace what the person typed.
+      liveAutoRanRef.current = true;
+      if (!searchText.trim()) {
+        setSearchText(SUGGESTED_QUERIES[0]);
+        runLiveSearch(SUGGESTED_QUERIES[0]);
+      } else {
+        runLiveSearch(searchText);
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, dbSearch, dbStance, dbSource, dbCategory, dbDistrict, dbLanguage, dbDateRange, fetchDbArticles]);
@@ -204,14 +239,7 @@ const PublicWebArticles = () => {
     return liveArticles.filter((article) => {
       const inSource = liveSourceFilter === 'All' || article.source === liveSourceFilter;
       if (!inSource) return false;
-      const pubDate = article.publishedAt ? new Date(article.publishedAt) : null;
-      if (liveDateRange.start && (!pubDate || pubDate < new Date(liveDateRange.start))) return false;
-      if (liveDateRange.end) {
-        const endLimit = new Date(liveDateRange.end);
-        endLimit.setHours(23, 59, 59, 999);
-        if (!pubDate || pubDate > endLimit) return false;
-      }
-      return true;
+      return isWithinDays(article.publishedAt, liveDateRange.start, liveDateRange.end);
     }).sort((a, b) => new Date(b.publishedAt) - new Date(a.publishedAt));
   }, [liveArticles, liveSourceFilter, liveDateRange]);
 
@@ -268,9 +296,9 @@ const PublicWebArticles = () => {
             <div className="relative flex-1 min-w-[200px]">
               <Search className="h-4 w-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
               <Input
-                value={dbSearch}
+                value={dbSearchInput}
                 onChange={(e) => {
-                  setDbSearch(e.target.value);
+                  setDbSearchInput(e.target.value);
                 }}
                 placeholder="Search articles..."
                 className="pl-9 h-10 text-sm"
@@ -284,7 +312,7 @@ const PublicWebArticles = () => {
               placeholder="All Categories"
               options={[
                 { value: 'all', label: 'All Categories' },
-                ...['crime', 'politics', 'development', 'agriculture', 'health', 'education', 'law_order', 'communal', 'accident', 'sports', 'culture', 'infrastructure', 'economy', 'technology', 'entertainment', 'general'].map((c) => ({
+                ...['crime', 'politics', 'development', 'agriculture', 'health', 'education', 'law_order', 'communal', 'accident', 'sports', 'culture', 'general'].map((c) => ({
                   value: c,
                   label: c.replace('_', ' ').replace(/\b\w/g, (l) => l.toUpperCase()),
                 })),
@@ -322,8 +350,8 @@ const PublicWebArticles = () => {
                   <CalendarDays className="h-4 w-4" />
                   {dbDateRange.start ? (
                     <span>
-                      {format(new Date(dbDateRange.start), 'dd MMM')}
-                      {dbDateRange.end ? ` – ${format(new Date(dbDateRange.end), 'dd MMM')}` : ''}
+                      {format(fromDateOnly(dbDateRange.start) || new Date(), 'dd MMM')}
+                      {dbDateRange.end ? ` – ${format(fromDateOnly(dbDateRange.end) || new Date(), 'dd MMM')}` : ''}
                     </span>
                   ) : 'Date Range'}
                 </Button>
@@ -332,14 +360,11 @@ const PublicWebArticles = () => {
                 <CalendarComponent
                   mode="range"
                   selected={{
-                    from: dbDateRange.start ? new Date(dbDateRange.start) : undefined,
-                    to: dbDateRange.end ? new Date(dbDateRange.end) : undefined
+                    from: fromDateOnly(dbDateRange.start),
+                    to: fromDateOnly(dbDateRange.end)
                   }}
                   onSelect={(range) => {
-                    setDbDateRange({
-                      start: range?.from ? range.from.toISOString().split('T')[0] : '',
-                      end: range?.to ? range.to.toISOString().split('T')[0] : ''
-                    });
+                    setDbDateRange(rangeToDateStrings(range));
                   }}
                   numberOfMonths={2}
                   initialFocus
@@ -524,8 +549,8 @@ const PublicWebArticles = () => {
                       <CalendarDays className="h-4 w-4" />
                       {liveDateRange.start ? (
                         <span>
-                          {format(new Date(liveDateRange.start), 'dd MMM')}
-                          {liveDateRange.end ? ` – ${format(new Date(liveDateRange.end), 'dd MMM')}` : ''}
+                          {format(fromDateOnly(liveDateRange.start) || new Date(), 'dd MMM')}
+                          {liveDateRange.end ? ` – ${format(fromDateOnly(liveDateRange.end) || new Date(), 'dd MMM')}` : ''}
                         </span>
                       ) : 'Date Range'}
                     </Button>
@@ -534,14 +559,11 @@ const PublicWebArticles = () => {
                     <CalendarComponent
                       mode="range"
                       selected={{
-                        from: liveDateRange.start ? new Date(liveDateRange.start) : undefined,
-                        to: liveDateRange.end ? new Date(liveDateRange.end) : undefined
+                        from: fromDateOnly(liveDateRange.start),
+                        to: fromDateOnly(liveDateRange.end)
                       }}
                       onSelect={(range) => {
-                        setLiveDateRange({
-                          start: range?.from ? range.from.toISOString().split('T')[0] : '',
-                          end: range?.to ? range.to.toISOString().split('T')[0] : ''
-                        });
+                        setLiveDateRange(rangeToDateStrings(range));
                       }}
                       numberOfMonths={2}
                       initialFocus

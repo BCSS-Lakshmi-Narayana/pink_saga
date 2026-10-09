@@ -705,8 +705,10 @@ const getAlerts = async (req, res) => {
 
     const includeStats = String(req.query.includeStats || '').toLowerCase() === 'true';
     const cursor = req.query.cursor;
-    let pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    // Non-numeric / non-positive page falls back to 1, and limit is clamped to 1..100 (NaN became a NaN skip and a 500;
+    // an unbounded limit let one request pull the whole collection).
+    let pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10) || 20));
 
     // Support page-encoded cursor for aggregation path (format: "p:N")
     if (cursor && cursor.startsWith('p:')) {
@@ -715,7 +717,7 @@ const getAlerts = async (req, res) => {
     }
 
     const skip = (pageNum - 1) * limitNum;
-    const hasSearch = search && search.trim();
+    const hasSearch = typeof search === 'string' && search.trim();
 
     const Source = require('../models/Source');
 
