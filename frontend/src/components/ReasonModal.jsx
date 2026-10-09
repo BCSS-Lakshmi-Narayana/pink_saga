@@ -7,7 +7,7 @@ import { cn } from '../lib/utils';
 import ForensicResults from './ForensicResults';
 // Shared resolver — the modal MUST derive sentiment/stance the same way the
 // card does, or the two disagree on screen for the same record.
-import { getAlertSentiment, getAlertStance, needsReview, getReasoning } from '../lib/sentiment';
+import { getAlertSentiment, getAlertBrsVerdict, needsReview, getReasoning } from '../lib/sentiment';
 
 // Backend-aligned bands (alertController RISK_LEVEL_SCORE_MAP). 'critical' is
 // not in the Alert model enum so we limit to low/medium/high.
@@ -57,7 +57,7 @@ const ReasonModal = ({ open, onClose, alert, content, analysis, onRiskLevelChang
      */
     const resolvedSentiment = getAlertSentiment(alert, content || { analysis: fullAnalysis });
     const sentiment = resolvedSentiment === 'moderate' ? 'neutral' : resolvedSentiment;
-    const stance = getAlertStance(alert, content || { analysis: fullAnalysis });
+    const stance = getAlertBrsVerdict(alert, content || { analysis: fullAnalysis });
     const isUnreviewed = needsReview(alert) || needsReview(fullAnalysis);
 
     /**
@@ -146,7 +146,7 @@ const ReasonModal = ({ open, onClose, alert, content, analysis, onRiskLevelChang
                         infer one from the other. */}
                     {(stance || isUnreviewed) && (
                         <div className="flex items-center gap-2 pb-3 border-b flex-wrap">
-                            {stance && !stance.inferred && (
+                            {stance && (
                                 <Badge className={cn('text-xs px-2.5 py-0.5 uppercase tracking-wide', stance.cls)}>
                                     <Shield className="h-3 w-3 mr-1" />{stance.label}
                                 </Badge>
