@@ -6,7 +6,7 @@ import { ExternalLink, Shield, AlertTriangle, TrendingUp, Tag, MessageSquare, Sc
 import { cn } from '../../lib/utils';
 // Shared resolver — the modal must derive sentiment/stance the same way the
 // grievance card does, or the two disagree on screen for the same record.
-import { getGrievanceSentiment, getGrievanceStance, needsReview, getReasoning } from '../../lib/sentiment';
+import { getGrievanceSentiment, getGrievanceBrsVerdict, needsReview, getReasoning } from '../../lib/sentiment';
 
 // Same bands the backend uses when overriding risk level (low: 20, medium: 50, high: 75, critical: 92)
 const RISK_LEVELS = [
@@ -46,7 +46,7 @@ const GrievanceAnalysisModal = ({ open, onClose, grievance, onRiskLevelChange, o
      */
     const resolvedSentiment = getGrievanceSentiment(grievance);
     const sentiment = resolvedSentiment === 'moderate' ? 'neutral' : resolvedSentiment;
-    const stance = getGrievanceStance(grievance);
+    const stance = getGrievanceBrsVerdict(grievance);
     const isUnreviewed = needsReview(grievance);
     const riskScore = analysis.risk_score || 0;
     const category = analysis.category || '';
@@ -210,9 +210,12 @@ const GrievanceAnalysisModal = ({ open, onClose, grievance, onRiskLevelChange, o
                             )}
                         </div>
                         {!isEditingSentiment ? (
-                            <Badge className={cn('text-sm px-3 py-1', sentimentConfig.color)}>
-                                {sentimentConfig.icon} {sentimentConfig.label}
-                            </Badge>
+                            <div className="flex flex-wrap items-center gap-1.5">
+                                <Badge className={cn('text-xs px-2.5 py-0.5', stance.cls)}>{stance.label}</Badge>
+                                <Badge className={cn('text-sm px-3 py-1', sentimentConfig.color)}>
+                                    Tone: {sentimentConfig.icon} {sentimentConfig.label}
+                                </Badge>
+                            </div>
                         ) : (
                             <div className="space-y-2">
                                 <div className="flex flex-wrap gap-1">

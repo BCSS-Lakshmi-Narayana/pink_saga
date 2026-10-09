@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { normalizeMediaList, PostEngagersDialog } from '../AlertCards';
 import { cn } from '../../lib/utils';
 // Shared resolver — the badge, the border and the analysis modal must agree.
-import { getGrievanceSentiment, getGrievanceStance, needsReview } from '../../lib/sentiment';
+import { getGrievanceSentiment, getGrievanceBrsVerdict, toneLabel, toneChipClass, needsReview } from '../../lib/sentiment';
 import { useAuth } from '../../contexts/AuthContext';
 import { canManageRestrictedGrievanceUi } from '../../lib/grievanceUiPermissions';
 import api from '../../lib/api';
@@ -201,23 +201,32 @@ const TranslateButton = ({ isTranslated, isTranslating, onTranslate }) => (
     </button>
 );
 
+/**
+ * Primary badge = effect on BRS (stance engine); secondary chip = raw tone.
+ * Same pairing, fields and wording as Alerts (AlertCards.jsx) via lib/sentiment.js.
+ */
 const SentimentBadge = ({ analysis }) => {
     if (!analysis?.analyzed_at) return null;
-    // Resolved through the shared helper (raw sentiment: generic_sentiment,
-    // then the flat field) so this badge cannot disagree with the card border
-    // or the analysis modal.
-    const sentiment = getGrievanceSentiment({ analysis });
-    const badgeConfig = {
-        positive: { bg: 'bg-green-100', text: 'text-green-700', ring: 'ring-green-200', label: 'Positive' },
-        negative: { bg: 'bg-red-100', text: 'text-red-700', ring: 'ring-red-200', label: 'Negative' },
-        neutral: { bg: 'bg-slate-100', text: 'text-slate-700', ring: 'ring-slate-200', label: 'Neutral' }
-    };
-    const config = badgeConfig[sentiment] || badgeConfig.neutral;
+    const brs = getGrievanceBrsVerdict({ analysis });
+    const tone = getGrievanceSentiment({ analysis });
     return (
-        <span className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded ring-1', config.bg, config.text, config.ring)}>
-            <Shield className="h-2.5 w-2.5" />
-            {config.label}
-        </span>
+        <>
+            <span
+                data-testid="brs-badge"
+                title="How this post affects BRS (from the stance engine), independent of its tone"
+                className={cn('inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded', brs.cls)}
+            >
+                <Shield className="h-2.5 w-2.5" />
+                {brs.label}
+            </span>
+            <span
+                data-testid="tone-chip"
+                title="Overall emotional tone of the text, not its effect on BRS"
+                className={cn('inline-flex items-center text-[10px] font-semibold px-1.5 py-0.5 rounded border', toneChipClass(tone))}
+            >
+                {toneLabel(tone)}
+            </span>
+        </>
     );
 };
 
@@ -318,36 +327,12 @@ const CategoryBadge = ({ analysis }) => {
     );
 };
 
-/**
- * Client-relative stance, shown beside the sentiment badge exactly as Alerts do
- * (AlertCards.jsx). `sentiment` is the tone; `stance` is who it helps — an attack
- * on the opposition reads Negative but is pro-client, and without this badge that
- * card is indistinguishable from an attack on us.
- *
- * Hidden when `inferred` is true: that flag means nothing was stored and the
- * resolver described it from the sentiment, which would just restate the badge
- * next to it. Alerts apply the same condition.
- */
-const StanceBadge = ({ grievance }) => {
-    const stance = getGrievanceStance(grievance);
-    if (!stance || stance.inferred) return null;
-    return (
-        <span className={cn(
-            'inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border',
-            stance.cls,
-        )}>
-            <Shield className="h-2.5 w-2.5" />{stance.label}
-        </span>
-    );
-};
-
 // Top-right analysis row: sentiment label + stance + eye icon
 const AnalysisRow = ({ grievance, onAction }) => {
     if (!grievance.analysis?.analyzed_at) return null;
     return (
         <div className="flex items-center gap-1.5 justify-end mb-1">
             <SentimentBadge analysis={grievance.analysis} />
-            <StanceBadge grievance={grievance} />
             <Button
                 variant="ghost"
                 size="icon"
@@ -1304,10 +1289,8 @@ export const GrievanceCard = ({ grievance, onAction, getProxiedMediaUrl, downloa
     // Same resolver as SentimentBadge above. Previously the border defaulted to
     // '' (no border) while the badge defaulted to amber, so a record with no
     // stored sentiment showed a Neutral badge on a card with no accent at all.
-    const sentiment = grievance.analysis?.analyzed_at ? getGrievanceSentiment(grievance) : '';
-    const sentimentBorderColor = sentiment === 'negative' ? 'border-l-red-500' :
-        sentiment === 'positive' ? 'border-l-green-500' :
-            sentiment === 'neutral' ? 'border-l-slate-400' : '';
+    const brsKey = grievance.analysis?.analyzed_at ? getGrievanceBrsVerdict(grievance).key : '';
+    const sentimentBorderColor = { supportive: 'border-l-emerald-500', opposing: 'border-l-red-500', neutral: 'border-l-slate-400', unclear: 'border-l-amber-400' }[brsKey] || '';
 
     return (
         <Card id={`grievance-card-${grievance.id}`} className={cn(
@@ -1350,8 +1333,7 @@ export const GrievanceCard = ({ grievance, onAction, getProxiedMediaUrl, downloa
                     <PlatformBadge platform={platform} />
                     <SentimentBadge analysis={grievance.analysis} />
                     {/* Stance sits next to sentiment here, the same pairing Alerts use. */}
-                    <StanceBadge grievance={grievance} />
-                    <GrievanceTopicBadge analysis={grievance.analysis} />
+                            <GrievanceTopicBadge analysis={grievance.analysis} />
                     <LocationBadge location={grievance.detected_location} />
                     <span>Detected {timeAgo(grievance.detected_date || grievance.created_at)} ago</span>
                 </div>

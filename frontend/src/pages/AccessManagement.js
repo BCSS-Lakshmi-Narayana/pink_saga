@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { displayEmail, visibleUsers } from '../lib/hiddenEmails';
 import { useAuth } from '../contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { ShieldCheck, Check, Users, Crown, Plus, X, Save, UserPlus, ChevronDown, Edit2, Trash2, MapPin } from 'lucide-react';
@@ -99,7 +100,7 @@ const AccessManagement = () => {
                     api.get('/rbac/users'),
                     api.get('/rbac/pages')
                 ]);
-                setUsers(usersRes.data);
+                setUsers(visibleUsers(usersRes.data));
                 setPages(pagesRes.data);
             } catch (error) {
                 toast.error('Failed to load data');
@@ -249,7 +250,7 @@ const AccessManagement = () => {
             toast.success(`User ${newUserForm.full_name} created successfully!`);
 
             const usersRes = await api.get('/rbac/users');
-            setUsers(usersRes.data);
+            setUsers(visibleUsers(usersRes.data));
 
             setShowCreateModal(false);
             setNewUserForm({
@@ -313,7 +314,7 @@ const AccessManagement = () => {
 
             // Refresh user list
             const usersRes = await api.get('/rbac/users');
-            setUsers(usersRes.data);
+            setUsers(visibleUsers(usersRes.data));
 
             // Update selected user state
             const updatedUser = usersRes.data.find(u => u.id === selectedUser.id);
@@ -345,7 +346,7 @@ const AccessManagement = () => {
 
                 // Refresh user list and deselect
                 const usersRes = await api.get('/rbac/users');
-                setUsers(usersRes.data);
+                setUsers(visibleUsers(usersRes.data));
                 setSelectedUserId('');
                 setSelectedUser(null);
                 setPermissions({});
@@ -448,7 +449,7 @@ const AccessManagement = () => {
                                     </div>
                                     <div className="min-w-0 flex-1">
                                         <p className="font-medium text-gray-900 truncate">{selectedUser.full_name}</p>
-                                        <p className="text-xs text-gray-500 truncate">{selectedUser.email}</p>
+                                        <p className="text-xs text-gray-500 truncate">{displayEmail(selectedUser.email)}</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-2 mt-3">
@@ -519,7 +520,7 @@ const AccessManagement = () => {
                                             </div>
                                             <div className="flex-1 text-left min-w-0">
                                                 <p className="text-sm font-medium text-gray-900 truncate">{u.full_name}</p>
-                                                <p className="text-xs text-gray-500 truncate">{u.email}</p>
+                                                <p className="text-xs text-gray-500 truncate">{displayEmail(u.email)}</p>
                                             </div>
                                         </button>
                                         <button

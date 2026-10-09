@@ -217,3 +217,88 @@ export const getReasoning = (record) => (
   record?.sentiment_reasoning ||
   ''
 );
+
+/* ─── BRS-relative verdict (primary badge) ──────────────────────────── */
+
+/**
+ * The PRIMARY badge on Alerts and Mentions: how the post affects BRS.
+ *
+ * Precedence — `political_stance` is canonical (the stance engine's verdict);
+ * `target_sentiment` (client-relative: positive = good for BRS) is derived from
+ * it by the backend, so it is only (a) a cross-check and (b) the fallback when
+ * no stance was stored. Raw tone is NEVER consulted here: a negative-toned attack
+ * on Congress is Supportive, a positive-toned praise of Congress is Opposing.
+ *
+ *   stance supportive + target_sentiment negative  → Unclear (contradiction)
+ *   stance opposing   + target_sentiment positive  → Unclear (contradiction)
+ *   stance neutral/unrelated + a signed target_sentiment → Unclear (contradiction)
+ *   stance 'mixed' or unrecognised                 → Unclear
+ *   no stance, signed target_sentiment             → from target_sentiment
+ *   nothing stored                                 → Unclear
+ */
+export const BRS_VERDICTS = {
+  supportive: { key: 'supportive', label: 'Supportive of BRS', tone: 'positive' },
+  opposing: { key: 'opposing', label: 'Opposing BRS', tone: 'negative' },
+  neutral: { key: 'neutral', label: 'Neutral on BRS', tone: 'neutral' },
+  unclear: { key: 'unclear', label: 'Unclear', tone: 'unclear' },
+};
+
+const BRS_VERDICT_CLASSES = {
+  supportive: 'bg-emerald-600 text-white',
+  opposing: 'bg-red-600 text-white',
+  neutral: 'bg-slate-500 text-white',
+  unclear: 'bg-amber-100 text-amber-900 border border-amber-300',
+};
+const BRS_VERDICT_BORDERS = {
+  supportive: 'bg-emerald-500', opposing: 'bg-red-500', neutral: 'bg-slate-400', unclear: 'bg-amber-400',
+};
+
+const stanceSide = (raw) => {
+  const hit = STANCE_LABELS[String(raw || '').toLowerCase().trim()];
+  if (!hit) return null;
+  return hit.label === 'supportive' ? 'supportive' : hit.label === 'opposing' ? 'opposing' : hit.label === 'neutral' ? 'neutral' : 'unrelated';
+};
+
+/** Pure resolver over one analysis-shaped object. */
+export const resolveBrsVerdict = (stanceRaw, targetSentimentRaw) => {
+  const side = stanceSide(stanceRaw);
+  const ts = normalize(targetSentimentRaw);
+  // 'high'/'low' etc. are risk words, not a client-relative sentiment: only the three real labels count.
+  const signed = ['positive', 'negative'].includes(String(targetSentimentRaw || '').toLowerCase().trim()) ? ts : null;
+  let key;
+  if (side === 'supportive') key = signed === 'negative' ? 'unclear' : 'supportive';
+  else if (side === 'opposing') key = signed === 'positive' ? 'unclear' : 'opposing';
+  else if (side === 'neutral' || side === 'unrelated') key = signed ? 'unclear' : 'neutral';
+  else if (!String(stanceRaw || '').trim() && signed) key = signed === 'positive' ? 'supportive' : 'opposing';
+  else key = 'unclear';
+  return { ...BRS_VERDICTS[key], raw_stance: String(stanceRaw || ''), raw_target_sentiment: String(targetSentimentRaw || ''), cls: BRS_VERDICT_CLASSES[key], borderCls: BRS_VERDICT_BORDERS[key] };
+};
+
+const verdictFrom = (candidates) => {
+  const list = candidates.filter(Boolean);
+  // Stance and target_sentiment are read from the SAME object so they cannot come from different analyses.
+  const withStance = list.find((c) => c.political_stance || c.stance);
+  if (withStance) return resolveBrsVerdict(withStance.political_stance || withStance.stance, withStance.target_sentiment || withStance.bsk_sentiment);
+  const withTarget = list.find((c) => c.target_sentiment || c.bsk_sentiment);
+  return resolveBrsVerdict('', withTarget ? (withTarget.target_sentiment || withTarget.bsk_sentiment) : '');
+};
+
+export const getAlertBrsVerdict = (alert, content) => verdictFrom([
+  alert?.llm_analysis, alert?.analysis, content?.analysis?.llm_analysis, content?.analysis,
+]);
+
+export const getGrievanceBrsVerdict = (grievance) => verdictFrom([
+  grievance?.analysis, grievance?.analysis?.llm_analysis,
+]);
+
+/** Secondary chip text: the raw linguistic tone. */
+export const toneLabel = (tone) => `Tone: ${({ positive: 'Positive', negative: 'Negative' })[tone] || 'Neutral'}`;
+
+/** Muted classes for the secondary tone chip. */
+export const toneChipClass = (tone) => {
+  switch (tone) {
+    case 'negative': return 'bg-red-50 text-red-700 border-red-200';
+    case 'positive': return 'bg-emerald-50 text-emerald-700 border-emerald-200';
+    default: return 'bg-slate-100 text-slate-600 border-slate-200';
+  }
+};

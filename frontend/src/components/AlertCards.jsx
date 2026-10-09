@@ -17,7 +17,7 @@ import ReasonModal from './ReasonModal';
 import ForensicResults from './ForensicResults';
 // One shared resolver for sentiment/stance — see lib/sentiment.js for why the
 // card, the border and the modal must not each derive this themselves.
-import { getAlertSentiment, getAlertStance, sentimentBadgeClass, sentimentBorderClass, needsReview } from '../lib/sentiment';
+import { getAlertSentiment, getAlertBrsVerdict, toneLabel, toneChipClass, needsReview } from '../lib/sentiment';
 //
 const WHATSAPP_GROUP_LINK = 'https://chat.whatsapp.com/HGGWZCyNXBmHfp4KvYxlXu';
 
@@ -882,7 +882,7 @@ export const TwitterAlertCard = ({ alert, content, source, onResolve, onAddSourc
     // the border and the modal so they cannot disagree with each other or with
     // the server-side Negative/Neutral/Positive filter.
     const sentiment = getAlertSentiment(alert, content);
-    const stance = getAlertStance(alert, content);
+    const brs = getAlertBrsVerdict(alert, content);
     const isUnreviewed = needsReview(alert) || needsReview(content?.analysis);
     const intentLabel = alert.threat_details?.intent || analysis.intent || analysis.topic || '';
     const reasons = alert.threat_details?.reasons || analysis.reasons || analysis.threat_model?.reasons || [];
@@ -1041,19 +1041,25 @@ export const TwitterAlertCard = ({ alert, content, source, onResolve, onAddSourc
             </Dialog>
             <div className={`bg-card dark:bg-[#0d1117] border border-border rounded-md hover:shadow-md transition-shadow duration-200 font-sans relative flex flex-col overflow-hidden ${viewMode === 'list' ? 'max-w-md w-full self-start shadow-sm' : 'w-full h-full shadow-sm'} ${isInvestigatedResult ? 'ring-1 ring-amber-300/50' : ''} ${customClass}`}>
                 {/* Sentiment accent — same resolver as the badge below. */}
-                <div className={`absolute left-0 top-0 bottom-0 w-1 ${sentimentBorderClass(sentiment)}`} />
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${brs.borderCls}`} />
 
                 <div className="p-4 pl-5">
                     {/* Sentiment, stance & viral badges (same row, absolute positioned) */}
                     <div className="absolute left-0 top-2.5 z-10 flex items-center gap-1.5">
-                        <div className={`rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm ${sentimentBadgeClass(sentiment)}`}>
-                            {sentiment}
+                        <div
+                            data-testid="brs-badge"
+                            title="How this post affects BRS (from the stance engine), independent of its tone"
+                            className={`inline-flex items-center gap-1 rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm ${brs.cls}`}
+                        >
+                            <Shield className="h-2.5 w-2.5" />{brs.label}
                         </div>
-                        {stance && !stance.inferred && (
-                            <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border ${stance.cls}`}>
-                                <Shield className="h-2.5 w-2.5" />{stance.label}
-                            </span>
-                        )}
+                        <span
+                            data-testid="tone-chip"
+                            title="Overall emotional tone of the text, not its effect on BRS"
+                            className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold tracking-wide border ${toneChipClass(sentiment)}`}
+                        >
+                            {toneLabel(sentiment)}
+                        </span>
                         {isUnreviewed && (
                             <span
                                 className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border bg-amber-50 text-amber-800 border-amber-300"
@@ -1981,7 +1987,7 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
     // the border and the modal so they cannot disagree with each other or with
     // the server-side Negative/Neutral/Positive filter.
     const sentiment = getAlertSentiment(alert, content);
-    const stance = getAlertStance(alert, content);
+    const brs = getAlertBrsVerdict(alert, content);
     const isUnreviewed = needsReview(alert) || needsReview(content?.analysis);
     const intentLabel = alert.threat_details?.intent || analysis.intent || analysis.topic || '';
     const reasons = alert.threat_details?.reasons || analysis.reasons || analysis.threat_model?.reasons || [];
@@ -2081,19 +2087,25 @@ export const YoutubeAlertCard = ({ alert, content, source, onResolve, onAddSourc
             </Dialog>
             <div className={`bg-card dark:bg-[#0d1117] border border-border rounded-md hover:shadow-md transition-shadow duration-200 font-sans group relative flex flex-col overflow-hidden shadow-sm ${isGrid ? 'w-full h-full' : 'max-w-md w-full self-start'} ${isInvestigatedResult ? 'ring-1 ring-amber-300/50' : ''} ${customClass}`}>
                 {/* Sentiment accent — same resolver as the badge below. */}
-                <div className={`absolute left-0 top-0 bottom-0 w-1 ${sentimentBorderClass(sentiment)}`} />
+                <div className={`absolute left-0 top-0 bottom-0 w-1 ${brs.borderCls}`} />
 
                 <div className="p-4 pl-5 flex flex-col flex-grow min-w-0">
                     {/* Sentiment, stance & review badges (same row, absolute positioned) */}
                     <div className="absolute left-0 top-2.5 z-10 flex items-center gap-1.5">
-                        <div className={`rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm ${sentimentBadgeClass(sentiment)}`}>
-                            {sentiment}
+                        <div
+                            data-testid="brs-badge"
+                            title="How this post affects BRS (from the stance engine), independent of its tone"
+                            className={`inline-flex items-center gap-1 rounded-r-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-sm ${brs.cls}`}
+                        >
+                            <Shield className="h-2.5 w-2.5" />{brs.label}
                         </div>
-                        {stance && !stance.inferred && (
-                            <span className={`inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border ${stance.cls}`}>
-                                <Shield className="h-2.5 w-2.5" />{stance.label}
-                            </span>
-                        )}
+                        <span
+                            data-testid="tone-chip"
+                            title="Overall emotional tone of the text, not its effect on BRS"
+                            className={`inline-flex items-center rounded px-1.5 py-0.5 text-[10px] font-semibold tracking-wide border ${toneChipClass(sentiment)}`}
+                        >
+                            {toneLabel(sentiment)}
+                        </span>
                         {isUnreviewed && (
                             <span
                                 className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide border bg-amber-50 text-amber-800 border-amber-300"

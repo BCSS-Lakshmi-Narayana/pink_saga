@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { displayEmail, visibleUsers } from '../lib/hiddenEmails';
 import { Navigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import {
@@ -272,7 +273,7 @@ const ConstituencyLogins = () => {
     setLoading(true);
     try {
       const res = await api.get('/auth/constituency-users');
-      setUsers(res.data?.users || []);
+      setUsers(visibleUsers(res.data?.users || []));
     } catch (err) {
       toast.error(err?.response?.data?.message || 'Failed to load logins');
     } finally {
@@ -496,7 +497,7 @@ const ConstituencyLogins = () => {
                       </td>
                       <td className="px-3 py-2 text-slate-600">
                         {user ? (
-                          <span className="font-mono text-xs">{user.email}</span>
+                          <span className="font-mono text-xs">{displayEmail(user.email)}</span>
                         ) : (
                           <span className="text-slate-400 italic">—</span>
                         )}
