@@ -50,6 +50,37 @@ const normalizeSentiment = (s) => {
 };
 
 /**
+ * Romanized-Telugu abuse the model keeps missing.
+ *
+ * Audited a live sample of completed mentions (Oct 2026): Telugu abuse written
+ * in Telugu script, and English profanity, both score correctly. Telugu abuse
+ * spelled out phonetically in Latin letters ("Tenglish" — how most people
+ * actually type when @-replying) does not: the model doesn't recognise the
+ * words as abusive and both sentiment passes converge on the same wrong
+ * "neutral"/"positive" reading, so the disagreement check below never fires
+ * either. ~55% of completed mentions are in this script, so this isn't an
+ * edge case.
+ *
+ * This is a deterministic stopgap, not a lexicon: it forces a human look
+ * rather than trying to re-derive a verdict the model already got wrong.
+ * Extend as more misses turn up; it will never be exhaustive.
+ *
+ * Romanized Telugu has no fixed spelling (single vs. doubled consonants,
+ * interchangeable vowels), so a literal word list under-matches its own
+ * entries. A second audit pass (300 more live mentions) found two terms
+ * already on this list missed by their own spelling variants — "gadidi"
+ * (donkey, insult) wasn't caught by `gadida\w*`, "edhava" (wretch) wasn't
+ * caught by `vedava\w*` — so those two are now stems/alternations instead
+ * of single fixed spellings.
+ */
+const ROMANIZED_ABUSE_RE = new RegExp(
+  '\\b(lanja\\w*|modda\\w*|pooku\\w*|erripo?oku\\w*|deng\\w*|'
+  + 'kut+h*a\\w*|kukka\\w*|nak{1,2}a\\w*|naya[l]a\\w*|pandi\\w*|gadid\\w*|soole\\w*|'
+  + 'v?edhava\\w*|vedava\\w*|muriki\\s*naya\\w*)',
+  'i',
+);
+
+/**
  * Stage 5 output surface: a per-dimension confidence bag, a validation record,
  * and the blocking `needs_review` decision.
  *
@@ -70,7 +101,7 @@ const normalizeSentiment = (s) => {
  * is treated as the non-blocking case deliberately: over-flagging would shrink
  * every downstream pool that excludes `needs_review` records.
  */
-const buildQualityGate = ({ llmResult, political, finalSentiment }) => {
+const buildQualityGate = ({ llmResult, political, finalSentiment, text }) => {
   const llmSentiment = normalizeSentiment(llmResult?.sentiment);
   const targetSentiment = normalizeSentiment(finalSentiment);
 
@@ -128,11 +159,25 @@ const buildQualityGate = ({ llmResult, political, finalSentiment }) => {
   const directStance = ['pro_target', 'anti_target'].includes(political?.stance);
   const oppositeVerdicts = (llmSentiment === 'positive' && targetSentiment === 'negative')
     || (llmSentiment === 'negative' && targetSentiment === 'positive');
+  // "Pass A found nothing" (neutral) is not the same as "Pass A agrees", on a
+  // direct-stance post. Audited misses were all this shape: Pass A read a
+  // Romanized-Telugu insult as neutral, Stage 4 called it positive, and
+  // because Pass A was never client-relative to begin with the old check
+  // below (`passAWasClientRelative && oppositeVerdicts`) silently waved it
+  // through as a non-blocking warning instead of flagging the conflict.
+  const passAFoundNothing = llmSentiment === 'neutral' && targetSentiment !== 'neutral';
   if (sentimentDisagreement) {
-    if (passAWasClientRelative && directStance && oppositeVerdicts) reasons.push('client_sentiment_conflict');
-    else warnings.push('sentiment_disagreement');
+    if (directStance && ((passAWasClientRelative && oppositeVerdicts) || passAFoundNothing)) {
+      reasons.push('client_sentiment_conflict');
+    } else {
+      warnings.push('sentiment_disagreement');
+    }
   }
   if (political?.provider === 'fallback') reasons.push('llm_fallback');
+  // Deterministic stopgap for Romanized-Telugu abuse both sentiment passes
+  // miss identically (so the disagreement checks above never fire at all) —
+  // see ROMANIZED_ABUSE_RE above for why this exists and its limits.
+  if (ROMANIZED_ABUSE_RE.test(text || '')) reasons.push('possible_romanized_abuse');
 
   return {
     confidence,
@@ -440,7 +485,7 @@ const analyzeContent = async (text, options = {}) => {
 
     const finalGenericSentiment = finalSentiment;
     // The quality gate compares CLIENT-relative verdicts (Pass A vs Stage 4).
-    const quality = buildQualityGate({ llmResult, political, finalSentiment: political.target_sentiment || 'neutral' });
+    const quality = buildQualityGate({ llmResult, political, finalSentiment: political.target_sentiment || 'neutral', text });
     const currentCategory = llmResult.category;
 
     // --- RESULT CONSOLIDATION ---

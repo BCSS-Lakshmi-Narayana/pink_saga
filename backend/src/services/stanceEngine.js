@@ -52,6 +52,22 @@ const alignmentOf = (resolvedActor) => {
 };
 
 /**
+ * The display name for a resolved actor/target — never the bare roster key or
+ * the raw matched text. `.canonical` is usually already set by the resolver,
+ * but every call site here used to fall back straight to `.text` (what was
+ * literally typed — "kcr", "ktr", a bare @handle) whenever it wasn't. Roster
+ * lookup by key is the correct fallback: it is only the raw string when the
+ * entity genuinely isn't on the roster at all.
+ */
+const canonicalOf = (resolvedActor) => {
+    if (!resolvedActor) return '';
+    if (resolvedActor.canonical) return resolvedActor.canonical;
+    const key = resolveEntityKey(resolvedActor.key || resolvedActor.text);
+    const ent = key ? POLITICAL_ENTITIES[key] : null;
+    return (ent && ent.canonical) || resolvedActor.text || resolvedActor.key || '';
+};
+
+/**
  * Find an ally/opposition hit straight from the deterministic Stage 2 pre-scan.
  * Used when the LLM's actor extraction surfaced nobody resolvable — e.g. a
  * passing mention, or a joke where the entity is present in the text but the
@@ -182,7 +198,7 @@ const compute = ({
         const ctxSides = [...new Set((ctx?.mentioned_entities || []).map((e) => e.alignment).filter((a) => a === 'ally' || a === 'opposition'))];
         if (ctxSides.length === 1 && (tone === 'positive' || tone === 'negative')) {
             const named = ctx.mentioned_entities.find((e) => e.alignment === ctxSides[0]);
-            return applyMatrix(ctxSides[0], named.canonical || named.key, tone, 'context rule (one camp named)');
+            return applyMatrix(ctxSides[0], canonicalOf(named), tone, 'context rule (one camp named)');
         }
         return { stance: 'unrelated', beneficiary: 'none', attack_target: '', rationale: 'no actors/subjects' };
     }
@@ -264,7 +280,7 @@ const compute = ({
             if (otherHit) {
                 return applyMatrix(
                     otherSide,
-                    otherHit.canonical,
+                    canonicalOf(otherHit),
                     effectiveTone,
                     `author-is-target correction (author=${authorAlignment}, re-pointed to ${otherSide})`,
                 );
@@ -279,7 +295,7 @@ const compute = ({
             if (ctx.author_party && targetParty && ctx.author_party === targetParty) {
                 return applyMatrix(
                     targetSide,
-                    resolvedTarget.canonical || resolvedTarget.text,
+                    canonicalOf(resolvedTarget),
                     'neutral',
                     `author-is-target correction (author party ${ctx.author_party} = target party, no other camp named — neutral)`,
                 );
@@ -288,7 +304,7 @@ const compute = ({
 
         return applyMatrix(
             targetSide,
-            resolvedTarget.canonical || resolvedTarget.text,
+            canonicalOf(resolvedTarget),
             effectiveTone,
             `sentiment-target rule (${targetSide}${effectiveTone !== tone ? ', cross-camp prior applied' : ''})`,
         );
@@ -303,9 +319,9 @@ const compute = ({
      */
     const scoreHit = (side, hit, rule) => {
         if (tone === 'negative' && ctx && ctx.author_party && partyOf(hit) === ctx.author_party) {
-            return applyMatrix(side, hit.canonical || hit.text, 'neutral', `${rule} — author's own party with negative tone, target not placed — neutral`);
+            return applyMatrix(side, canonicalOf(hit), 'neutral', `${rule} — author's own party with negative tone, target not placed — neutral`);
         }
-        return applyMatrix(side, hit.canonical || hit.text, tone, rule);
+        return applyMatrix(side, canonicalOf(hit), tone, rule);
     };
 
     if (allyHit) {

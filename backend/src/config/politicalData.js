@@ -300,6 +300,17 @@ const _PARTY_ORG_RAW = [
         role: 'BRS Whip, Rajya Sabha; MP (Rajya Sabha, term to Jun 2028)',
         constituency: '', party: 'BRS', handles: [],
     },
+    {
+        // Role title not independently verified — added because he is a
+        // frequent, recognisable BRS spokesperson in the live mention stream
+        // (press meets at Telangana Bhavan, arrests over corruption-exposure
+        // press conferences) who was falling through entity resolution
+        // entirely, landing his mentions as unscored "unrelated" content.
+        id: 'manne-krishank', name: 'Manne Krishank', shortName: 'Krishank',
+        aliases: ['Manne Krishank', 'Krishank', 'మన్నె క్రిశాంక్', 'మన్నె కృశాంక్'],
+        role: 'BRS leader and spokesperson (exact office unverified)',
+        constituency: '', party: 'BRS', handles: ['Krishank_BRS'],
+    },
 ];
 
 // ─────────────────────────────────────────────────────────

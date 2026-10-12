@@ -220,6 +220,21 @@ const readConfidence = (raw, keys, fallback) => {
 };
 
 /**
+ * Display name for a resolved actor/target — roster canonical name first,
+ * never the bare matched text ("kcr", "ktr", a raw @handle) that a partially
+ * populated resolver object leaves in `.text`/`.key`. Mirrors stanceEngine's
+ * own `canonicalOf`; kept local since this module assembles the final
+ * `target_entity` field independently of the stance engine's internal calls.
+ */
+const canonicalOf = (resolvedActor) => {
+    if (!resolvedActor) return '';
+    if (resolvedActor.canonical) return resolvedActor.canonical;
+    const key = resolveEntityKey(resolvedActor.key || resolvedActor.text);
+    const ent = key ? POLITICAL_ENTITIES[key] : null;
+    return (ent && ent.canonical) || resolvedActor.text || resolvedActor.key || '';
+};
+
+/**
  * `scored` is the stance engine's result when one exists. A verdict scored on
  * a rostered entity is never "not relevant" (Stage 2 may simply have lacked an
  * alias for the name), and a clear, non-neutral verdict about either camp is
@@ -828,11 +843,11 @@ const analyzePoliticalSentiment = async (text, politicalContext, options = {}) =
                 // author-is-target re-point); else the extracted target; else
                 // the first resolved actor.
                 target_entity: stanceResult.scored_entity
-                    || (resolvedTarget && (resolvedTarget.canonical || resolvedTarget.text))
-                    || (resolvedActors[0] && (resolvedActors[0].canonical || resolvedActors[0].text))
+                    || canonicalOf(resolvedTarget)
+                    || canonicalOf(resolvedActors[0])
                     || String(ctx.primary_target || 'none'),
-                target_entity_canonical: (resolvedTarget && resolvedTarget.canonical)
-                    || (resolvedActors[0] && resolvedActors[0].canonical)
+                target_entity_canonical: canonicalOf(resolvedTarget)
+                    || canonicalOf(resolvedActors[0])
                     || ctx.primary_target_canonical || null,
                 relevance_score: clamp01(ctx.target_relevance),
                 stance: normalizeStance(stanceResult.stance),
