@@ -1162,6 +1162,18 @@ const upsertXGrievancesForSource = async (source, startDate = null, endDate = nu
     const complaintCodeFn = deps.complaintCodeFn || generateComplaintCode;
 
     const keywords = await getActiveKeywordsCached();
+    // Handle text, bare (no '@'), lower-case — a mention returned by
+    // searchMentionsFn(source.handle, ...) already names this handle, so
+    // requiring it to ALSO match the budget-gated keyword list (kept
+    // deliberately small — see seed_phase2_keywords.js — because every
+    // ACTIVE keyword costs paid API calls in the keyword-SEARCH fetch) was
+    // silently dropping valid mentions of any tracked handle whose own name
+    // isn't one of those keywords. "KTR"/"KCR" happen to be active, which is
+    // why @KTRBRS/@KCRBRSPresident were unaffected while @BRSparty,
+    // @BRSHarish and @revanth_anumula lost most of their volume to this.
+    // The handle check costs nothing extra (the text is already fetched),
+    // unlike widening the active keyword set.
+    const sourceHandle = String(source.handle || '').trim().replace(/^@+/, '').toLowerCase();
     const mentions = await searchMentionsFn(source.handle, 100, startDate, endDate);
     let newCount = 0;
 
@@ -1172,7 +1184,8 @@ const upsertXGrievancesForSource = async (source, startDate = null, endDate = nu
         const existing = await GrievanceModel.findOne({ tweet_id: mention.tweet_id });
         if (existing) continue;
 
-        if (!textMatchesAnyKeyword(mention.text, keywords)) {
+        const mentionsSourceHandle = sourceHandle && String(mention.text || '').toLowerCase().includes(sourceHandle);
+        if (!mentionsSourceHandle && !textMatchesAnyKeyword(mention.text, keywords)) {
             console.log(`[Grievance][X] Skipping tweet ${mention.tweet_id}: no keyword match in "${String(mention.text).substring(0, 80)}..."`);
             continue;
         }
