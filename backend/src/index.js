@@ -1,4 +1,14 @@
 require('dotenv').config();
+
+// Polyfill: axios's fetch-adapter path loads undici, which references the
+// global File class at module-load time. Node doesn't always expose it as a
+// global, so an unpolyfilled require crashes the whole process with
+// "ReferenceError: File is not defined".
+if (typeof globalThis.File === 'undefined') {
+    const { File } = require('node:buffer');
+    globalThis.File = File;
+}
+
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
