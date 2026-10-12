@@ -1,4 +1,3 @@
-const puppeteer = require('puppeteer');
 const Alert = require('../models/Alert');
 const Grievance = require('../models/Grievance');
 const { buildStanceClause, normalizeStanceFilter, GRIEVANCE_STANCE_PATHS } = require('../utils/stanceFilter');
@@ -913,6 +912,9 @@ function buildGrievancesHtml(data, filters) {
 // ─── PDF generation (shared Puppeteer utility) ─────────────────────────────────
 
 async function renderPdf(html) {
+  // Loaded lazily: the installed puppeteer version ships as ESM-only, which
+  // crashes a top-level require() at server boot with ERR_REQUIRE_ESM.
+  const { default: puppeteer } = await import('puppeteer');
   const browser = await puppeteer.launch({
     headless: 'new',
     args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
