@@ -54,6 +54,8 @@ import api from '../lib/api';
 import { APP_NAVIGATION } from '../config/navigation';
 import { useRbac } from '../contexts/RbacContext';
 import SocialChannelsView from '../components/social/SocialChannelsView';
+import ManifestoTrackerView from '../components/manifesto/ManifestoTrackerView';
+import { Card, Pill, Kpi } from '../components/brief/BriefParts';
 
 /* ── palette ───────────────────────────────────────────────────────────── */
 const POS = '#15803d';
@@ -173,40 +175,12 @@ const netColor = (v) => (v === null || v === undefined ? INK.mute
 
 /* ── primitives ────────────────────────────────────────────────────────── */
 
-const Card = ({ Icon, title, action, children, className = '' }) => (
-  <section className={`bg-white rounded-xl border border-slate-200 shadow-[0_1px_2px_rgba(16,24,40,0.04)] flex flex-col h-full ${className}`}>
-    {(title || action) && (
-      <header className="flex items-center justify-between gap-3 px-4 h-[48px] shrink-0 border-b border-slate-100">
-        <h3 className="text-[13.5px] font-semibold text-slate-900 flex items-center gap-2 truncate">
-          {Icon && <Icon className="h-4 w-4 text-slate-400 shrink-0" />}
-          {title}
-        </h3>
-        {action}
-      </header>
-    )}
-    <div className="p-4 flex-1 min-h-0">{children}</div>
-  </section>
-);
-
 const ViewAll = ({ to }) => (
   <Link to={to} className="text-[12px] font-medium text-indigo-600 hover:text-indigo-700 flex items-center gap-0.5 shrink-0">
     View All <ChevronRight className="h-3.5 w-3.5" />
   </Link>
 );
 
-const Pill = ({ tone, children }) => {
-  const map = {
-    positive: 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-    neutral: 'bg-amber-50 text-amber-800 ring-amber-200',
-    negative: 'bg-rose-50 text-rose-700 ring-rose-200',
-    muted: 'bg-slate-100 text-slate-600 ring-slate-200',
-  };
-  return (
-    <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-medium ring-1 whitespace-nowrap shrink-0 ${map[tone] || map.muted}`}>
-      {children}
-    </span>
-  );
-};
 const STANCE_TONE = { pro: 'positive', neutral: 'neutral', anti: 'negative', unrelated: 'muted' };
 const STANCE_WORD = { pro: 'Supportive', neutral: 'Neutral', anti: 'Opposing', unrelated: 'Unrelated' };
 /**
@@ -216,38 +190,6 @@ const STANCE_WORD = { pro: 'Supportive', neutral: 'Neutral', anti: 'Opposing', u
  * than passing the internal key through and silently filtering nothing.
  */
 const STANCE_PARAM = { pro: 'supportive', neutral: 'neutral', anti: 'opposing' };
-
-/**
- * Headline counter. The footer carries the source split, because the figure
- * above it is a total across streams and the reader needs to know what fed it.
- */
-const Kpi = ({ label, value, share, footer, color, bg, Icon, to }) => {
-  const Wrap = to ? Link : 'div';
-  const wrapProps = to ? { to } : {};
-  return (
-  <Wrap {...wrapProps}
-    className={`bg-white rounded-xl border border-slate-200 shadow-[0_1px_2px_rgba(16,24,40,0.04)] p-3.5 flex flex-col h-full ${
-      to ? 'hover:border-indigo-300 hover:shadow-[0_4px_12px_rgba(16,24,40,0.08)] transition-all group' : ''}`}>
-    <div className="flex items-center justify-between gap-2">
-      <span className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: bg }}>
-        <Icon className="h-4 w-4" style={{ color }} />
-      </span>
-      <div className="text-[12px] font-medium truncate text-right" style={{ color }}>{label}</div>
-    </div>
-    <div className="flex items-baseline gap-1.5 mt-2.5">
-      <span className="text-[26px] font-bold tracking-[-0.02em] text-slate-900 tabular-nums leading-none">
-        {value}
-      </span>
-      {share !== undefined && share !== null && (
-        <span className="text-[12px] text-slate-500 tabular-nums">({share}%)</span>
-      )}
-    </div>
-    <div className="mt-auto pt-2.5 h-[24px] flex items-center gap-2 text-[11px] text-slate-500 truncate">
-      {footer}
-    </div>
-  </Wrap>
-  );
-};
 
 /** One stream's composition: icon, label, segmented bar, headline figure. */
 /** Stance bar — counts always available, colour never alone. */
@@ -593,10 +535,11 @@ const MainTrendTip = ({ active, payload, label }) => {
 };
 
 /* ── page ──────────────────────────────────────────────────────────────── */
-/** The brief's two views. Both share the 7 / 30 / 90-day switch in the header. */
+/** The brief's views. All share the 7 / 30 / 90-day switch in the header. */
 const VIEWS = [
   { id: 'brief', label: 'Brief' },
   { id: 'social', label: 'Social & Channels' },
+  { id: 'manifesto', label: 'Manifesto tracker' },
 ];
 
 export default function CMDashboard() {
@@ -724,7 +667,7 @@ export default function CMDashboard() {
           ))}
         </nav>
 
-        {view === 'social' ? <SocialChannelsView days={days} /> : briefPending || (<>
+        {view === 'social' ? <SocialChannelsView days={days} /> : view === 'manifesto' ? <ManifestoTrackerView days={days} /> : briefPending || (<>
         {/* ── A · SIGNALS (all three streams) ───────────────────────────── */}
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3.5 items-stretch">
           <Kpi label="Took a side" value={n(comb?.total)} Icon={Megaphone} color="#2563eb" bg="#eff6ff"

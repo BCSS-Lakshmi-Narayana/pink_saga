@@ -113,6 +113,7 @@ app.use('/api/cm-dashboard', require('./routes/cmDashboardRoutes'));
 app.use('/api/voter-profiles', require('./routes/voterProfileRoutes'));
 app.use('/api/electoral-base', require('./routes/electoralBaseRoutes'));
 app.use('/api/social-channels', require('./routes/socialChannelsRoutes'));
+app.use('/api/manifesto', require('./routes/manifestoRoutes'));
 app.use('/api/booth-imports', require('./routes/boothImportRoutes'));
 app.use('/api/web-articles', require('./routes/webArticleRoutes'));
 app.use('/api/youtube-live', require('./routes/youtubeLiveRoutes'));
@@ -821,6 +822,8 @@ const startServer = async () => {
 
     // ─── Warm caches in the background, after the port is open ───
     console.log('[Server] Warming caches in background (requests are already being served)...');
+    // Manifesto tracker: read new posts about tracked schemes in the background (MANIFESTO_CLAIMS_ENABLED=false to stop).
+    require('./services/schemeClaimService').start();
     warmGatedAlertIdsCache()
       .then(() => warmProfilesCache())
       // Intelligence Brief: Social & Channels posts, then the brief itself (7 → 30 → 90 days).
