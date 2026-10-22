@@ -6,6 +6,9 @@ import { STATE_MLAS, getMlaByConstituency, canonicalDistrictName } from '../../.
 import { BRAND } from '../../../config/partyMedia';
 import { getMpByLsId, getMpByLsName } from '../../../data/stateMPs';
 import { PARTY_ORDER, partyStyle } from '../../../config/partyColors';
+import { useElectoralSeats } from '../../../hooks/useElectoralBase';
+import { loyaltyBand, LOYALTY_BANDS, seatKey, partyAsOf } from '../../../config/electoralBase';
+import ElectoralAnalysisModal from '../../electoral/ElectoralAnalysisModal';
 
 const DISTRICT_SOURCES = [
   '/state_districts.geojson',
@@ -89,9 +92,40 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
   const [districtGeo, setDistrictGeo] = useState(null);
   const [acGeo, setAcGeo] = useState(null);
   const [viewLevel, setViewLevel] = useState('ac'); // 'district' | 'ac'
-  const [viewMode, setViewMode] = useState('sentiment'); // 'sentiment' | 'volume' | 'engagement' | 'party'
+  const [viewMode, setViewMode] = useState('sentiment'); // 'sentiment' | 'volume' | 'engagement' | 'party' | 'brs'
   const [searchQuery, setSearchQuery] = useState('');
   const [hovered, setHovered] = useState(null);
+  const [hoveredAc, setHoveredAc] = useState(null);
+  const [analysisSeat, setAnalysisSeat] = useState(null);
+  const [tableOpen, setTableOpen] = useState(false);
+
+  // "BRS wins" view: in how many of its six MLA and MP elections (2014–2024)
+  // BRS won each seat. Joined on the assembly-constituency NUMBER carried by
+  // the boundary file, not the name, so spelling variants cannot miss.
+  const { seats: electoralSeats } = useElectoralSeats({ enabled: viewMode === 'brs' });
+  const brs = useMemo(() => {
+    const byAc = new Map();
+    const byKey = new Map();
+    const byDistrict = new Map();
+    for (const s of electoralSeats) {
+      byAc.set(Number(s.ac_number), s);
+      byKey.set(s.key, s);
+      const d = normalizeDistrictKey(s.district);
+      if (!byDistrict.has(d)) byDistrict.set(d, []);
+      byDistrict.get(d).push(s);
+    }
+    return { byAc, byKey, byDistrict };
+  }, [electoralSeats]);
+  const brsSeat = (name, acNo) => brs.byAc.get(Number(acNo)) || brs.byKey.get(seatKey(name)) || null;
+  /** District: average BRS wins per seat (out of 6) shades it; tooltip lists each election. */
+  const brsDistrict = (name) => {
+    const list = brs.byDistrict.get(normalizeDistrictKey(name));
+    if (!list || !list.length) return null;
+    const avg = list.reduce((t, x) => t + x.brs_wins, 0) / list.length;
+    const labels = list[0].timeline.filter((t) => !t.bypoll).map((t) => t.label);
+    const perElection = labels.map((label) => ({ label, won: list.filter((x) => x.timeline.find((t) => t.label === label)?.brs_won).length }));
+    return { list, perElection, avg: Math.round(avg * 10) / 10, shade: Math.round(avg) };
+  };
   const [tooltip, setTooltip] = useState({ x: 0, y: 0 });
   const [loadingGeo, setLoadingGeo] = useState(true);
 
@@ -182,7 +216,15 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
     return `${x0 - pad} ${y0 - pad} ${x1 - x0 + 2 * pad} ${y1 - y0 + 2 * pad}`;
   }, [path, geojson]);
   // Color matching formulas based on view modes
-  const getFillColor = useCallback((name, stats) => {
+  const getFillColor = useCallback((name, stats, acNo) => {
+    if (viewMode === 'brs') {
+      if (viewLevel === 'district') {
+        const d = brsDistrict(name);
+        return d ? loyaltyBand(d.shade).hex : '#cbd5e1';
+      }
+      const s = brsSeat(name, acNo);
+      return s ? loyaltyBand(s.brs_wins).hex : '#cbd5e1';
+    }
     if (viewMode === 'party') {
       if (viewLevel === 'district') {
         return getPartyFill(getDistrictParty(name));
@@ -216,11 +258,12 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
     }
 
     return '#e2e8f0';
-  }, [viewMode, viewLevel]);
+  }, [viewMode, viewLevel, brs]);
 
   // Map mouse handlers
-  const handleMouseMove = (e, name) => {
+  const handleMouseMove = (e, name, acNo) => {
     setHovered(name);
+    setHoveredAc(acNo ?? null);
     setTooltip({ x: e.clientX, y: e.clientY });
   };
 
@@ -338,7 +381,7 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
 
         {/* View Mode Select */}
         <div className="flex rounded-md overflow-hidden border border-slate-200 text-[11px] ml-auto">
-          {['sentiment', 'volume', 'engagement', 'party'].map((mode) => (
+          {['sentiment', 'volume', 'engagement', 'party', 'brs'].map((mode) => (
             <button
               key={mode}
               onClick={() => setViewMode(mode)}
@@ -348,7 +391,7 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
                   : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-200'
               }`}
             >
-              <span className="capitalize">{mode}</span>
+              <span className={mode === 'brs' ? '' : 'capitalize'}>{mode === 'brs' ? 'BRS wins' : mode}</span>
             </button>
           ))}
         </div>
@@ -411,7 +454,8 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
               : mapData?.districts?.[normalizeDistrictKey(name)] || mapData?.districts?.[lowerName];
 
             const isHovered = hovered === name;
-            const fill = getFillColor(name, stats);
+            const acNo = feature.properties?.AC_NO;
+            const fill = getFillColor(name, stats, acNo);
 
             return (
               <path
@@ -422,9 +466,14 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
                 strokeWidth={viewLevel === 'district' ? 1.4 : 0.8}
                 className="transition-colors duration-100 ease-out cursor-pointer"
                 vectorEffect="non-scaling-stroke"
-                onMouseMove={(e) => { if (!isPanning) handleMouseMove(e, name); }}
+                onMouseMove={(e) => { if (!isPanning) handleMouseMove(e, name, acNo); }}
                 onMouseLeave={handleMouseLeave}
-                onClick={() => { if (!dragRef.current.moved) onConstituencyClick(name); }}
+                onClick={() => {
+                  if (dragRef.current.moved) return;
+                  // Loyalty view: a seat opens its electoral analysis in place.
+                  if (viewMode === 'brs' && viewLevel === 'ac') { setHovered(null); setAnalysisSeat(name); return; }
+                  onConstituencyClick(name);
+                }}
               />
             );
           })}
@@ -435,11 +484,26 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
           <div className="font-bold text-slate-700 mb-1 uppercase tracking-wide">
             {viewMode === 'sentiment' ? 'Sentiment View' :
              viewMode === 'volume' ? 'Mention Volume' :
-             viewMode === 'engagement' ? 'Total Engagement' : 'winning party'}
+             viewMode === 'engagement' ? 'Total Engagement' :
+             viewMode === 'brs' ? `BRS wins, MLA + MP 2014–24${viewLevel === 'district' ? ' · district avg' : ''}` : 'winning party'}
           </div>
 
           <div className="space-y-0.5">
-            {viewMode !== 'party' && (
+            {viewMode === 'brs' && (
+              <>
+                {LOYALTY_BANDS.map((b) => (
+                  <div key={b.label} className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded shrink-0 border border-slate-300/60" style={{ background: b.hex }} />{b.label}
+                  </div>
+                ))}
+                <button type="button" onClick={() => setTableOpen(true)}
+                  className="mt-1.5 w-full rounded-md bg-pink-600 text-white text-[10px] font-semibold py-1 hover:bg-pink-700">
+                  Electoral analysis
+                </button>
+                <div className="text-[8px] text-slate-400 pt-1 border-t border-slate-100 mt-1">MLA 2014 · 2018 · 2023, MP 2014 · 2019 · 2024 · ECI / TCPD</div>
+              </>
+            )}
+            {viewMode !== 'party' && viewMode !== 'brs' && (
               <div className="flex items-center gap-1.5 border-b border-slate-100 pb-1 mb-1 text-slate-500">
                 <span className="w-2.5 h-2.5 rounded bg-[#cbd5e1]" />
                 <span>No Data</span>
@@ -522,6 +586,44 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
 
             const mla = viewLevel === 'ac' ? getMlaByConstituency(hovered) : null;
 
+            if (viewMode === 'brs') {
+              if (viewLevel === 'district') {
+                const d = brsDistrict(hovered);
+                if (!d) return <div className="text-slate-500">No result data</div>;
+                return (
+                  <div className="space-y-0.5 text-slate-600 min-w-[190px]">
+                    <div className="font-semibold text-slate-800">{d.list.length} seats · BRS seats won per election</div>
+                    {d.perElection.map((p) => (
+                      <div key={p.label} className="flex justify-between gap-3"><span>{p.label}</span><span className="font-semibold text-slate-800">{p.won} of {d.list.length}</span></div>
+                    ))}
+                  </div>
+                );
+              }
+              const s = brsSeat(hovered, hoveredAc);
+              if (!s) return <div className="text-slate-500">No result data</div>;
+              return (
+                <div className="space-y-0.5 text-slate-600 min-w-[200px]">
+                  <div className="font-semibold text-slate-800">BRS (TRS) won or led in {s.brs_wins} of {s.elections_counted}</div>
+                  {s.timeline.map((t) => {
+                    const area = t.level === 'assembly_area';
+                    const who = partyAsOf(t.winner_party, t.poll_date);
+                    return (
+                      <div key={t.id} className="flex justify-between gap-3">
+                        <span>{t.label}{area ? ' (area)' : t.level === 'lok_sabha_seat' ? '*' : ''}</span>
+                        <span className={t.brs_won ? 'text-emerald-700 font-semibold' : 'text-rose-700 font-semibold'}>
+                          {who} {area ? 'led' : 'won'}
+                          {area && t.seat_winner_party && t.seat_winner_party !== t.winner_party
+                            ? <span className="text-slate-400 font-normal"> · seat: {partyAsOf(t.seat_winner_party, t.poll_date)}</span> : null}
+                        </span>
+                      </div>
+                    );
+                  })}
+                  <div className="text-[9px] text-slate-400">*whole Lok Sabha seat · TRS renamed BRS Dec 2022</div>
+                  <div className="text-[10px] text-pink-700 font-medium pt-1">Click for full results</div>
+                </div>
+              );
+            }
+
             return (
               <div className="space-y-1 text-slate-600">
                 {mla && (
@@ -544,6 +646,14 @@ const APMap = ({ mapData, loading: statsLoading, onConstituencyClick, filters })
           })()}
         </div>
       )}
+
+      {/* One Electoral analysis window: a clicked seat opens on that seat, the
+          legend button opens on the statewide view. */}
+      <ElectoralAnalysisModal
+        open={!!analysisSeat || tableOpen}
+        onOpenChange={(o) => { if (!o) { setAnalysisSeat(null); setTableOpen(false); } }}
+        constituency={analysisSeat}
+      />
     </Card>
   );
 };

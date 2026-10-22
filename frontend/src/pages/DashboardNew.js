@@ -20,6 +20,7 @@ const ManagedRibbonWidget = lazy(() => import('../components/dashboard/ManagedRi
 
 import StateMap from './StateMap';
 import { PARTY_ORDER, partyStyle } from '../config/partyColors';
+import ElectoralAnalysisModal from '../components/electoral/ElectoralAnalysisModal';
 
 // Platform configurations
 const PLATFORMS = [
@@ -440,6 +441,8 @@ const Dashboard = () => {
   // Free-text filter over the leaderboard — matches MLA name or seat, so a
   // seat can be found without paging through all 90 rows to reach it.
   const [mlaQuery, setMlaQuery] = useState('');
+  // The seat whose electoral analysis window is open.
+  const [analysisSeat, setAnalysisSeat] = useState(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -712,6 +715,14 @@ const Dashboard = () => {
                             <div className="bg-red-500" style={{ width: `${negPct}%` }} />
                           </div>
                         </div>
+                        <button
+                          type="button"
+                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); setAnalysisSeat(r.constituency); }}
+                          className="shrink-0 inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-600 hover:border-pink-300 hover:text-pink-700 hover:bg-pink-50 transition-colors"
+                          title="Election results for this seat"
+                        >
+                          Analysis
+                        </button>
                         <div className="text-right shrink-0">
                           <div className="flex items-center justify-end gap-1 text-emerald-700 text-sm font-bold tabular-nums">
                             {r.sentiment_index >= 0 ? (
@@ -779,6 +790,12 @@ const Dashboard = () => {
           </div>
         </Card>
       </div>
+
+      <ElectoralAnalysisModal
+        open={!!analysisSeat}
+        onOpenChange={(o) => { if (!o) setAnalysisSeat(null); }}
+        constituency={analysisSeat}
+      />
 
       {/* Combined Analytics & Alerts Grid */}
       <TooltipProvider>

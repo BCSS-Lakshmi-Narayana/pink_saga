@@ -1,0 +1,58 @@
+{
+  "_purpose": "What each main party promised for the 2023 Telangana Assembly election, as reported at release. Amounts are quoted as published.",
+  "_retrieved": "2026-10-21",
+  "parties": [
+    {
+      "party": "INC",
+      "title": "Six Guarantees",
+      "released": "2023-09-17",
+      "released_by": "Sonia Gandhi, Tukkuguda (Hyderabad)",
+      "promises": [
+        { "area": "Women", "scheme": "Mahalakshmi", "promise": "Rs 2,500 a month to women; LPG cylinder for Rs 500; free travel in TSRTC buses" },
+        { "area": "Farmers", "scheme": "Rythu Bharosa", "promise": "Rs 15,000 per acre a year to farmers and tenant farmers; Rs 12,000 a year to agricultural labourers; Rs 500 per quintal bonus on paddy above MSP" },
+        { "area": "Housing", "scheme": "Indiramma Indlu", "promise": "A house site and Rs 5 lakh for house construction for the homeless; 250 sq. yd plots for families of Telangana movement martyrs" },
+        { "area": "Power", "scheme": "Gruha Jyothi", "promise": "200 units of free electricity for every household" },
+        { "area": "Youth", "scheme": "Yuva Vikasam", "promise": "Vidya Bharosa card worth Rs 5 lakh for higher education; a Telangana International School in every mandal" },
+        { "area": "Pensions & health", "scheme": "Cheyutha", "promise": "Rs 4,000 monthly pension for the elderly, widows and other eligible groups; Rs 10 lakh Rajiv Arogyasri health cover" }
+      ],
+      "sources": [
+        { "publisher": "Hindustan Times", "date": "2023-09-17", "title": "Congress unveils six guarantees for poll-bound Telangana", "url": "https://www.hindustantimes.com/india-news/congress-unveils-six-guarantees-for-poll-bound-telangana-101694974676273.html" },
+        { "publisher": "India Today", "date": "2023-09-17", "title": "LPG cylinder for Rs 500, free bus travel: 6 guarantees by Congress in Telangana", "url": "https://www.indiatoday.in/elections/telangana-assembly-polls-2023/story/lpg-cylinder-for-rs-500-free-bus-travel-6-guarantees-by-congress-in-telangana-2436939-2023-09-17" }
+      ]
+    },
+    {
+      "party": "BJP",
+      "title": "Sakala Janula Saubhagya Telangana",
+      "released": "2023-11-18",
+      "released_by": "Amit Shah, Hyderabad",
+      "promises": [
+        { "area": "Households", "scheme": "Ujjwala", "promise": "Four free LPG cylinders a year for Ujjwala beneficiaries" },
+        { "area": "Girls", "scheme": "Aada Bidda Bharosa", "promise": "A fixed deposit at birth for every girl child, redeemable for Rs 2 lakh at 21" },
+        { "area": "Education & jobs", "scheme": null, "promise": "Free laptops for girl college students; 10 lakh jobs for women" },
+        { "area": "Governance", "scheme": null, "promise": "Committee under a retired Supreme Court judge to investigate the previous government's corruption cases" },
+        { "area": "Legislation", "scheme": null, "promise": "Uniform Civil Code; end religion-based reservations" }
+      ],
+      "sources": [
+        { "publisher": "The Hindu", "date": "2023-11-18", "title": "BJP's manifesto for Telangana dodges anti-freebies policy, promises several sops", "url": "https://www.thehindu.com/elections/telangana-assembly/bjps-manifesto-for-telangana-dodges-anti-freebies-policy-promises-several-sops/article67548286.ece" }
+      ]
+    },
+    {
+      "party": "BRS",
+      "title": "BRS manifesto 2023",
+      "released": "2023-10-15",
+      "released_by": "K. Chandrashekar Rao, Telangana Bhavan",
+      "promises": [
+        { "area": "Pensions", "scheme": "Aasara", "promise": "Social security pension raised from Rs 2,016 to Rs 3,016 in year one, rising to Rs 5,000 over five years" },
+        { "area": "Farmers", "scheme": "Rythu Bandhu", "promise": "Rs 10,000 per acre a year, rising to Rs 16,000 over five years" },
+        { "area": "Households", "scheme": null, "promise": "LPG cylinder for Rs 400 for eligible families" },
+        { "area": "Health", "scheme": "Aarogyasri", "promise": "Health cover raised from Rs 5 lakh to Rs 15 lakh" },
+        { "area": "Food", "scheme": null, "promise": "Fine rice through ration shops" },
+        { "area": "Women", "scheme": "Sowbhagya Lakshmi", "promise": "Rs 3,000 monthly honorarium for eligible poor women" }
+      ],
+      "sources": [
+        { "publisher": "The Hindu", "date": "2023-10-15", "title": "BRS promises monthly honorarium of Rs 3,000 for women, superfine rice supply through PDS in manifesto", "url": "https://www.thehindu.com/elections/telangana-assembly/brs-chief-kcr-releases-the-partys-manifesto-for-telangana-assembly-elections-2023/article67423344.ece" },
+        { "publisher": "Deccan Chronicle", "date": "2023-10-16", "title": "KCR Releases BRS Manifesto For Telangana Assembly Elections at Telangana Bhavan", "url": "https://www.deccanchronicle.com/nation/politics/151023/kcr-releases-brs-manifesto-for-telangana-assembly-elections-at-pragath.html" }
+      ]
+    }
+  ]
+}

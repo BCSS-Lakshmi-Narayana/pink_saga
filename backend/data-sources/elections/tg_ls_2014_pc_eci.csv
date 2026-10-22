@@ -1,0 +1,283 @@
+__pc,id,year,state_name,pc_name,total_electors,candidate_name,gender,age,category,party_name,party_symbol,votes_secured_general,votes_secured_postal,pct_votes_of_total_electors,pct_votes_of_total_polled
+adilabad,13520,2014,Andhra Pradesh,Adilabad,1386282,Banka Sahadev,Male,53,Scheduled Tribe,Independent,Gas Cylinder,4780,7,0.35,0.45
+adilabad,13521,2014,Andhra Pradesh,Adilabad,1386282,Godam Nagesh,Male,49,Scheduled Tribe,Telangana Rashtra Samithi,Car,425762,5085,31.08,40.82
+adilabad,13522,2014,Andhra Pradesh,Adilabad,1386282,Mosali Chinnaiah,Male,40,Scheduled Tribe,Independent,Almirah,8842,17,0.64,0.84
+adilabad,13523,2014,Andhra Pradesh,Adilabad,1386282,Naresh,Male,37,Scheduled Tribe,Indian National Congress,Hand,257994,1563,18.72,24.59
+adilabad,13524,2014,Andhra Pradesh,Adilabad,1386282,Nethawath Ramdas,Male,44,Scheduled Tribe,Independent,Auto- Rickshaw,41028,4,2.96,3.89
+adilabad,13525,2014,Andhra Pradesh,Adilabad,1386282,None Of The Above,,,,None Of The Above,Nota,17021,63,1.23,1.62
+adilabad,13526,2014,Andhra Pradesh,Adilabad,1386282,Pawar Krishna,Male,33,Scheduled Tribe,Independent,Bat,5051,4,0.36,0.48
+adilabad,13527,2014,Andhra Pradesh,Adilabad,1386282,Ramesh Rathod,Male,48,Scheduled Tribe,Telugu Desam,Bicycle,182879,1319,13.29,17.45
+adilabad,13528,2014,Andhra Pradesh,Adilabad,1386282,Rathod Sadashiv,Male,55,Scheduled Tribe,Bahujan Samaj Party,Elephant,94363,57,6.81,8.95
+bhongir,13594,2014,Andhra Pradesh,Bhongir,1492240,Arvapally Ambati,Male,34,General,Bahujan Samaj Party,Elephant,9023,6,0.61,0.74
+bhongir,13595,2014,Andhra Pradesh,Bhongir,1492240,Boilla Narender,Male,32,Scheduled Caste,Republican Party Of India (A),Sewing Machine,6846,1,0.46,0.56
+bhongir,13596,2014,Andhra Pradesh,Bhongir,1492240,Cherupally Seetharamulu,Male,60,General,Communist Party Of India  (Marxist),"Hammer, Sickle And Star",53973,62,3.62,4.46
+bhongir,13597,2014,Andhra Pradesh,Bhongir,1492240,Dr. Boora Narsaiah Goud,Male,55,General,Telangana Rashtra Samithi,Car,446822,1342,30.03,36.96
+bhongir,13598,2014,Andhra Pradesh,Bhongir,1492240,Guahati Mothilal,Male,45,General,All India Majlis-E-Ittehadul Muslimeen,Kite,2598,2,0.17,0.21
+bhongir,13599,2014,Andhra Pradesh,Bhongir,1492240,Guduru Janardhan Reddy,Male,41,General,Jai Samaikyandhra Party,Chappals,2342,0,0.16,0.19
+bhongir,13600,2014,Andhra Pradesh,Bhongir,1492240,Indrasena Reddy Nallu,Male,64,General,Bharatiya Janata Party,Lotus,182849,400,12.28,15.11
+bhongir,13601,2014,Andhra Pradesh,Bhongir,1492240,Kapilavai Dileep Kumar,Male,60,General,Rashtriya Lok Dal,Hand Pump,5550,1,0.37,0.46
+bhongir,13602,2014,Andhra Pradesh,Bhongir,1492240,Komatireddy Rajgopal Reddy,Male,46,General,Indian National Congress,Hand,416240,1380,27.99,34.44
+bhongir,13603,2014,Andhra Pradesh,Bhongir,1492240,Nagula Srinivas Yadav,Male,44,General,Mahajana Socialist Party,Scissors,1852,6,0.12,0.15
+bhongir,13604,2014,Andhra Pradesh,Bhongir,1492240,Navulla Malla Reddy,Male,42,General,Independent,Coconut,26805,0,1.8,2.21
+bhongir,13605,2014,Andhra Pradesh,Bhongir,1492240,None Of The Above,,,,None Of The Above,Nota,10869,38,0.73,0.9
+bhongir,13606,2014,Andhra Pradesh,Bhongir,1492240,Ravulapally Kondal Rao,Male,60,General,Independent,Television,7720,1,0.52,0.64
+bhongir,13607,2014,Andhra Pradesh,Bhongir,1492240,Varikuppala Krishna Vaddera,Male,45,General,Independent,Auto- Rickshaw,35004,0,2.35,2.89
+chevella,13608,2014,Andhra Pradesh,Chelvella,2185164,Chan Pasha,Male,37,General,Akhil Bharatiya Muslim League (Secular),Kite,56832,3,2.6,4.3
+chevella,13609,2014,Andhra Pradesh,Chelvella,2185164,Dr. P. Sadhu Satyanadhan,Male,61,General,Indian Christian Secular Party,Trumpet,2487,58,0.12,0.19
+chevella,13610,2014,Andhra Pradesh,Chelvella,2185164,Dr.Golla Ramaiah,Male,73,General,Telangana Loksatta Party,Gas Cylinder,1737,28,0.08,0.13
+chevella,13611,2014,Andhra Pradesh,Chelvella,2185164,G.Mallesham Goud,Male,38,General,Independent,Auto- Rickshaw,24650,10,1.13,1.86
+chevella,13612,2014,Andhra Pradesh,Chelvella,2185164,Konda Raghava Reddy,Male,54,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,40069,66,1.84,3.04
+chevella,13613,2014,Andhra Pradesh,Chelvella,2185164,Konda Vishweshwar Reddy,Male,54,General,Telangana Rashtra Samithi,Car,431084,3993,19.91,32.9
+chevella,13614,2014,Andhra Pradesh,Chelvella,2185164,Kummari Giri,Male,33,General,Pyramid Party Of India,Television,5787,2,0.26,0.44
+chevella,13615,2014,Andhra Pradesh,Chelvella,2185164,Md Yunus Miya,Male,70,General,Marxist Communist Party Of India (United),Carrom Board,2901,3,0.13,0.22
+chevella,13616,2014,Andhra Pradesh,Chelvella,2185164,None Of The Above,,,,None Of The Above,Nota,9989,29,0.46,0.76
+chevella,13617,2014,Andhra Pradesh,Chelvella,2185164,Patlolla Kartik Reddy,Male,34,General,Indian National Congress,Hand,360834,1220,16.57,27.38
+chevella,13618,2014,Andhra Pradesh,Chelvella,2185164,Regatte Venkat Reddy,Male,54,General,Aam Aadmi Party,Broom,7433,29,0.34,0.56
+chevella,13619,2014,Andhra Pradesh,Chelvella,2185164,Samala Ravindar,Male,46,General,Bahujan Samaj Party,Elephant,7713,19,0.35,0.58
+chevella,13620,2014,Andhra Pradesh,Chelvella,2185164,Sanike Ram Gopal Yadav,Male,47,General,Independent,Ring,2056,2,0.09,0.16
+chevella,13621,2014,Andhra Pradesh,Chelvella,2185164,Sutharapu Padmaiah,Male,61,General,Andhra Pradesh Rashtra Samaikya Samithi Party,Batsman,2211,3,0.1,0.17
+chevella,13622,2014,Andhra Pradesh,Chelvella,2185164,Syed Hashmathullah Quadri,Male,45,General,Indian Union Muslim League,Ladder,1399,12,0.06,0.11
+chevella,13623,2014,Andhra Pradesh,Chelvella,2185164,Tulla Veerender,Male,31,General,Telugu Desam,Bicycle,352227,976,16.16,26.71
+hyderabad,13674,2014,Andhra Pradesh,Hyderabad,1823217,Asaduddin Owaisi,Male,43,General,All India Majlis-E-Ittehadul Muslimeen,Kite,513777,91,28.18,52.88
+hyderabad,13675,2014,Andhra Pradesh,Hyderabad,1823217,Binghi Rajashekar,Male,38,General,Pyramid Party Of India,Television,21796,0,1.2,2.24
+hyderabad,13676,2014,Andhra Pradesh,Hyderabad,1823217,Boddu Sainath Reddy,Male,36,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,10735,8,0.59,1.11
+hyderabad,13677,2014,Andhra Pradesh,Hyderabad,1823217,Dr.Bhagavanth Rao,Male,61,General,Bharatiya Janata Party,Lotus,311336,78,17.08,32.05
+hyderabad,13678,2014,Andhra Pradesh,Hyderabad,1823217,Jaya Vindhyala,Female,49,General,Socialist Party (India),Battery Torch,598,0,0.03,0.06
+hyderabad,13679,2014,Andhra Pradesh,Hyderabad,1823217,Lubna Sarwath,Female,49,General,Aam Aadmi Party,Broom,6118,0,0.34,0.63
+hyderabad,13680,2014,Andhra Pradesh,Hyderabad,1823217,M A Habeeb,Male,37,General,Independent,Carrom Board,5992,0,0.33,0.62
+hyderabad,13681,2014,Andhra Pradesh,Hyderabad,1823217,Md Osman,Male,52,General,Independent,Belt,728,0,0.04,0.07
+hyderabad,13682,2014,Andhra Pradesh,Hyderabad,1823217,N.Mahender Singh,Male,49,General,Nava Bharat National Party,Dao,485,0,0.03,0.05
+hyderabad,13683,2014,Andhra Pradesh,Hyderabad,1823217,None Of The Above,,,,None Of The Above,Nota,5011,2,0.27,0.52
+hyderabad,13684,2014,Andhra Pradesh,Hyderabad,1823217,Rashid Shareef,Male,53,General,Telangana Rashtra Samithi,Car,37190,5,2.04,3.83
+hyderabad,13685,2014,Andhra Pradesh,Hyderabad,1823217,S Krishna Reddy,Male,51,General,Indian National Congress,Hand,49301,9,2.7,5.07
+hyderabad,13686,2014,Andhra Pradesh,Hyderabad,1823217,S.Khaja Moinuddin,Male,45,General,All India Azaad Congress Party,Batsman,1592,1,0.09,0.16
+hyderabad,13687,2014,Andhra Pradesh,Hyderabad,1823217,Shaik Moin,Male,46,General,Independent,Candles,626,0,0.03,0.06
+hyderabad,13688,2014,Andhra Pradesh,Hyderabad,1823217,Syed Abdul Gaffer,Male,56,General,Independent,Gas Cylinder,740,0,0.04,0.08
+hyderabad,13689,2014,Andhra Pradesh,Hyderabad,1823217,Syed Mustafa Mahmood,Male,45,General,Majlis Bachao Tahreek,Bat,2101,1,0.12,0.22
+hyderabad,13690,2014,Andhra Pradesh,Hyderabad,1823217,Venu Gopal.P,Male,30,Scheduled Caste,Bahujan Samaj Party,Elephant,3100,0,0.17,0.32
+karimnagar,13729,2014,Andhra Pradesh,Karimnagar,1550810,B. Laxman,Male,53,Scheduled Caste,Bahujan Samaj Party,Elephant,11289,39,0.73,1
+karimnagar,13730,2014,Andhra Pradesh,Karimnagar,1550810,Burla. Ravi,Male,42,General,Nationalist Congress Party,Clock,4768,1,0.31,0.42
+karimnagar,13731,2014,Andhra Pradesh,Karimnagar,1550810,Chennamaneni Vidya Sagar Rao,Male,73,General,Bharatiya Janata Party,Lotus,213836,992,13.85,19.06
+karimnagar,13732,2014,Andhra Pradesh,Karimnagar,1550810,Dr.Dharmaiah Vendavetla,Male,61,Scheduled Caste,Bahujan Mukti Party,Cot,3771,1,0.24,0.33
+karimnagar,13733,2014,Andhra Pradesh,Karimnagar,1550810,Kandem Prabhakar,Male,45,General,Independent,Gas Stove,4727,1,0.3,0.42
+karimnagar,13734,2014,Andhra Pradesh,Karimnagar,1550810,L. Prabhakar Reddy,Male,48,General,Pyramid Party Of India,Television,3942,1,0.25,0.35
+karimnagar,13735,2014,Andhra Pradesh,Karimnagar,1550810,Mallesh Yadav Barla,Male,26,General,Independent,Coconut,2757,0,0.18,0.24
+karimnagar,13736,2014,Andhra Pradesh,Karimnagar,1550810,Meesala Raji Reddy,Male,44,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,3071,4,0.2,0.27
+karimnagar,13737,2014,Andhra Pradesh,Karimnagar,1550810,Mohammed Amjad Mohiuddin,Male,45,General,Independent,Kite,6713,0,0.43,0.6
+karimnagar,13738,2014,Andhra Pradesh,Karimnagar,1550810,None Of The Above,,,,None Of The Above,Nota,5722,12,0.37,0.51
+karimnagar,13739,2014,Andhra Pradesh,Karimnagar,1550810,Ponnam Prabhakar,Male,47,General,Indian National Congress,Hand,298386,2320,19.39,26.68
+karimnagar,13740,2014,Andhra Pradesh,Karimnagar,1550810,Pulikota Ramesh,Male,34,Scheduled Caste,Independent,Battery Torch,1772,1,0.11,0.16
+karimnagar,13741,2014,Andhra Pradesh,Karimnagar,1550810,Ranaveni Lakshman,Male,41,General,New India Party,Cup & Saucer,2061,1,0.13,0.18
+karimnagar,13742,2014,Andhra Pradesh,Karimnagar,1550810,Reddi Malla Srinivas,Male,46,Scheduled Caste,Republican Party Of India (A),Sewing Machine,8033,1,0.52,0.71
+karimnagar,13743,2014,Andhra Pradesh,Karimnagar,1550810,Shaik Mahmood,Male,58,General,Welfare Party Of India,Auto- Rickshaw,39300,8,2.53,3.49
+karimnagar,13744,2014,Andhra Pradesh,Karimnagar,1550810,Srinivas Reddy Lingampally,Male,41,General,Independent,Carrom Board,3851,0,0.25,0.34
+karimnagar,13745,2014,Andhra Pradesh,Karimnagar,1550810,Uppuleti.Laxman,Male,49,Scheduled Caste,Independent,Bat,2445,0,0.16,0.22
+karimnagar,13746,2014,Andhra Pradesh,Karimnagar,1550810,Vinod Kumar Boinapally,Male,54,General,Telangana Rashtra Samithi,Car,503197,2161,32.59,44.83
+khammam,13747,2014,Andhra Pradesh,Khammam,1440267,Bachala Laxmaiah,Male,55,Scheduled Tribe,Independent,Electric Pole,6506,0,0.45,0.55
+khammam,13748,2014,Andhra Pradesh,Khammam,1440267,Banoth Kishan Nayak,Male,33,Scheduled Tribe,Independent,Dolli,1617,0,0.11,0.14
+khammam,13749,2014,Andhra Pradesh,Khammam,1440267,Banoth Laxma Naik,Male,57,Scheduled Tribe,Independent,Table,1342,0,0.09,0.11
+khammam,13750,2014,Andhra Pradesh,Khammam,1440267,Budan Baig Shaik,Male,53,General,Telangana Rashtra Samithi,Car,88944,180,6.19,7.5
+khammam,13751,2014,Andhra Pradesh,Khammam,1440267,Busireddy Shankar Reddy,Male,53,General,Independent,Pot,964,0,0.07,0.08
+khammam,13752,2014,Andhra Pradesh,Khammam,1440267,Dodda Ram Babu,Male,48,General,Bahujan Samaj Party,Elephant,4758,3,0.33,0.4
+khammam,13753,2014,Andhra Pradesh,Khammam,1440267,Gokinepalli Venkateswara Rao (Gvr),Male,56,General,Independent,Cup & Saucer,8041,14,0.56,0.68
+khammam,13754,2014,Andhra Pradesh,Khammam,1440267,Gugulothu Ranjith Kumar,Male,30,Scheduled Tribe,Independent,Bat,1434,0,0.1,0.12
+khammam,13755,2014,Andhra Pradesh,Khammam,1440267,Gugulothu Sarvan,Male,29,Scheduled Tribe,Independent,Sewing Machine,1491,0,0.1,0.13
+khammam,13756,2014,Andhra Pradesh,Khammam,1440267,Jerripothula Srinivas,Male,38,Scheduled Caste,Independent,Cot,1116,0,0.08,0.09
+khammam,13757,2014,Andhra Pradesh,Khammam,1440267,Kaki Bhaskar,Male,43,General,Independent,Auto- Rickshaw,5368,0,0.37,0.45
+khammam,13758,2014,Andhra Pradesh,Khammam,1440267,Kalthi Ramulamma,Female,39,Scheduled Tribe,Independent,Basket Containing Fruits,983,0,0.07,0.08
+khammam,13759,2014,Andhra Pradesh,Khammam,1440267,Kalthi Venkateswarlu,Male,42,Scheduled Tribe,Independent,Almirah,1063,0,0.07,0.09
+khammam,13760,2014,Andhra Pradesh,Khammam,1440267,Kanakam Tirumala Rao,Male,27,Scheduled Caste,Independent,Green Chilli,917,0,0.06,0.08
+khammam,13761,2014,Andhra Pradesh,Khammam,1440267,Kankanala Narayana,Male,66,General,Communist Party Of India,Ears Of Corn And Sickle,187266,436,13.03,15.79
+khammam,13762,2014,Andhra Pradesh,Khammam,1440267,Lingala Ravi Kumar,Male,38,Scheduled Caste,Independent,Gas Cylinder,9459,1,0.66,0.8
+khammam,13763,2014,Andhra Pradesh,Khammam,1440267,Marikanti Vasudasu,Male,69,General,Independent,Ring,879,0,0.06,0.07
+khammam,13764,2014,Andhra Pradesh,Khammam,1440267,Medarametla  Rama Rao,Male,48,General,Pyramid Party Of India,Television,4136,3,0.29,0.35
+khammam,13765,2014,Andhra Pradesh,Khammam,1440267,Mokalla Ramesh,Male,41,Scheduled Tribe,Independent,Scissors,5401,0,0.37,0.45
+khammam,13766,2014,Andhra Pradesh,Khammam,1440267,Mudige Nageswara Rao,Male,44,Scheduled Tribe,Independent,Belt,1202,0,0.08,0.1
+khammam,13767,2014,Andhra Pradesh,Khammam,1440267,Nagarjuna Cherukuru,Male,44,General,Jai Samaikyandhra Party,Chappals,4994,8,0.35,0.42
+khammam,13768,2014,Andhra Pradesh,Khammam,1440267,Nagireddy Raji Reddy (Rajanna),Male,38,General,Independent,Telephone,4484,0,0.31,0.38
+khammam,13769,2014,Andhra Pradesh,Khammam,1440267,Nama Nageswara Rao,Male,56,General,Telugu Desam,Bicycle,407614,2616,28.48,34.51
+khammam,13770,2014,Andhra Pradesh,Khammam,1440267,None Of The Above,,,,None Of The Above,Nota,4978,13,0.35,0.42
+khammam,13771,2014,Andhra Pradesh,Khammam,1440267,Ponguleti  Srinivasa Reddy,Male,48,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,418609,3825,29.33,35.53
+khammam,13772,2014,Andhra Pradesh,Khammam,1440267,Ramesh Kommu,Male,42,Scheduled Caste,Independent,Gas Stove,1273,1,0.09,0.11
+khammam,13773,2014,Andhra Pradesh,Khammam,1440267,Ramu Kandula,Male,35,Scheduled Caste,Independent,Coconut,1021,0,0.07,0.09
+khammam,13774,2014,Andhra Pradesh,Khammam,1440267,Sanapa Pommaiah,Male,50,Scheduled Tribe,Independent,Bucket,889,0,0.06,0.07
+mahabubabad,13800,2014,Andhra Pradesh,Mahabubabad,1387288,Balunayak Bhukya,Male,34,Scheduled Tribe,Independent,Gas Cylinder,3091,0,0.22,0.27
+mahabubabad,13801,2014,Andhra Pradesh,Mahabubabad,1387288,Banoth Mohanlal,Male,49,Scheduled Tribe,Telugu Desam,Bicycle,215664,240,15.56,19.16
+mahabubabad,13802,2014,Andhra Pradesh,Mahabubabad,1387288,Boda Raasi,Female,29,Scheduled Tribe,Bahujan Samaj Party,Elephant,6220,4,0.45,0.55
+mahabubabad,13803,2014,Andhra Pradesh,Mahabubabad,1387288,Datla Nageshwar Rao,Male,48,Scheduled Tribe,Independent,Pot,6833,20,0.49,0.61
+mahabubabad,13804,2014,Andhra Pradesh,Mahabubabad,1387288,Eesam Sudhakar,Male,29,Scheduled Tribe,Independent,Bat,2193,0,0.16,0.19
+mahabubabad,13805,2014,Andhra Pradesh,Mahabubabad,1387288,Gugulotu Jagan,Male,37,Scheduled Tribe,Marxist Communist Party Of India (United),Carrom Board,3662,0,0.26,0.33
+mahabubabad,13806,2014,Andhra Pradesh,Mahabubabad,1387288,Kavitha Rani Lunavath,Female,35,Scheduled Tribe,Pyramid Party Of India,Television,6633,4,0.48,0.59
+mahabubabad,13807,2014,Andhra Pradesh,Mahabubabad,1387288,Laxman Bukya,Male,38,Scheduled Tribe,Independent,Ring,14029,5,1.01,1.25
+mahabubabad,13808,2014,Andhra Pradesh,Mahabubabad,1387288,Laxminarayana Borra,Male,38,Scheduled Tribe,Independent,Gas Stove,5879,0,0.42,0.52
+mahabubabad,13809,2014,Andhra Pradesh,Mahabubabad,1387288,Metla Papaiah,Male,62,Scheduled Tribe,Independent,Bucket,3882,43,0.28,0.35
+mahabubabad,13810,2014,Andhra Pradesh,Mahabubabad,1387288,None Of The Above,,,,None Of The Above,Nota,6695,9,0.48,0.6
+mahabubabad,13811,2014,Andhra Pradesh,Mahabubabad,1387288,P. Balram,Male,49,Scheduled Tribe,Indian National Congress,Hand,283735,1842,20.59,25.35
+mahabubabad,13812,2014,Andhra Pradesh,Mahabubabad,1387288,Padiga Yarraiah,Male,69,Scheduled Tribe,Independent,Table,3496,2,0.25,0.31
+mahabubabad,13813,2014,Andhra Pradesh,Mahabubabad,1387288,Payam Chandhar Rao (Chinna Chandhranna),Male,53,Scheduled Tribe,Independent,Auto- Rickshaw,94029,15,6.78,8.35
+mahabubabad,13814,2014,Andhra Pradesh,Mahabubabad,1387288,Ponaka Sammakka,Female,36,Scheduled Tribe,Independent,Cup & Saucer,3443,0,0.25,0.31
+mahabubabad,13815,2014,Andhra Pradesh,Mahabubabad,1387288,Prof. Azmeera Seetaram Naik,Male,56,Scheduled Tribe,Telangana Rashtra Samithi,Car,319388,1181,23.11,28.45
+mahabubabad,13816,2014,Andhra Pradesh,Mahabubabad,1387288,Tellam Venkata Rao,Male,46,Scheduled Tribe,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,127819,653,9.26,11.4
+mahabubabad,13817,2014,Andhra Pradesh,Mahabubabad,1387288,V. Gouri Nagamani,Female,43,Scheduled Tribe,Independent,Scissors,13580,83,0.98,1.21
+mahbubnagar,13818,2014,Andhra Pradesh,Mahbubnagar,1418668,Ap Jithender Reddy,Male,60,General,Telangana Rashtra Samithi,Car,332581,1647,23.56,32.91
+mahbubnagar,13819,2014,Andhra Pradesh,Mahbubnagar,1418668,Dr. Chandra Sekhar. A,Male,45,General,Independent,Stethoscope,3983,50,0.28,0.4
+mahbubnagar,13820,2014,Andhra Pradesh,Mahbubnagar,1418668,Dr. Janardhan Reddy Nagam,Male,65,General,Bharatiya Janata Party,Lotus,270102,2689,19.23,26.86
+mahbubnagar,13821,2014,Andhra Pradesh,Mahbubnagar,1418668,H.A. Rahman,Male,44,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,9065,40,0.64,0.9
+mahbubnagar,13822,2014,Andhra Pradesh,Mahbubnagar,1418668,Ibrahim Syed,Male,44,General,Independent,Almirah,4487,62,0.32,0.45
+mahbubnagar,13823,2014,Andhra Pradesh,Mahbubnagar,1418668,Jaipal Reddy Sudini,Male,72,General,Indian National Congress,Hand,330167,1471,23.38,32.66
+mahbubnagar,13824,2014,Andhra Pradesh,Mahbubnagar,1418668,Kadire Krishna,Male,37,Scheduled Caste,Bahujan Samaj Party,Elephant,15690,89,1.11,1.55
+mahbubnagar,13825,2014,Andhra Pradesh,Mahbubnagar,1418668,None Of The Above,,,,None Of The Above,Nota,9016,21,0.64,0.89
+mahbubnagar,13826,2014,Andhra Pradesh,Mahbubnagar,1418668,S. Shiva Shankar,Male,45,General,Independent,Air Conditioner,3242,10,0.23,0.32
+mahbubnagar,13827,2014,Andhra Pradesh,Mahbubnagar,1418668,S.R.Premaiah,Male,60,Scheduled Caste,Pyramid Party Of India,Auto- Rickshaw,30379,9,2.14,2.99
+malkajgiri,13828,2014,Andhra Pradesh,Malkajgiri,3183083,Anjaneyulu.E,Male,28,General,Independent,Bat,2675,2,0.08,0.16
+malkajgiri,13829,2014,Andhra Pradesh,Malkajgiri,3183083,B.Veera Hanumantha Reddy,Male,48,General,Independent,Slate,775,0,0.02,0.05
+malkajgiri,13830,2014,Andhra Pradesh,Malkajgiri,3183083,Bandi Sudhakar,Male,39,General,Jai Samaikyandhra Party,Chappals,4088,7,0.13,0.25
+malkajgiri,13831,2014,Andhra Pradesh,Malkajgiri,3183083,Ch.Malla Reddy,Male,56,General,Telugu Desam,Bicycle,522423,933,16.44,32.21
+malkajgiri,13832,2014,Andhra Pradesh,Malkajgiri,3183083,D.Bikshapathi,Male,40,General,Independent,Camera,5715,2,0.18,0.35
+malkajgiri,13833,2014,Andhra Pradesh,Malkajgiri,3183083,Dasari Bharath Reddy,Male,28,General,Independent,Cup & Saucer,1693,0,0.05,0.1
+malkajgiri,13834,2014,Andhra Pradesh,Malkajgiri,3183083,Divakar Dharanikota Sudhakar,Male,28,General,All India Majlis-E-Ittehadul Muslimeen,Almirah,18535,9,0.58,1.14
+malkajgiri,13835,2014,Andhra Pradesh,Malkajgiri,3183083,Dr.Jayaprakash  Narayan .N,Male,58,General,Lok Satta Party,Whistle,157530,718,4.97,9.74
+malkajgiri,13836,2014,Andhra Pradesh,Malkajgiri,3183083,Dr.N.V.Sudha Kiran,Male,48,General,Aam Aadmi Party,Broom,8264,37,0.26,0.51
+malkajgiri,13837,2014,Andhra Pradesh,Malkajgiri,3183083,Gajabinkar Bansilal,Male,47,General,Independent,Air Conditioner,1416,0,0.04,0.09
+malkajgiri,13838,2014,Andhra Pradesh,Malkajgiri,3183083,Hanumanth Rao Mynampally,Male,47,General,Telangana Rashtra Samithi,Car,493433,1757,15.56,30.48
+malkajgiri,13839,2014,Andhra Pradesh,Malkajgiri,3183083,Jajula Bhaskar,Male,39,General,Shramajeevi Party,Auto- Rickshaw,7951,2,0.25,0.49
+malkajgiri,13840,2014,Andhra Pradesh,Malkajgiri,3183083,Kante Sayanna,Male,35,General,Independent,Stethoscope,2260,1,0.07,0.14
+malkajgiri,13841,2014,Andhra Pradesh,Malkajgiri,3183083,Karunakar.R,Male,48,General,Bahujan Samaj Party,Elephant,6111,22,0.19,0.38
+malkajgiri,13842,2014,Andhra Pradesh,Malkajgiri,3183083,Koyalkar Bhoj Raj,Male,56,General,Independent,Basket Containing Fruits,1547,0,0.05,0.1
+malkajgiri,13843,2014,Andhra Pradesh,Malkajgiri,3183083,M.Nageswara Rao,Male,60,General,Independent,Letter Box,1264,37,0.04,0.08
+malkajgiri,13844,2014,Andhra Pradesh,Malkajgiri,3183083,M.T.Varughese,Male,50,General,Independent,Gas Stove,1025,1,0.03,0.06
+malkajgiri,13845,2014,Andhra Pradesh,Malkajgiri,3183083,Murari.T.N,Male,60,General,Shivsena,Bow & Arrow,1388,2,0.04,0.09
+malkajgiri,13846,2014,Andhra Pradesh,Malkajgiri,3183083,None Of The Above,,,,None Of The Above,Nota,8666,26,0.27,0.53
+malkajgiri,13847,2014,Andhra Pradesh,Malkajgiri,3183083,Paduri Srinivas Reddy,Male,39,General,Telangana Loksatta Party,Gas Cylinder,793,9,0.03,0.05
+malkajgiri,13848,2014,Andhra Pradesh,Malkajgiri,3183083,Peesari Satish Reddy,Male,32,General,Independent,Harmonium,1325,0,0.04,0.08
+malkajgiri,13849,2014,Andhra Pradesh,Malkajgiri,3183083,Polisetty Krishna Rao,Male,28,General,Independent,Bottle,495,1,0.02,0.03
+malkajgiri,13850,2014,Andhra Pradesh,Malkajgiri,3183083,Potturi Tulasi Das,Male,62,General,Independent,Walking Stick,411,0,0.01,0.03
+malkajgiri,13851,2014,Andhra Pradesh,Malkajgiri,3183083,Prof. K.Nageshwar,Male,50,General,Independent,Telephone,13037,202,0.42,0.81
+malkajgiri,13852,2014,Andhra Pradesh,Malkajgiri,3183083,Rahul Pandit,Male,48,General,Independent,Battery Torch,897,2,0.03,0.06
+malkajgiri,13853,2014,Andhra Pradesh,Malkajgiri,3183083,Sarvey Sathyanarayana,Male,60,General,Indian National Congress,Hand,232989,541,7.34,14.37
+malkajgiri,13854,2014,Andhra Pradesh,Malkajgiri,3183083,Sathyanarayana Yaadav Peddiboyina,Male,40,General,B.C.Bharata Desam Party,Candles,593,3,0.02,0.04
+malkajgiri,13855,2014,Andhra Pradesh,Malkajgiri,3183083,Surakanti Venkat Reddy,Male,50,General,Pyramid Party Of India,Television,2048,1,0.06,0.13
+malkajgiri,13856,2014,Andhra Pradesh,Malkajgiri,3183083,Sutharapu Padmaiah,Male,60,General,Andhra Pradesh Rashtra Samaikya Samithi Party,Batsman,527,2,0.02,0.03
+malkajgiri,13857,2014,Andhra Pradesh,Malkajgiri,3183083,V.Dinesh Reddy,Male,60,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,114941,280,3.62,7.09
+malkajgiri,13858,2014,Andhra Pradesh,Malkajgiri,3183083,Vattikuti Ramarao Goud,Male,28,General,Independent,Pen Nib With Seven Rays,1031,1,0.03,0.06
+medak,13859,2014,Andhra Pradesh,Medak,1536166,Balaraju Mittapally,Male,43,General,Independent,Carrom Board,2973,0,0.19,0.25
+medak,13860,2014,Andhra Pradesh,Medak,1536166,Bomma Balesham,Male,62,General,Pyramid Party Of India,Television,3296,1,0.21,0.28
+medak,13861,2014,Andhra Pradesh,Medak,1536166,Chaganla Narendra Nath,Male,49,General,Bharatiya Janata Party,Lotus,181177,627,11.83,15.23
+medak,13862,2014,Andhra Pradesh,Medak,1536166,Dr.P. Shravan Kumar Reddy,Male,39,General,Indian National Congress,Hand,260202,261,16.96,21.82
+medak,13863,2014,Andhra Pradesh,Medak,1536166,Gajabinkar Bansilal,Male,49,General,Independent,Basket Containing Fruits,3281,0,0.21,0.27
+medak,13864,2014,Andhra Pradesh,Medak,1536166,Gurjada Bheeraiah Yadav,Male,47,General,Independent,Coconut,2050,3,0.13,0.17
+medak,13865,2014,Andhra Pradesh,Medak,1536166,Iqbal Ali Zafar,Male,59,General,Majlis Bachao Tahreek,Balloon,5010,0,0.33,0.42
+medak,13866,2014,Andhra Pradesh,Medak,1536166,Kalvakuntla Chandrasekhar Rao,Male,60,General,Telangana Rashtra Samithi,Car,655484,2008,42.8,55.09
+medak,13867,2014,Andhra Pradesh,Medak,1536166,Kompelli Prabhudas,Male,48,Scheduled Caste,Republican Party Of India (A),Sewing Machine,7599,0,0.49,0.64
+medak,13868,2014,Andhra Pradesh,Medak,1536166,Kundeti. Ravi.,Male,40,General,Independent,Camera,33507,0,2.18,2.81
+medak,13869,2014,Andhra Pradesh,Medak,1536166,Meka. Subba Rao,Male,37,Scheduled Caste,Independent,Cup & Saucer,4441,0,0.29,0.37
+medak,13870,2014,Andhra Pradesh,Medak,1536166,None Of The Above,,,,None Of The Above,Nota,10687,9,0.7,0.9
+medak,13871,2014,Andhra Pradesh,Medak,1536166,"Prabhugoud, Pullaiahgari",Male,45,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,11744,8,0.77,0.98
+medak,13872,2014,Andhra Pradesh,Medak,1536166,Y. Shankar Goud,Male,50,General,Bahujan Samaj Party,Elephant,6633,10,0.43,0.56
+nagarkurnool,13873,2014,Andhra Pradesh,Nagarkurnool,1477305,Bahadhur Srinivas,Male,39,Scheduled Caste,Bahujan Samaj Party,Elephant,12022,67,0.82,1.08
+nagarkurnool,13874,2014,Andhra Pradesh,Nagarkurnool,1477305,Bakkani Narsimlu,Male,63,Scheduled Caste,Telugu Desam,Bicycle,182734,618,12.41,16.43
+nagarkurnool,13875,2014,Andhra Pradesh,Nagarkurnool,1477305,Buddula Srinivas,Male,39,Scheduled Caste,Independent,Auto- Rickshaw,54675,5,3.7,4.9
+nagarkurnool,13876,2014,Andhra Pradesh,Nagarkurnool,1477305,Dr. Manda Jagannath,Male,63,Scheduled Caste,Telangana Rashtra Samithi,Car,401212,2187,27.31,36.14
+nagarkurnool,13877,2014,Andhra Pradesh,Nagarkurnool,1477305,Maredu Gopal,Male,63,Scheduled Caste,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,22955,30,1.56,2.06
+nagarkurnool,13878,2014,Andhra Pradesh,Nagarkurnool,1477305,None Of The Above,,,,None Of The Above,Nota,12329,59,0.84,1.11
+nagarkurnool,13879,2014,Andhra Pradesh,Nagarkurnool,1477305,Yellaiah Nandi,Male,71,Scheduled Caste,Indian National Congress,Hand,419040,1035,28.44,37.64
+nalgonda,13880,2014,Andhra Pradesh,Nalgonda,1494343,Dr. Palla Rajeshwar Reddy,Male,50,General,Telangana Rashtra Samithi,Car,257953,2724,17.44,21.88
+nalgonda,13881,2014,Andhra Pradesh,Nalgonda,1494343,Gunnam Nagi Reddy,Male,64,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,39339,46,2.64,3.31
+nalgonda,13882,2014,Andhra Pradesh,Nalgonda,1494343,Gutha Sukhender Reddy,Male,60,General,Indian National Congress,Hand,467984,4109,31.59,39.62
+nalgonda,13883,2014,Andhra Pradesh,Nalgonda,1494343,Kundarapu Ramesh,Male,46,General,Bahujan Samaj Party,Elephant,11503,14,0.77,0.97
+nalgonda,13884,2014,Andhra Pradesh,Nalgonda,1494343,Manupuri Daya Sagar,Male,39,General,Pyramid Party Of India,Television,4481,14,0.3,0.38
+nalgonda,13885,2014,Andhra Pradesh,Nalgonda,1494343,Marri Nehemiah,Male,58,General,Independent,Auto- Rickshaw,56256,3,3.76,4.72
+nalgonda,13886,2014,Andhra Pradesh,Nalgonda,1494343,Nandyala Narsimha Reddy,Male,58,General,Communist Party Of India  (Marxist),"Hammer, Sickle And Star",54157,266,3.64,4.57
+nalgonda,13887,2014,Andhra Pradesh,Nalgonda,1494343,None Of The Above,,,,None Of The Above,Nota,9284,21,0.62,0.78
+nalgonda,13888,2014,Andhra Pradesh,Nalgonda,1494343,Tejavath Bellaiah Naik,Male,42,General,Aam Aadmi Party,Broom,2297,11,0.15,0.19
+nalgonda,13889,2014,Andhra Pradesh,Nalgonda,1494343,Tera Chinnapa Reddy,Male,50,General,Telugu Desam,Bicycle,277433,1504,18.67,23.41
+nizamabad,13947,2014,Andhra Pradesh,Nizamabad,1496193,Abdul Gani,Male,39,General,B. C. United Front,Chappals,4791,0,0.32,0.46
+nizamabad,13948,2014,Andhra Pradesh,Nizamabad,1496193,Abdul Kareem Khan (Babu),Male,44,General,Independent,Bat,1599,2,0.11,0.15
+nizamabad,13949,2014,Andhra Pradesh,Nizamabad,1496193,Bagwan B,Male,49,Scheduled Tribe,Independent,Almirah,8129,0,0.54,0.79
+nizamabad,13950,2014,Andhra Pradesh,Nizamabad,1496193,Banja Veerappa,Male,53,General,Pyramid Party Of India,Television,3649,2,0.24,0.35
+nizamabad,13951,2014,Andhra Pradesh,Nizamabad,1496193,Chirulingadrula Venkatesham,Male,40,General,Independent,Coconut,3091,0,0.21,0.3
+nizamabad,13952,2014,Andhra Pradesh,Nizamabad,1496193,Endala Lakshminarayana,Male,51,General,Bharatiya Janata Party,Lotus,222876,2457,15.06,21.79
+nizamabad,13953,2014,Andhra Pradesh,Nizamabad,1496193,Kalvakuntla Kavitha,Female,36,General,Telangana Rashtra Samithi,Car,435706,3601,29.36,42.49
+nizamabad,13954,2014,Andhra Pradesh,Nizamabad,1496193,Kandem Prabhakar,Male,45,General,Independent,Gas Stove,3988,2,0.27,0.39
+nizamabad,13955,2014,Andhra Pradesh,Nizamabad,1496193,Kotapati Narsimham Naidu,Male,56,General,Independent,Gas Cylinder,2458,4,0.16,0.24
+nizamabad,13956,2014,Andhra Pradesh,Nizamabad,1496193,Madhu Yaskhi Goud,Male,56,General,Indian National Congress,Hand,270948,1175,18.19,26.32
+nizamabad,13957,2014,Andhra Pradesh,Nizamabad,1496193,Malik Mohtasim Khan,Male,47,General,Welfare Party Of India,Auto- Rickshaw,43738,76,2.93,4.24
+nizamabad,13958,2014,Andhra Pradesh,Nizamabad,1496193,None Of The Above,,,,None Of The Above,Nota,7244,22,0.49,0.7
+nizamabad,13959,2014,Andhra Pradesh,Nizamabad,1496193,Rapelly Srinivas,Male,39,General,Aam Aadmi Party,Broom,2613,8,0.18,0.25
+nizamabad,13960,2014,Andhra Pradesh,Nizamabad,1496193,S. Chandraiah,Male,66,General,Independent,Cup & Saucer,2817,0,0.19,0.27
+nizamabad,13961,2014,Andhra Pradesh,Nizamabad,1496193,Sagar Suddala,Male,32,Scheduled Caste,Bahujan Mukti Party,Cot,1952,26,0.13,0.19
+nizamabad,13962,2014,Andhra Pradesh,Nizamabad,1496193,Singareddy Ravindra Reddy,Male,46,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,3508,21,0.24,0.34
+nizamabad,13963,2014,Andhra Pradesh,Nizamabad,1496193,Talari Ramulu,Male,46,Scheduled Caste,Bahujan Samaj Party,Elephant,7398,23,0.5,0.72
+peddapalle,13980,2014,Andhra Pradesh,Peddapalle,1425355,Balka Suman,Male,31,Scheduled Caste,Telangana Rashtra Samithi,Car,563214,2282,39.67,55.16
+peddapalle,13981,2014,Andhra Pradesh,Peddapalle,1425355,Botha Venkata Mallaiah,Male,58,Scheduled Caste,B. C. United Front,Chappals,2245,0,0.16,0.22
+peddapalle,13982,2014,Andhra Pradesh,Peddapalle,1425355,Bupelli Narayana,Male,30,Scheduled Caste,Independent,Bat,7255,3,0.51,0.71
+peddapalle,13983,2014,Andhra Pradesh,Peddapalle,1425355,Dr.Janapati Sarat Babu,Male,42,Scheduled Caste,Telugu Desam,Bicycle,63174,160,4.44,6.18
+peddapalle,13984,2014,Andhra Pradesh,Peddapalle,1425355,G. Vivekanand,Male,56,Scheduled Caste,Indian National Congress,Hand,273441,897,19.25,26.76
+peddapalle,13985,2014,Andhra Pradesh,Peddapalle,1425355,Gaddala Vinay Kumar,Male,65,Scheduled Caste,Independent,Ceiling Fan,3263,3,0.23,0.32
+peddapalle,13986,2014,Andhra Pradesh,Peddapalle,1425355,Gorre Ramesh,Male,43,Scheduled Caste,Independent,Gas Cylinder,2359,2,0.17,0.23
+peddapalle,13987,2014,Andhra Pradesh,Peddapalle,1425355,J.V. Raju,Male,50,Scheduled Caste,New India Party,Cup & Saucer,3020,0,0.21,0.29
+peddapalle,13988,2014,Andhra Pradesh,Peddapalle,1425355,Jinna Ramadevi,Female,37,Scheduled Caste,Independent,Battery Torch,9199,0,0.65,0.9
+peddapalle,13989,2014,Andhra Pradesh,Peddapalle,1425355,Kalvala Sanjeev,Male,37,Scheduled Caste,Republican Party Of India,Sewing Machine,8609,0,0.6,0.84
+peddapalle,13990,2014,Andhra Pradesh,Peddapalle,1425355,Kalvala Shankar,Male,44,Scheduled Caste,Pyramid Party Of India,Television,9288,2,0.65,0.91
+peddapalle,13991,2014,Andhra Pradesh,Peddapalle,1425355,Kamilla Jaya Rao,Male,43,Scheduled Caste,Independent,Scissors,2741,1,0.19,0.27
+peddapalle,13992,2014,Andhra Pradesh,Peddapalle,1425355,Moutam Ravinder,Male,33,Scheduled Caste,Independent,Almirah,2671,3,0.19,0.26
+peddapalle,13993,2014,Andhra Pradesh,Peddapalle,1425355,None Of The Above,,,,None Of The Above,Nota,5344,17,0.38,0.52
+peddapalle,13994,2014,Andhra Pradesh,Peddapalle,1425355,Tagaram Shankar Lal,Male,37,Scheduled Caste,Bahujan Samaj Party,Elephant,9430,19,0.66,0.92
+peddapalle,13995,2014,Andhra Pradesh,Peddapalle,1425355,Thallapalli Srinivas,Male,35,Scheduled Caste,Independent,Candles,3698,1,0.26,0.36
+peddapalle,13996,2014,Andhra Pradesh,Peddapalle,1425355,Velthuru Mallaiah,Male,57,Scheduled Caste,Republican Paksha (Khoripa),Auto- Rickshaw,45976,1,3.23,4.48
+peddapalle,13997,2014,Andhra Pradesh,Peddapalle,1425355,Venkata Swamy Injam,Male,42,Scheduled Caste,Mahajana Socialist Party,Ring,3861,5,0.27,0.38
+secunderabad,14023,2014,Andhra Pradesh,Secundrabad,1893741,Abdus Sattar Mujahed,Male,48,General,Akhil Bharatiya Muslim League (Secular),Balloon,807,2,0.04,0.08
+secunderabad,14024,2014,Andhra Pradesh,Secundrabad,1893741,Ananth Rao Gundepally,Male,43,General,Independent,Pen Nib With Seven Rays,779,0,0.04,0.08
+secunderabad,14025,2014,Andhra Pradesh,Secundrabad,1893741,Avula Ranganayakulu,Male,60,General,Independent,Telephone,1143,1,0.06,0.11
+secunderabad,14026,2014,Andhra Pradesh,Secundrabad,1893741,B.Deepak Kumar,Male,39,Scheduled Caste,Republican Party Of India (Khobragade),Candles,1813,0,0.1,0.18
+secunderabad,14027,2014,Andhra Pradesh,Secundrabad,1893741,B.Subramanyam,Male,60,General,Independent,Camera,2480,1,0.13,0.25
+secunderabad,14028,2014,Andhra Pradesh,Secundrabad,1893741,Bandaru Dattatreya,Male,66,General,Bharatiya Janata Party,Lotus,437860,411,23.14,43.62
+secunderabad,14029,2014,Andhra Pradesh,Secundrabad,1893741,Ch. Murahari,Male,55,General,Socialist Unity Centre Of India (Communist),Glass Tumbler,552,2,0.03,0.06
+secunderabad,14030,2014,Andhra Pradesh,Secundrabad,1893741,Chaya Ratan Musinipally,Female,61,Scheduled Caste,Aam Aadmi Party,Broom,11162,22,0.59,1.11
+secunderabad,14031,2014,Andhra Pradesh,Secundrabad,1893741,Dr.Malathi Latha Eppa,Female,29,General,Jantantra Party,Almirah,871,2,0.05,0.09
+secunderabad,14032,2014,Andhra Pradesh,Secundrabad,1893741,Dr.N.S.Uday Kumar,Male,53,General,Prem Janata Dal,Television,927,1,0.05,0.09
+secunderabad,14033,2014,Andhra Pradesh,Secundrabad,1893741,J.Ramulu,Male,39,General,Revolutionary Socialist Party,Spade & Stoker,2057,1,0.11,0.2
+secunderabad,14034,2014,Andhra Pradesh,Secundrabad,1893741,K. Srinivasulu,Male,42,General,Jai Samaikyandhra Party,Chappals,3688,3,0.19,0.37
+secunderabad,14035,2014,Andhra Pradesh,Secundrabad,1893741,K.Sai Krishna Mohan Rao,Male,53,General,Indian Christian Secular Party,Trumpet,2599,4,0.14,0.26
+secunderabad,14036,2014,Andhra Pradesh,Secundrabad,1893741,Karankote Narender,Male,52,General,All India Forward Bloc,Lion,474,0,0.03,0.05
+secunderabad,14037,2014,Andhra Pradesh,Secundrabad,1893741,Khaja Khalid Anwar,Male,47,General,Bahujan Samaj Party,Elephant,2856,7,0.15,0.28
+secunderabad,14038,2014,Andhra Pradesh,Secundrabad,1893741,Khaja Sirajuddin Azaz,Male,49,General,Majlis Markaz-E-Siyasee Party,Iron,957,2,0.05,0.1
+secunderabad,14039,2014,Andhra Pradesh,Secundrabad,1893741,Kumar Chowdary Yadav.G,Male,55,General,Samaikyandhra Parirakshana Samithi,Bat,547,0,0.03,0.05
+secunderabad,14040,2014,Andhra Pradesh,Secundrabad,1893741,M.Anjan Kumar Yadav,Male,53,General,Indian National Congress,Hand,183427,109,9.69,18.27
+secunderabad,14041,2014,Andhra Pradesh,Secundrabad,1893741,Michael Daniel Ovelz,Male,41,General,Independent,Pot,291,0,0.02,0.03
+secunderabad,14042,2014,Andhra Pradesh,Secundrabad,1893741,Mohammed Rizwan Hussain,Male,32,General,Independent,Coconut,370,0,0.02,0.04
+secunderabad,14043,2014,Andhra Pradesh,Secundrabad,1893741,Mohd Abubakar Parwaiz Siddiqui,Male,38,General,Independent,Gas Cylinder,322,0,0.02,0.03
+secunderabad,14044,2014,Andhra Pradesh,Secundrabad,1893741,Mohd Imtiaz Hussain,Male,35,General,Indian Union Muslim League,Ladder,784,2,0.04,0.08
+secunderabad,14045,2014,Andhra Pradesh,Secundrabad,1893741,Narla Mohan Rao,Male,47,General,All India Majlis-E-Ittehadul Muslimeen,Kite,145095,25,7.66,14.44
+secunderabad,14046,2014,Andhra Pradesh,Secundrabad,1893741,None Of The Above,,,,None Of The Above,Nota,6567,5,0.35,0.65
+secunderabad,14047,2014,Andhra Pradesh,Secundrabad,1893741,Raghu Deshaboina,Male,45,General,Bahujan Mukti Party,Cot,1494,2,0.08,0.15
+secunderabad,14048,2014,Andhra Pradesh,Secundrabad,1893741,S. Lakshman Rao,Male,50,General,Independent,Envelope,885,1,0.05,0.09
+secunderabad,14049,2014,Andhra Pradesh,Secundrabad,1893741,Shakthi Satyavathi,Female,49,Scheduled Tribe,Pyramid Party Of India,Battery Torch,638,0,0.03,0.06
+secunderabad,14050,2014,Andhra Pradesh,Secundrabad,1893741,Sonu Sarsal Valmiki,Male,29,Scheduled Caste,Telangana Communist Party Of India,Auto- Rickshaw,2310,1,0.12,0.23
+secunderabad,14051,2014,Andhra Pradesh,Secundrabad,1893741,Syed Madani Quadri,Male,53,General,Independent,Bread,376,0,0.02,0.04
+secunderabad,14052,2014,Andhra Pradesh,Secundrabad,1893741,Syed Sajid Ali,Male,44,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,45161,26,2.39,4.5
+secunderabad,14053,2014,Andhra Pradesh,Secundrabad,1893741,T.Bheemsen,Male,65,General,Telangana Rashtra Samithi,Car,143696,151,7.6,14.32
+warangal,14136,2014,Andhra Pradesh,Warangal,1537778,Chiluveru Prathap,Male,40,Scheduled Caste,Independent,Gas Stove,9178,0,0.6,0.78
+warangal,14137,2014,Andhra Pradesh,Warangal,1537778,Chintha Swamy,Male,44,Scheduled Caste,Aam Aadmi Party,Broom,5561,8,0.36,0.47
+warangal,14138,2014,Andhra Pradesh,Warangal,1537778,Gannarapu Surender,Male,49,Scheduled Caste,Bahujan Samaj Party,Elephant,9489,47,0.62,0.81
+warangal,14139,2014,Andhra Pradesh,Warangal,1537778,Jannu Mahendar,Male,33,Scheduled Caste,Independent,Black Board,3209,2,0.21,0.27
+warangal,14140,2014,Andhra Pradesh,Warangal,1537778,Kadiyam Srihari,Male,63,Scheduled Caste,Telangana Rashtra Samithi,Car,658828,2811,43.03,56.23
+warangal,14141,2014,Andhra Pradesh,Warangal,1537778,Kanakam Ramesh,Male,34,Scheduled Caste,Independent,Scissors,2013,0,0.13,0.17
+warangal,14142,2014,Andhra Pradesh,Warangal,1537778,None Of The Above,,,,None Of The Above,Nota,14007,27,0.91,1.19
+warangal,14143,2014,Andhra Pradesh,Warangal,1537778,Parameshwar Ramagalla,Male,55,Scheduled Caste,Bharatiya Janata Party,Lotus,186742,397,12.17,15.9
+warangal,14144,2014,Andhra Pradesh,Warangal,1537778,Rajaiah Siricilla,Male,61,Scheduled Caste,Indian National Congress,Hand,268450,615,17.5,22.87
+warangal,14145,2014,Andhra Pradesh,Warangal,1537778,Thuppari Narasimha Swamy,Male,44,Scheduled Caste,Pyramid Party Of India,Television,7350,0,0.48,0.62
+warangal,14146,2014,Andhra Pradesh,Warangal,1537778,Venkanna Kannam,Male,36,Scheduled Caste,Marxist Communist Party Of India (United),Carrom Board,2257,1,0.15,0.19
+warangal,14147,2014,Andhra Pradesh,Warangal,1537778,Venkanna Neerudu,Male,38,Scheduled Caste,Bahujan Mukti Party,Cot,2098,0,0.14,0.18
+warangal,14148,2014,Andhra Pradesh,Warangal,1537778,Venu Esampelly,Male,37,Scheduled Caste,All India Forward Bloc,Lion,1541,0,0.1,0.13
+zahirabad,14149,2014,Andhra Pradesh,Zahirabad,1445354,B.B. Patil,Male,58,General,Telangana Rashtra Samithi,Car,505983,2678,35.19,46.25
+zahirabad,14150,2014,Andhra Pradesh,Zahirabad,1445354,Benjamin Raju,Male,43,General,Independent,Grapes,4802,2,0.33,0.44
+zahirabad,14151,2014,Andhra Pradesh,Zahirabad,1445354,Dr. Suneel Kumar Chowdhary,Male,53,General,Aam Aadmi Party,Broom,3270,15,0.23,0.3
+zahirabad,14152,2014,Andhra Pradesh,Zahirabad,1445354,K.Madan Mohan Rao,Male,44,General,Telugu Desam,Bicycle,156807,690,10.9,14.32
+zahirabad,14153,2014,Andhra Pradesh,Zahirabad,1445354,Mahmood Mohiuddin,Male,44,General,Yuvajana Sramika Rythu Congress Party,Ceiling Fan,12369,14,0.86,1.13
+zahirabad,14154,2014,Andhra Pradesh,Zahirabad,1445354,Marri Durgesh,Male,30,Scheduled Caste,Republican Party Of India (A),Sewing Machine,18027,0,1.25,1.64
+zahirabad,14155,2014,Andhra Pradesh,Zahirabad,1445354,None Of The Above,,,,None Of The Above,Nota,11157,33,0.77,1.02
+zahirabad,14156,2014,Andhra Pradesh,Zahirabad,1445354,Rama Rao,Male,45,General,Independent,Balloon,4426,0,0.31,0.4
+zahirabad,14157,2014,Andhra Pradesh,Zahirabad,1445354,Suresh Kumar Shetkar,Male,53,General,Indian National Congress,Hand,362939,1091,25.19,33.1
+zahirabad,14158,2014,Andhra Pradesh,Zahirabad,1445354,Syed Ferozuddin,Male,46,General,Bahujan Samaj Party,Elephant,8165,15,0.57,0.74
+zahirabad,14159,2014,Andhra Pradesh,Zahirabad,1445354,Tandale Ambaji Rao,Male,45,General,Independent,Slate,2321,2,0.16,0.21

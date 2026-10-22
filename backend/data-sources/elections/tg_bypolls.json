@@ -1,0 +1,49 @@
+{
+  "_purpose": "Assembly by-elections in Telangana after the 2023 general election. Vote shares are as reported in the cited tables (share of total votes polled).",
+  "bypolls": [
+    {
+      "ac_number": 71,
+      "constituency": "Secunderabad Cantonment",
+      "poll_date": "2024-05-13",
+      "result_date": "2024-06-04",
+      "cause": "Death of sitting BRS MLA G. Lasya Nanditha (road accident, February 2024)",
+      "votes_polled": 131788,
+      "turnout_pct": 51.93,
+      "candidates": [
+        { "name": "Sri Ganesh", "party": "INC", "votes": 53651, "share": 40.86 },
+        { "name": "T. N. Vamsha Tilak", "party": "BJP", "votes": 40445, "share": 30.80 },
+        { "name": "G. Niveditha Sayanna", "party": "BRS", "votes": 34462, "share": 26.25 },
+        { "name": "NOTA", "party": "NOTA", "votes": 969, "share": 0.74 }
+      ],
+      "margin": 13206,
+      "margin_pct": 10.06,
+      "sources": [
+        "https://www.thehindu.com/news/national/telangana/turncoat-triumphs-as-congress-regains-secunderabad-cantonment-assembly-constituency/article68250165.ece",
+        "https://www.thenewsminute.com/telangana/congress-wrests-secunderabad-cantonment-assembly-seat-from-brs",
+        "https://en.wikipedia.org/wiki/Secunderabad_Cantonment_Assembly_constituency"
+      ]
+    },
+    {
+      "ac_number": 61,
+      "constituency": "Jubilee Hills",
+      "poll_date": "2025-11-11",
+      "result_date": "2025-11-14",
+      "cause": "Death of sitting BRS MLA Maganti Gopinath (June 2025)",
+      "votes_polled": 194727,
+      "turnout_pct": 48.49,
+      "candidates": [
+        { "name": "V. Naveen Yadav", "party": "INC", "votes": 98988, "share": 50.83 },
+        { "name": "Maganti Sunitha", "party": "BRS", "votes": 74259, "share": 38.13 },
+        { "name": "Lankala Deepak Reddy", "party": "BJP", "votes": 17061, "share": 8.76 },
+        { "name": "NOTA", "party": "NOTA", "votes": 924, "share": 0.47 }
+      ],
+      "margin": 24729,
+      "margin_pct": 12.70,
+      "sources": [
+        "https://web.archive.org/web/20251113000000/https://results.eci.gov.in/ByeElectionMay2025/candidateswise-S2961.htm",
+        "https://www.theweek.in/wire-updates/national/2025/11/14/mds39-tl-bypoll-ld-result.html",
+        "https://en.wikipedia.org/wiki/Jubilee_Hills_Assembly_constituency"
+      ]
+    }
+  ]
+}

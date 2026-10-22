@@ -1,0 +1,190 @@
+{
+  "_purpose": "Provenance for every election figure in src/data/state_election_history.json. scripts/build_election_history.js reads this file and copies it into the output, so the application can show the source of any number it displays.",
+  "retrieved": "2026-10-19",
+  "elections": [
+    {
+      "id": "AE2014",
+      "label": "Assembly 2014",
+      "type": "assembly",
+      "poll_date": "2014-04-30",
+      "file": "tg_ae_2014_tcpd.csv",
+      "publisher": "Trivedi Centre for Political Data (TCPD), Ashoka University — LokDhaba, redistributed by OpenCity",
+      "underlying_source": "Election Commission of India statistical report",
+      "url": "https://data.opencity.in/dataset/telangana-assembly-elections-2014",
+      "licence": "Public domain (as listed by OpenCity); cite TCPD LokDhaba",
+      "notes": "Held as part of undivided Andhra Pradesh; the 119 Telangana seats are on the 2008 delimitation, identical to 2018 and 2023. Party 'TRS' is BRS's former name."
+    },
+    {
+      "id": "AE2018",
+      "label": "Assembly 2018",
+      "type": "assembly",
+      "poll_date": "2018-12-07",
+      "file": "tg_ae_2018_tcpd.csv",
+      "publisher": "Trivedi Centre for Political Data (TCPD), Ashoka University — LokDhaba, redistributed by OpenCity",
+      "underlying_source": "Election Commission of India statistical report",
+      "url": "https://data.opencity.in/dataset/telangana-assembly-elections-2018",
+      "licence": "Public domain (as listed by OpenCity); cite TCPD LokDhaba",
+      "notes": "Includes TCPD's incumbent / turncoat / last-party fields per candidate."
+    },
+    {
+      "id": "AE2023",
+      "label": "Assembly 2023",
+      "type": "assembly",
+      "poll_date": "2023-11-30",
+      "file": "tg_ae_2023_eci_detailed.xlsx",
+      "publisher": "Election Commission of India — Statistical Report, '10 - Detailed Results'",
+      "underlying_source": "Election Commission of India",
+      "url": "https://www.eci.gov.in/eci-backend/public/all_files/full-statistical-reports/telangana/2023/Detailed_Results.xlsx",
+      "licence": "Government of India public record",
+      "notes": "Byte-identical to the OpenCity copy. Party code 'BHRS' is BRS. Votes include postal ballots."
+    },
+    {
+      "id": "LS2024",
+      "label": "Lok Sabha 2024 (assembly segment)",
+      "type": "lok_sabha_segment",
+      "poll_date": "2024-05-13",
+      "file": "tg_ls_2024_ac_segments_eci.csv",
+      "publisher": "Election Commission of India — Statistical Report '34 - Details of Assembly Segment of PC', redistributed by OpenCity",
+      "underlying_source": "Election Commission of India",
+      "url": "https://data.opencity.in/dataset/parliamentary-elections-2024-results",
+      "licence": "Government of India public record",
+      "notes": "EVM votes only — postal ballots are counted per parliamentary seat, not per assembly segment, so segment shares exclude them. Filtered to Telangana from the all-India file. A national election: shown alongside assembly results, never mixed into the loyalty score."
+    }
+  ],
+  "governments": {
+    "_purpose": "The government formed after each election. The build verifies each state entry against the computed seat tally: the named party must hold a majority (60 of 119) in that election's results.",
+    "AE2014": {
+      "level": "state",
+      "party": "BRS",
+      "party_label": "TRS (now BRS)",
+      "head": "K. Chandrashekar Rao",
+      "role": "Chief Minister",
+      "sworn_in": "2014-06-02",
+      "source": "https://en.wikipedia.org/wiki/First_K._Chandrashekar_Rao_ministry"
+    },
+    "AE2018": {
+      "level": "state",
+      "party": "BRS",
+      "party_label": "TRS (now BRS)",
+      "head": "K. Chandrashekar Rao",
+      "role": "Chief Minister",
+      "sworn_in": "2018-12-13",
+      "source": "https://en.wikipedia.org/wiki/Second_K._Chandrashekar_Rao_ministry"
+    },
+    "AE2023": {
+      "level": "state",
+      "party": "INC",
+      "party_label": "Indian National Congress",
+      "head": "A. Revanth Reddy",
+      "role": "Chief Minister",
+      "sworn_in": "2023-12-07",
+      "source": "https://en.wikipedia.org/wiki/Revanth_Reddy_ministry"
+    },
+    "LS2024": {
+      "level": "national",
+      "party": "BJP",
+      "party_label": "BJP-led NDA",
+      "head": "Narendra Modi",
+      "role": "Prime Minister",
+      "sworn_in": "2024-06-09",
+      "source": "https://en.wikipedia.org/wiki/Third_Modi_ministry"
+    }
+  },
+  "lok_sabha": {
+    "_purpose": "Full results for Telangana's 17 Lok Sabha (MP) seats. Each seat's result is its own contest; an assembly seat sits inside one of them. The build verifies each year's Telangana tally against `declared`.",
+    "elections": [
+      {
+        "id": "LS2014",
+        "label": "Lok Sabha 2014",
+        "poll_date": "2014-04-30",
+        "file": "tg_ls_2014_pc_eci.csv",
+        "publisher": "Election Commission of India — Constituency-wise Detailed Results, via India Data Portal",
+        "url": "https://ckandev.indiadataportal.com/dataset/loksabha-general-election-results/resource/0f197109-f80f-461f-8ef1-aaef13ccc2de",
+        "notes": "Polled as part of undivided Andhra Pradesh; the 17 Telangana seats are filtered by name. Votes are general + postal."
+      },
+      {
+        "id": "LS2019",
+        "label": "Lok Sabha 2019",
+        "poll_date": "2019-04-11",
+        "file": "tg_ls_2019_pc_tcpd.csv",
+        "publisher": "Trivedi Centre for Political Data (TCPD), Ashoka University — LokDhaba, via OpenCity",
+        "url": "https://data.opencity.in/dataset/parliamentary-elections-2019"
+      },
+      {
+        "id": "LS2024",
+        "label": "Lok Sabha 2024",
+        "poll_date": "2024-05-13",
+        "file": "tg_ls_2024_pc_eci.csv",
+        "publisher": "Election Commission of India — constituency-wise results, via OpenCity",
+        "url": "https://data.opencity.in/dataset/parliamentary-elections-2024-results",
+        "notes": "Votes are EVM + postal."
+      }
+    ],
+    "segments": [
+      {
+        "id": "LS2019",
+        "file": "tg_ls_2019_ac_segments_eci.csv",
+        "publisher": "Election Commission of India — Assembly Segment-wise Results, via OpenCity",
+        "url": "https://data.opencity.in/dataset/parliamentary-elections-2019"
+      }
+    ],
+    "declared": {
+      "LS2014": {
+        "BRS": 11,
+        "INC": 2,
+        "BJP": 1,
+        "TDP": 1,
+        "YSRCP": 1,
+        "AIMIM": 1
+      },
+      "LS2019": {
+        "BRS": 9,
+        "BJP": 4,
+        "INC": 3,
+        "AIMIM": 1
+      },
+      "LS2024": {
+        "INC": 8,
+        "BJP": 8,
+        "AIMIM": 1
+      }
+    },
+    "national_governments": {
+      "LS2014": {
+        "party": "BJP",
+        "party_label": "BJP-led NDA",
+        "head": "Narendra Modi",
+        "role": "Prime Minister",
+        "sworn_in": "2014-05-26"
+      },
+      "LS2019": {
+        "party": "BJP",
+        "party_label": "BJP-led NDA",
+        "head": "Narendra Modi",
+        "role": "Prime Minister",
+        "sworn_in": "2019-05-30"
+      },
+      "LS2024": {
+        "party": "BJP",
+        "party_label": "BJP-led NDA",
+        "head": "Narendra Modi",
+        "role": "Prime Minister",
+        "sworn_in": "2024-06-09"
+      }
+    }
+  },
+  "bypolls": {
+    "file": "tg_bypolls.json",
+    "notes": "Assembly by-elections after 2023. Only the leading candidates and NOTA are published in the cited tables, so these carry the reported vote share rather than a full candidate list."
+  },
+  "excluded": [
+    {
+      "what": "Lok Sabha 2019 by assembly segment",
+      "why": "No machine-readable party-wise segment file was found; the OpenCity 2019 segment file carries electors and turnout only."
+    },
+    {
+      "what": "Seat-level census demographics",
+      "why": "The per-seat census attributes in the OpenCity constituency map are column-shifted and half zero; unusable. Census 2011 predates Telangana's 2016 district reorganisation, so only Hyderabad has a district figure on its present territory."
+    }
+  ]
+}
