@@ -241,6 +241,8 @@ contentSchema.index({ platform: 1, source_id: 1, published_at: -1 });
 contentSchema.index({ platform: 1, risk_level: 1 });
 contentSchema.index({ source_id: 1, risk_level: 1 });
 contentSchema.index({ platform: 1, content_type: 1, published_at: -1 });
+// Posts matched to a monitored event, newest first (Intelligence Brief → Social & Channels → Rallies & outreach).
+contentSchema.index({ event_ids: 1, published_at: -1 });
 contentSchema.index({ platform: 1, source_id: 1, content_type: 1, published_at: -1 });
 contentSchema.index({ is_deleted: 1 });
 

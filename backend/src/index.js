@@ -112,6 +112,7 @@ app.use('/api/dashboard', require('./routes/apDashboardRoutes'));
 app.use('/api/cm-dashboard', require('./routes/cmDashboardRoutes'));
 app.use('/api/voter-profiles', require('./routes/voterProfileRoutes'));
 app.use('/api/electoral-base', require('./routes/electoralBaseRoutes'));
+app.use('/api/social-channels', require('./routes/socialChannelsRoutes'));
 app.use('/api/booth-imports', require('./routes/boothImportRoutes'));
 app.use('/api/web-articles', require('./routes/webArticleRoutes'));
 app.use('/api/youtube-live', require('./routes/youtubeLiveRoutes'));
@@ -822,6 +823,10 @@ const startServer = async () => {
     console.log('[Server] Warming caches in background (requests are already being served)...');
     warmGatedAlertIdsCache()
       .then(() => warmProfilesCache())
+      // Intelligence Brief: Social & Channels posts, then the brief itself (7 → 30 → 90 days).
+      .then(() => require('./services/socialChannelsService').warm()
+        .catch((err) => console.warn('[Server] Social channels warm-up failed (non-fatal):', err.message)))
+      .then(() => require('./controllers/cmDashboardController').warmCMBrief())
       .then(() => console.log('[Server] Cache warm-up complete.'))
       .catch((err) => console.warn('[Server] Cache warm-up failed (non-fatal):', err.message));
   });
