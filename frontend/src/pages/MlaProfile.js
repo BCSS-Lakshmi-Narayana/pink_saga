@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, MapPin, Loader2, Calendar, ExternalLink, Swords } from 'lucide-react';
+import { ArrowLeft, MapPin, Loader2, Calendar, ExternalLink, Swords, Landmark } from 'lucide-react';
 import VoterProfilePanel from '../components/VoterProfilePanel';
 import SocialNarrativePanel from '../components/SocialNarrativePanel';
 import CompareModal from '../components/compare/CompareModal';
 import DistrictNewsPanel from '../components/DistrictNewsPanel';
+import ElectoralAnalysisModal from '../components/electoral/ElectoralAnalysisModal';
 import api from '../lib/api';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
@@ -186,6 +187,7 @@ const MlaProfile = () => {
   const [analysisGrievance, setAnalysisGrievance] = useState(null);
   const [isAnalysisOpen, setIsAnalysisOpen] = useState(false);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [electoralOpen, setElectoralOpen] = useState(false);
 
   const handleAction = useCallback(async (action, payload) => {
     const g = payload?.grievance;
@@ -293,6 +295,13 @@ const MlaProfile = () => {
                 className="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-br from-indigo-600 to-violet-600 text-white px-3 py-1.5 text-sm font-semibold shadow-sm hover:from-indigo-500 hover:to-violet-500 transition-all active:scale-95"
               >
                 <Swords className="h-4 w-4" /> Draw Comparison
+              </button>
+              <button
+                type="button"
+                onClick={() => setElectoralOpen(true)}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-pink-200 bg-pink-50 text-pink-700 px-3 py-1.5 text-sm font-semibold hover:bg-pink-100 transition-colors active:scale-95"
+              >
+                <Landmark className="h-4 w-4" /> Electoral analysis
               </button>
             </div>
           )}
@@ -450,6 +459,12 @@ const MlaProfile = () => {
           me={mla}
         />
       )}
+
+      <ElectoralAnalysisModal
+        open={electoralOpen}
+        onOpenChange={setElectoralOpen}
+        constituency={mla?.constituency || decoded}
+      />
     </div>
   );
 };
