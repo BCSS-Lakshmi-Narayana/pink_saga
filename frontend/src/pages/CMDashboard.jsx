@@ -53,6 +53,7 @@ import {
 import api from '../lib/api';
 import { APP_NAVIGATION } from '../config/navigation';
 import { useRbac } from '../contexts/RbacContext';
+import SocialChannelsView from '../components/social/SocialChannelsView';
 
 /* ── palette ───────────────────────────────────────────────────────────── */
 const POS = '#15803d';
@@ -592,8 +593,15 @@ const MainTrendTip = ({ active, payload, label }) => {
 };
 
 /* ── page ──────────────────────────────────────────────────────────────── */
+/** The brief's two views. Both share the 7 / 30 / 90-day switch in the header. */
+const VIEWS = [
+  { id: 'brief', label: 'Brief' },
+  { id: 'social', label: 'Social & Channels' },
+];
+
 export default function CMDashboard() {
-  const [days, setDays] = useState(30);
+  const [view, setView] = useState('brief');
+  const [days, setDays] = useState(7);
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(true);
@@ -652,33 +660,30 @@ export default function CMDashboard() {
   }, [data]);
   const maxLocation = topLocations[0]?.mentions || 1;
 
-  if (busy && !data) {
-    return (
-      <div className="h-full flex items-center justify-center bg-[#f6f7fb]">
-        <div className="text-center">
-          <RefreshCw className="h-6 w-6 text-indigo-500 animate-spin mx-auto mb-3" />
-          <div className="text-[14px] font-medium text-slate-800">Building the brief</div>
-          <div className="text-[13px] text-slate-600 mt-1">across all leaders over the last {days} days</div>
-          <div className="text-[12px] text-slate-400 mt-3">Reading mentions, articles and alerts, then scoring them by issue.</div>
-        </div>
+  // Loading and error states sit inside the Brief tab, so the header and the
+  // tab bar stay usable (Social & Channels loads on its own).
+  const briefPending = busy && !data ? (
+    <div className="flex items-center justify-center py-24">
+      <div className="text-center">
+        <RefreshCw className="h-6 w-6 text-indigo-500 animate-spin mx-auto mb-3" />
+        <div className="text-[14px] font-medium text-slate-800">Building the brief</div>
+        <div className="text-[13px] text-slate-600 mt-1">across all leaders over the last {days} days</div>
+        <div className="text-[12px] text-slate-400 mt-3">Reading mentions, articles and alerts, then scoring them by issue.</div>
       </div>
-    );
-  }
-  if (err) {
-    return (
-      <div className="h-full flex items-center justify-center bg-[#f6f7fb] p-6">
-        <div className="bg-white rounded-xl border border-slate-200 p-8 text-center max-w-md">
-          <AlertTriangle className="h-8 w-8 text-rose-500 mx-auto mb-3" />
-          <div className="text-[15px] font-semibold text-slate-900 mb-1">Could not load the brief</div>
-          <div className="text-[12.5px] text-slate-500 mb-4">{err}</div>
-          <button onClick={load}
-            className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-[13px] font-medium hover:bg-indigo-700">
-            Try again
-          </button>
-        </div>
+    </div>
+  ) : err ? (
+    <div className="flex items-center justify-center py-16">
+      <div className="bg-white rounded-xl border border-slate-200 p-8 text-center max-w-md">
+        <AlertTriangle className="h-8 w-8 text-rose-500 mx-auto mb-3" />
+        <div className="text-[15px] font-semibold text-slate-900 mb-1">Could not load the brief</div>
+        <div className="text-[12.5px] text-slate-500 mb-4">{err}</div>
+        <button onClick={load}
+          className="px-4 py-2 rounded-lg bg-indigo-600 text-white text-[13px] font-medium hover:bg-indigo-700">
+          Try again
+        </button>
       </div>
-    );
-  }
+    </div>
+  ) : null;
 
   return (
     <div className="h-full overflow-auto bg-[#f6f7fb]">
@@ -709,7 +714,17 @@ export default function CMDashboard() {
           </div>
         </div>
 
+        <nav className="flex gap-1 border-b border-slate-200" role="tablist" aria-label="Intelligence Brief views">
+          {VIEWS.map((v) => (
+            <button key={v.id} type="button" role="tab" aria-selected={view === v.id} onClick={() => setView(v.id)}
+              className={`px-3.5 py-2 text-[13.5px] font-medium border-b-2 -mb-px transition-colors ${
+                view === v.id ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-slate-500 hover:text-slate-800'}`}>
+              {v.label}
+            </button>
+          ))}
+        </nav>
 
+        {view === 'social' ? <SocialChannelsView days={days} /> : briefPending || (<>
         {/* ── A · SIGNALS (all three streams) ───────────────────────────── */}
         <div className="grid grid-cols-2 xl:grid-cols-4 gap-3.5 items-stretch">
           <Kpi label="Took a side" value={n(comb?.total)} Icon={Megaphone} color="#2563eb" bg="#eff6ff"
@@ -1166,6 +1181,7 @@ export default function CMDashboard() {
           <Info className="h-3.5 w-3.5 shrink-0 text-slate-300" />
           Public voice only — our own accounts, the press and opposition handles are counted separately.
         </p>
+        </>)}
       </div>
     </div>
   );

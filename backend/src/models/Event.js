@@ -114,6 +114,8 @@ eventSchema.virtual('is_active_now').get(function () {
 eventSchema.set('toJSON', { virtuals: true });
 
 eventSchema.index({ start_date: 1, end_date: 1 });
+// Events still running or ended within a window (Intelligence Brief → Social & Channels).
+eventSchema.index({ end_date: -1 });
 eventSchema.index({ origin: 1, origin_calendar_id: 1, origin_year: 1 });
 
 eventSchema.pre('save', function (next) {

@@ -156,10 +156,42 @@ const netScore = (pro, anti) => {
   return base ? Math.round(((pro - anti) / base) * 100) : null;
 };
 
+/* ── party mentions ─────────────────────────────────────────────────── */
+/**
+ * politicalData carries Latin aliases only, but a large share of public
+ * conversation in Telangana is written in Telugu. Without these forms a
+ * post saying బీఆర్ఎస్ would not be counted as naming the party at all,
+ * which would understate every party figure on the brief. Keyed by the
+ * party name as politicalData spells it.
+ */
+const TELUGU_PARTY_ALIASES = {
+  BRS: ['బీఆర్ఎస్', 'భారత్ రాష్ట్ర సమితి', 'కారు పార్టీ'],
+  INC: ['కాంగ్రెస్', 'భారత జాతీయ కాంగ్రెస్', 'హస్తం పార్టీ'],
+  BJP: ['బీజేపీ', 'భారతీయ జనతా పార్టీ', 'కమలం పార్టీ'],
+  AIMIM: ['ఎంఐఎం', 'మజ్లిస్'],
+  CPI: ['సీపీఐ'],
+  CPM: ['సీపీఎం'],
+  // Kavitha's breakaway. Bare "TRS" is deliberately absent — it is also
+  // this party's own former name, and the two are led by an estranged
+  // father and daughter attacking each other.
+  'TRS(K)': ['తెలంగాణ రక్షణ సేన'],
+};
+const partyAliasRx = (pt) => {
+  const words = [
+    pt?.name, pt?.full_name,
+    ...(pt?.aliases || []),
+    ...(TELUGU_PARTY_ALIASES[pt?.name] || []),
+  ]
+    .filter(Boolean)
+    .map((w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+    .sort((a, b) => b.length - a.length);
+  return words.length ? new RegExp('(' + words.join('|') + ')', 'i') : null;
+};
+
 const MIN_CONFIDENT = 40;
 const ENGAGEMENT_FLOOR = 10;
 
-const getCMBrief = async (req, res) => {
+const buildCMBrief = async (req, res) => {
   try {
     const db = mongoose.connection.db;
     const days = Math.min(90, Math.max(7, parseInt(req.query.days, 10) || 30));
@@ -990,36 +1022,6 @@ const getCMBrief = async (req, res) => {
       .slice(0, 6);
 
     /* -- party standing: ours against the opposition, in the public voice - */
-    /**
-     * politicalData carries Latin aliases only, but a large share of public
-     * conversation in Telangana is written in Telugu. Without these forms a
-     * post saying బీఆర్ఎస్ would not be counted as naming the party at all,
-     * which would understate every party figure on the brief. Keyed by the
-     * party name as politicalData spells it.
-     */
-    const TELUGU_PARTY_ALIASES = {
-      BRS: ['బీఆర్ఎస్', 'భారత్ రాష్ట్ర సమితి', 'కారు పార్టీ'],
-      INC: ['కాంగ్రెస్', 'భారత జాతీయ కాంగ్రెస్', 'హస్తం పార్టీ'],
-      BJP: ['బీజేపీ', 'భారతీయ జనతా పార్టీ', 'కమలం పార్టీ'],
-      AIMIM: ['ఎంఐఎం', 'మజ్లిస్'],
-      CPI: ['సీపీఐ'],
-      CPM: ['సీపీఎం'],
-      // Kavitha's breakaway. Bare "TRS" is deliberately absent — it is also
-      // this party's own former name, and the two are led by an estranged
-      // father and daughter attacking each other.
-      'TRS(K)': ['తెలంగాణ రక్షణ సేన'],
-    };
-    const partyAliasRx = (pt) => {
-      const words = [
-        pt?.name, pt?.full_name,
-        ...(pt?.aliases || []),
-        ...(TELUGU_PARTY_ALIASES[pt?.name] || []),
-      ]
-        .filter(Boolean)
-        .map((w) => String(w).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-        .sort((a, b) => b.length - a.length);
-      return words.length ? new RegExp('(' + words.join('|') + ')', 'i') : null;
-    };
     const ourRx = partyAliasRx(OUR_PARTY);
     const oppRxList = (OPPOSITION_PARTIES || [])
       .map((pt) => ({ name: pt.name, rx: partyAliasRx(pt) }))
@@ -1484,8 +1486,88 @@ const getCMBrief = async (req, res) => {
   }
 };
 
+/* ── cache ─────────────────────────────────────────────────────────────────
+ *
+ * Measured on the live database: building the brief took ~20 s on a cold
+ * load and ~7.5 s on a warm one — most of it moving a window of full posts
+ * from the remote database, the rest waiting on the advice lines. It was
+ * rebuilt on every visit and every change of window.
+ *
+ * The brief depends only on the window (no user or scope is read above), so
+ * one copy per window is shared by everyone: served at once while fresh,
+ * served and rebuilt in the background while stale, and only waited for when
+ * there is none or it is over 3 hours old. 7 days is built when the server
+ * starts, then 30 and 90, and all are rebuilt every 10 minutes while the
+ * brief is in use.
+ */
+const BRIEF_FRESH_MS = 10 * 60 * 1000;
+const BRIEF_MAX_STALE_MS = 3 * 60 * 60 * 1000;
+const BRIEF_ACTIVE_MS = 60 * 60 * 1000;
+const briefCache = new Map(); // days → { body, at, inflight }
+let briefLastAsked = 0;
+let briefTimer = null;
+const briefDays = (v) => Math.min(90, Math.max(7, parseInt(v, 10) || 30));
+
+/** Run the builder with a stand-in response and keep a successful result. */
+const rebuildBrief = (days) => {
+  const entry = briefCache.get(days) || {};
+  if (!entry.inflight) {
+    let status = 200; let body = null;
+    const res = { status(c) { status = c; return this; }, json(b) { body = b; return this; } };
+    entry.inflight = buildCMBrief({ query: { days: String(days) } }, res)
+      .then(() => {
+        if (status !== 200 || !body) throw new Error(body?.message || `brief build returned ${status}`);
+        entry.body = body;
+        entry.at = Date.now();
+        return entry;
+      })
+      .finally(() => { entry.inflight = null; });
+    briefCache.set(days, entry);
+  }
+  return entry.inflight;
+};
+
+/** While someone has opened the brief within the hour, keep every built window fresh in the background. */
+const startBriefTimer = () => {
+  if (briefTimer) return;
+  briefTimer = setInterval(() => {
+    if (Date.now() - briefLastAsked > BRIEF_ACTIVE_MS) return;
+    for (const days of briefCache.keys()) rebuildBrief(days).catch((e) => console.warn('[cm-brief] background rebuild failed:', e.message));
+  }, BRIEF_FRESH_MS);
+  if (briefTimer.unref) briefTimer.unref();
+};
+
+const getCMBrief = async (req, res) => {
+  const days = briefDays(req.query.days);
+  briefLastAsked = Date.now();
+  startBriefTimer();
+  try {
+    const entry = briefCache.get(days);
+    const age = entry?.body ? Date.now() - entry.at : Infinity;
+    if (age > BRIEF_MAX_STALE_MS) {
+      const built = await rebuildBrief(days);
+      return res.json(built.body);
+    }
+    if (age > BRIEF_FRESH_MS) rebuildBrief(days).catch((e) => console.warn('[cm-brief] background rebuild failed:', e.message));
+    return res.json(entry.body);
+  } catch (err) {
+    console.error('[cm-brief]', err.message);
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+/** Called once after the server starts listening: the default window first. */
+const warmCMBrief = async () => {
+  startBriefTimer();
+  for (const days of [7, 30, 90]) {
+    try { await rebuildBrief(days); } catch (e) { console.warn(`[cm-brief] warm-up ${days}d failed:`, e.message); }
+  }
+};
+
 // classifyVoice is exported for the adversary-roster test only. Which side an
 // account speaks for is the one thing in this controller that a wrong data
 // file breaks silently — nothing throws, the numbers are just wrong — so it
 // needs to be assertable without standing up a database.
-module.exports = { getCMBrief, classifyVoice };
+module.exports = {
+  getCMBrief, warmCMBrief, classifyVoice, sideOf, netScore, engagementOf, partyAliasRx, MIN_CONFIDENT,
+};
