@@ -409,6 +409,18 @@ const grievanceSchema = new mongoose.Schema({
     topic: { type: String, default: null },
     topic_taxonomy_version: { type: Number, default: null },
 
+    /**
+     * What the post says about each tracked manifesto scheme it is about
+     * (schemeClaimService): [{ scheme, claim, figure }]. Empty when the post
+     * names none. `scheme_claims_v` is the reader's version — a post is read
+     * again only when that changes.
+     */
+    scheme_claims: { type: [mongoose.Schema.Types.Mixed], default: undefined },
+    scheme_claims_v: { type: Number, default: null },
+    scheme_claims_at: { type: Date, default: null },
+    /** Which models produced the reading, e.g. "llama3.1:latest + gemma3:4b". */
+    scheme_claims_by: { type: String, default: null },
+
     target_entity: { type: String },
     target_entity_canonical: { type: String },
     target_relevance: { type: Number, default: 0 },

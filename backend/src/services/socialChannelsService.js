@@ -93,6 +93,9 @@ const fromMention = (d) => {
         url: d.tweet_url || null,
         author: d.posted_by?.display_name || d.posted_by?.handle || null,
         seat: d.detected_location?.constituency || null,
+        handle: d.posted_by?.handle || null,
+        // What the post says about each manifesto scheme (schemeClaimService); read by the Manifesto tracker.
+        schemes: Array.isArray(d.analysis?.scheme_claims) ? d.analysis.scheme_claims : [],
     };
 };
 
@@ -113,6 +116,8 @@ const fromArticle = (a) => {
         url: a.source_url || null,
         author: a.source_name || null,
         seat: a.detected_location?.constituency || null,
+        handle: a.source_name || null,
+        schemes: Array.isArray(a.scheme_claims) ? a.scheme_claims : [],
     };
 };
 
@@ -488,12 +493,13 @@ const fetchRows = async () => {
                 analysis: {
                     topic: '$analysis.topic', political_stance: '$analysis.political_stance', stance: '$analysis.stance',
                     target: '$analysis.target', mentioned_entities: entityNamesExpr,
+                    scheme_claims: '$analysis.scheme_claims',
                 },
                 detected_location: { constituency: '$detected_location.constituency' },
             } },
         ]).allowDiskUse(true),
         NewsArticle.find({ $and: [{ published_date: { $gte: since } }, ...(nG ? [nG] : [])] })
-            .select('-_id published_date title title_english source_url source_name campaign_topic political_stance detected_location.constituency')
+            .select('-_id published_date title title_english source_url source_name campaign_topic political_stance detected_location.constituency scheme_claims')
             .lean(),
         Event.find({ $or: [{ end_date: null }, { end_date: { $gte: new Date(Date.now() - Math.max(...WINDOWS) * DAY) } }] })
             .select('-_id id name location status start_date end_date').sort({ start_date: -1 }).limit(50).lean(),
@@ -548,18 +554,38 @@ const seatsOf = (scope) => (!scope || scope.canSeeAll ? null : new Set([...(scop
  * The tab's data for one window and one user's scope. Served from memory;
  * waits for the database only on a cold start or when the copy is very old.
  */
-const overview = async ({ days, scope }) => {
+/** Make sure the copy exists and is fresh enough; reload in the background when it is getting old. */
+const ensureFresh = async () => {
     store.lastAsked = Date.now();
     startTimer();
     const age = Date.now() - store.loadedAt;
     if (!store.data || age > MAX_STALE_MS) await refresh();
     else if (age > REFRESH_MS) refresh().catch(() => {});
+};
 
+const scopedItems = (items, seats) => (seats ? items.filter((i) => i.seat && seats.has(String(i.seat).toLowerCase())) : items);
+
+/**
+ * Other tabs built on the same copy (the Manifesto tracker): a user's items,
+ * a memo key that changes when the copy is reloaded, and when it was loaded.
+ */
+const scopedCopy = async ({ scope }) => {
+    await ensureFresh();
+    const seats = seatsOf(scope);
+    return {
+        items: scopedItems(store.data.items, seats),
+        key: `${store.loadedAt}:${seats ? [...seats].sort().join(',') : 'all'}`,
+        as_of: new Date(store.loadedAt).toISOString(),
+    };
+};
+
+const overview = async ({ days, scope }) => {
+    await ensureFresh();
     const seats = seatsOf(scope);
     const key = `${store.loadedAt}:${days}:${seats ? [...seats].sort().join(',') : 'all'}`;
     if (!store.results.has(key)) {
         const { items, events, eventPosts } = store.data;
-        const mine = seats ? items.filter((i) => i.seat && seats.has(String(i.seat).toLowerCase())) : items;
+        const mine = scopedItems(items, seats);
         const result = summariseItems({
             items: mine,
             // Events are set up statewide and their posts are not tied to a seat: statewide users only.
@@ -575,4 +601,6 @@ const overview = async ({ days, scope }) => {
     return store.results.get(key);
 };
 
-module.exports = { overview, warm, summarise, VOICES, CHANNELS, WINDOWS, MIN_TREND };
+module.exports = {
+    overview, warm, summarise, scopedCopy, isOpinion, VOICES, VOICE_LABEL, CHANNELS, WINDOWS, MIN_TREND, DAY,
+};

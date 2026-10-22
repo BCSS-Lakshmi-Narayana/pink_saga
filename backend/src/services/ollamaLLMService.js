@@ -80,6 +80,10 @@ async function chatCompletion({
    */
   timeoutMs,
   timeout,
+  /** A different model for this call (default OLLAMA_MODEL). */
+  model,
+  /** A different Ollama host for this call (default OLLAMA_URL). */
+  baseUrl,
 } = {}) {
   const effectiveTimeout = Number(timeoutMs || timeout || DEFAULT_TIMEOUT);
   if (!prompt || typeof prompt !== 'string') {
@@ -93,7 +97,7 @@ async function chatCompletion({
   messages.push({ role: 'user', content: prompt });
 
   const body = {
-    model: MODEL,
+    model: model || MODEL,
     messages,
     stream: false,
     options: {
@@ -108,7 +112,7 @@ async function chatCompletion({
   await acquire();
   let res;
   try {
-    res = await axios.post(`${OLLAMA_URL}/api/chat`, body, {
+    res = await axios.post(`${baseUrl || OLLAMA_URL}/api/chat`, body, {
       timeout: effectiveTimeout,
       headers: { 'Content-Type': 'application/json' },
     });

@@ -103,6 +103,11 @@ const newsArticleSchema = new mongoose.Schema({
    */
   campaign_topic: { type: String, default: null },
   campaign_topic_taxonomy_version: { type: Number, default: null },
+  /** What the headline says about each tracked manifesto scheme (schemeClaimService); see Grievance.analysis.scheme_claims. */
+  scheme_claims: { type: [mongoose.Schema.Types.Mixed], default: undefined },
+  scheme_claims_v: { type: Number, default: null },
+  scheme_claims_at: { type: Date, default: null },
+  scheme_claims_by: { type: String, default: null },
   /** Full pipeline output, for the reason modal. */
   pipeline_analysis: { type: mongoose.Schema.Types.Mixed, default: null },
   pipeline_analyzed_at: { type: Date, default: null },
